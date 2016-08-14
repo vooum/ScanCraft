@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os,shutil,subprocess
 __all__=['run','NMSSMToolsDir','inpModelDir','inpDir','spectrDir','omegaDir',
-         'recordchisq','recordpar','recordlist']
+         'recordDir','recordchisq','recordpar','recordlist']
 
 DataDir='mcmc/'
 if not os.path.isdir(DataDir): os.mkdir(DataDir)
