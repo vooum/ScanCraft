@@ -1,0 +1,5 @@
+Running NMHDECAY for 1 point
+with input file ../mcmc/mcmcinp.dat
+DM relic density will be computed by micrOMEGAs
+Output files mcmcspectr.dat and mcmcomega.dat
+will be written in directory ../mcmc

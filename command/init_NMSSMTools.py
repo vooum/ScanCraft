@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 import os,shutil,subprocess
 __all__=['run','NMSSMToolsDir','inpModelDir','inpDir','spectrDir','omegaDir',
-         'recordchisq','recordpar','recordlist']
+         'recordDir','recordchisq','recordpar','recordlist']
 
 DataDir='mcmc/'
 if not os.path.isdir(DataDir): os.mkdir(DataDir)
 
-CurDir=os.getcwd()
-print(CurDir)
+_CurDir=os.getcwd()
+print(_CurDir)
 NMSSMToolsDir=''
-for i in os.listdir(CurDir):
+for i in os.listdir(_CurDir):
     if 'NMSSMTools' in i and os.path.isdir(i):
         NMSSMToolsDir=max(NMSSMToolsDir,i)
 else:
     if NMSSMToolsDir=='': exit('no NMSSMTools package found')
-    else: NMSSMToolsDir=os.path.join(CurDir,NMSSMToolsDir)
+    else: NMSSMToolsDir=os.path.join(_CurDir,NMSSMToolsDir)
 inpModelDir = os.path.join(DataDir,'inp.dat')
 inpDir = os.path.join(DataDir,'mcmcinp.dat')
 spectrDir=os.path.join(DataDir,'mcmcspectr.dat')
