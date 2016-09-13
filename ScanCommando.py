@@ -10,6 +10,12 @@ target=5
 StepFactor=1. # sigma = n% of (maximum - minimum) of the free parameters
 SlopFactor=.3 # difficulty of accepting a new point with higher chisq
 add_chisq=True
+ignore=[ 'Landau Pole'
+        ,'No Higgs in the MHmin-MHmax'
+        ,'Relic density'
+        ,'b -> c tau nu'    # always keep alive
+        ]
+r=readSLHA(discountKeys=ignore)
 
 #print(read.readline.readline)
 #print(mcmc.Scan)
@@ -32,12 +38,6 @@ free.add('kappa','EXTPAR'   ,62 ,1.e-3    ,1. ,walk='log',step=None)
 free.add('A_kappa','EXTPAR' ,64,-3.e3,3.e3,step=None)
 free.add('mu_eff','EXTPAR'  ,65,100.,1500.,step=None)
 free.add('MA','EXTPAR',124,	0.,	2.e3)
-'''print(free.tanB.max)
-print(getattr(free,'tanB',None).walk)
-print(free.list)
-print(free.tanB.value)
-free.GetNewPoint()
-print(free.tanB.new_value)'''
 
 # read start points================================
 inpModel=open(inpModelDir,'r')
@@ -56,14 +56,6 @@ if True:
                     P[a[0]].value=a[1]
 
 free.SetRandom()
-exit()
-'''for i in free.list:
-    print(getattr(free,i).value,end='\t')
-    print()
-free.GetNewPoint()
-for i in free.list:
-    print(getattr(free,i).new_value,end='\t')
-    print()'''
 
 L_Nsd=DarkMatter('LUX2016_Nsd.txt')
 L_Psd=DarkMatter('LUX2016_Psd.txt')
@@ -72,10 +64,13 @@ L_Psi=DarkMatter('LUX2016_Psi.txt')
 record=-1
 trypoint=0
 lastchisq=1e10
+# scan ==================================================================
 while record < target:
+
     if trypoint%100==1: print(trypoint,' points tried; ',record,' points recorded')
     trypoint+=1
-# rewrite inp-------------------------------------------------------
+
+    # rewrite inp-------------------------------------------------------
     inp=open(inpDir,'w')
     BLOCK = ''
     Nnewline=0
@@ -103,7 +98,15 @@ while record < target:
 
 #--------- read output ------------------------
     if not os.path.exists(spectrDir): exit('spectr.dat not exist')
-    if r.readfile(spectrDir):
+
+    r.read(spectrDir)
+    '''
+    print(sorted(r.Decay.__dict__))
+    print(list(r.__dict__.keys()))
+    print(r.Decay.St_1)
+    exit()'''
+
+    if r.p:
         mainNNo=0
         mixV=0
         for i in range(5):
@@ -111,20 +114,30 @@ while record < target:
                 mixV=r.Nmix[tuple([1,i+1])]
                 mainNNo=i+1
         
-        #if mainNNo not in [5]:continue
-        if abs(r.DM['csNsd'])>L_Nsd.value(r.Msp['X_N1']):continue
-        if abs(r.DM['csPsd'])>L_Psd.value(r.Msp['X_N1']):continue
-        if abs(r.DM['csPsi'])>L_Psi.value(r.Msp['X_N1']):continue
+        #if mainNNo not in [3,4,5]:continue
+        if 'csNsd' in r.DM.keys():
+            if abs(r.DM['csNsd'])>L_Nsd.value(r.Msp['X_N1']):continue
+            if abs(r.DM['csPsd'])>L_Psd.value(r.Msp['X_N1']):continue
+            if abs(r.DM['csPsi'])>L_Psi.value(r.Msp['X_N1']):continue
+        if r.__hasattr__('HBresult'):
+            if r.HBresult!=1:continue
+        if r.__hasattr__('HSresult'):
+            if r.HSresult<0.05:continue
         chisq=0.
         chisq_Q={}
         chisq_A={}
-        chisq_A['FT']=(max(r.FT[sorted(r.FT.keys())[-2]],40.)-40.)**2/100.
+        # chisqure
+        chisq_Q['mh']=chi2(r.Mh[ism],mh)
+        chisq_Q['bsg']=chi2(r.b_phy['b_sg']*1e4,bsg)
+        chisq_Q['bmu']=chi2(r.b_phy['b_mu']*1e9,bmu)
+        chisq_Q['DM']=chi2(r.DM['DMRD'],omg)
+        chisq_A['FT']=(max(r.FT,40.)-40.)**2/100.
         for i in chisq_Q.values():
             chisq+=i
         if add_chisq :
             for i in chisq_A.values(): 
                 chisq+=i
-#   record point
+        #   record point
         if (random.random() < math.exp(max(SlopFactor*min(lastchisq-chisq,0.),-745))
     	    or chisq<10.):
             lastchisq=chisq
@@ -140,4 +153,4 @@ while record < target:
             shutil.move(spectrDir,os.path.join(recordDir,'spectr.'+str(record)))
             shutil.move(omegaDir,os.path.join(recordDir,'omega.'+str(record)))
 
-    free.GetNewPoint()
+    free.GetNewPoint(StepFactor)
