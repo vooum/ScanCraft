@@ -6,13 +6,16 @@ import subprocess,random,math,shutil
 
 # settings
 ism='M_h2'
-target=5
+target=1000
 StepFactor=1. # sigma = n% of (maximum - minimum) of the free parameters
 SlopFactor=.3 # difficulty of accepting a new point with higher chisq
 add_chisq=True
-ignore=[ 'Landau Pole'
-        ,'No Higgs in the MHmin-MHmax'
-        ,'Relic density'
+ignore=[ 'Landau Pole'#27
+        ,'excluded by Planck'#30
+        ,'b->s gamma'#32
+        ,'B_s->mu+mu-'#35
+        ,'No Higgs in the MHmin-MHmax'#46
+        ,'Relic density'#
         ,'b -> c tau nu'    # always keep alive
         ]
 r=readSLHA(discountKeys=ignore)
@@ -131,7 +134,7 @@ while record < target:
         chisq_Q['bsg']=chi2(r.b_phy['b_sg']*1e4,bsg)
         chisq_Q['bmu']=chi2(r.b_phy['b_mu']*1e9,bmu)
         chisq_Q['DM']=chi2(r.DM['DMRD'],omg)
-        chisq_A['FT']=(max(r.FT,40.)-40.)**2/100.
+        #chisq_A['FT']=(max(r.FT,40.)-40.)**2/100.
         for i in chisq_Q.values():
             chisq+=i
         if add_chisq :

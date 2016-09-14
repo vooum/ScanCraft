@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 from .readSLHA import ParticleSpectrum
 
-def PDGtoName(PDG):
-    if PDG>0:
-        return ParticleSpectrum[PDG]
-    elif PDG<0:
-        return '-'+ParticleSpectrum[-PDG]
-
 def AddValue(dictionary,key,value):
     if key in dictionary.keys():
         dictionary[key]+=value
@@ -52,3 +46,11 @@ def ClassifyEWino(DecayList):
                 AddValue(Decay,'&'.join(name),outR)
     return Decay
 
+def ClassifyDMAnni(AnnihilationList):
+    Anni={}
+    for outS, outR in AnnihilationList.items():
+        if outS[0]==outS[1]==1000022:
+            AddValue(Anni,'N1N1',outR)
+        else:
+            AddValue(Anni,'others',outR)
+    return Anni

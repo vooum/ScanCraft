@@ -84,6 +84,12 @@ for files in spectrs:
         outNumber+=1   # reNumber
         #outNumber=int(inNumber) #keep original Number
 
+        DMAnni=ClassifyDMAnni(r.DMAnnihilation)# DarkMatter Annihilation
+        continue
+
+
+
+
         for i in DataFiles.values():i.number(str(outNumber))
         DataFiles['Allpar'].Data([r.MinPar,r.ExtPar])
         DataFiles['DM'].Data([r.DM])
@@ -94,7 +100,7 @@ for files in spectrs:
 
 
         N2Decay=ClassifyEWino(r.DecayList[1000023])
-        N3Decay=ClassifyEWino(r.DecayList[1000035])
+        N3Decay=ClassifyEWino(r.DecayList[1000025])
         C1Decay=ClassifyEWino(r.DecayList[1000024])
         #print(C1Decay)
         for listi,filej in [[N2Decay,N2],[N3Decay,N3],[C1Decay,C1]]:

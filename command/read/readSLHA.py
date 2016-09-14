@@ -14,6 +14,16 @@ ParticleSpectrum={
     1000021:'Sg',
 	1000022:'N1',1000023:'N2',1000024:'C1',1000025:'N3',1000035:'N4',1000037:'C2',1000045:'N5',
 	}
+
+def GetName(NameTuple):
+    name=[]
+    for i in NameTuple:
+        if i>0:
+            name.append(ParticleSpectrum[i])
+        elif i<0:
+            name.append('-'+ParticleSpectrum[-i])
+    return '&'.join(name)
+
 class translate:
     def __init__(self,DecayList):
         for id in DecayList.keys():
@@ -24,13 +34,7 @@ class translate:
                 if type(outS) is str:
                     self.width[outS]=outR
                 else:
-                    name=[]
-                    for i in outS:
-                        if i>0:
-                            name.append(ParticleSpectrum[i])
-                        elif i<0:
-                            name.append('-'+ParticleSpectrum[-i])
-                    init['&'.join(name)]=outR
+                    init[GetName(outS)]=outR
         return
 
 
@@ -174,6 +178,14 @@ class readBLOCK:
             if self.a[-1]:
                 self.DM[['CS','csPsi','csNsi','csPsd','csNsd'][self.a[0]]]=self.a[1]
         return
+    
+    def ABUNDANCE(self):
+        self.DMAnnihilation={}
+        while self.InBlock():
+            if self.a[0]==7:
+                self.DMAnnihilation[tuple(self.a[2:6])]=self.a[6]
+        return
+                
 
     def DCINFO(self):
         self.DecayList={}
@@ -221,8 +233,3 @@ class readSLHA(readBLOCK):
                         getattr(readBLOCK,a[1])(self)
 
         self.Decay=translate(self.DecayList)
-            
-            
-            
-            
-            
