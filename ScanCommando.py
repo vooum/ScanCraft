@@ -11,6 +11,7 @@ StepFactor=1. # sigma = n% of (maximum - minimum) of the free parameters
 SlopFactor=.3 # difficulty of accepting a new point with higher chisq
 add_chisq=True
 ignore=[ 'Landau Pole'#27
+        ,'Relic density'
         ,'excluded by Planck'#30
         ,'b->s gamma'#32
         ,'B_s->mu+mu-'#35
@@ -36,8 +37,8 @@ free.add('MtauR','EXTPAR'   ,36,	100.,	2.e3,walk=free.Atau)
 free.add('MQ3L'	,'EXTPAR'   ,43,	100.,	2.e3,step=None)
 free.add('MtopR'	,'EXTPAR'   ,46,	100.,	2.e3,step=None)
 free.add('MbottomL','EXTPAR'  ,49,	100.,	2.e3 ,walk=free.MtopR)
-free.add('lambda','EXTPAR'  ,61  ,1e-3    ,1. ,walk='log',step=None)
-free.add('kappa','EXTPAR'   ,62 ,1.e-3    ,1. ,walk='log',step=None)
+free.add('Lambda','EXTPAR'  ,61  ,1e-3    ,1. ,walk='log',step=None)
+free.add('Kappa','EXTPAR'   ,62 ,1.e-3    ,1. ,walk='log',step=None)
 free.add('A_kappa','EXTPAR' ,64,-3.e3,3.e3,step=None)
 free.add('mu_eff','EXTPAR'  ,65,100.,1500.,step=None)
 free.add('MA','EXTPAR',124,	0.,	2.e3)
@@ -46,9 +47,16 @@ free.add('MA','EXTPAR',124,	0.,	2.e3)
 inpModel=open(inpModelDir,'r')
 inpModelLines=inpModel.readlines()
 inpModel.close()
+
+if True:#Change inp file
+    inputfile=open('inp','r')
+    inputlines=inputfile.readlines()
+    inputfile.close()
+else:
+    inputlines=inpModelLines
 if True:
     BLOCK=''
-    for line in inpModelLines:
+    for line in inputlines:
         a=readline(line)
         if a[-1] and a[0]=='BLOCK':
             BLOCK=a[1]
@@ -118,14 +126,10 @@ while record < target:
                 mainNNo=i+1
         
         #if mainNNo not in [3,4,5]:continue
-        if 'csNsd' in r.DM.keys():
+        if False:#'csNsd' in r.DM.keys():
             if abs(r.DM['csNsd'])>L_Nsd.value(r.Msp['X_N1']):continue
             if abs(r.DM['csPsd'])>L_Psd.value(r.Msp['X_N1']):continue
             if abs(r.DM['csPsi'])>L_Psi.value(r.Msp['X_N1']):continue
-        if r.__hasattr__('HBresult'):
-            if r.HBresult!=1:continue
-        if r.__hasattr__('HSresult'):
-            if r.HSresult<0.05:continue
         chisq=0.
         chisq_Q={}
         chisq_A={}
