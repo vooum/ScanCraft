@@ -16,7 +16,10 @@ r=readSLHA(discountKeys=ignore)
 if len(sys.argv)==1:
     key='mcmc'
 else:
-    key=sys.argv[1]
+    if sys.argv[1][-1]=='/':
+        key=sys.argv[1]
+    else:
+        key=sys.argv[1][:-1]
 if len(sys.argv)==3:
     OutSteam=sys.argv[2]
 else:
@@ -85,9 +88,6 @@ for files in spectrs:
         #outNumber=int(inNumber) #keep original Number
 
         DMAnni=ClassifyDMAnni(r.DMAnnihilation)# DarkMatter Annihilation
-        continue
-
-
 
 
         for i in DataFiles.values():i.number(str(outNumber))
@@ -106,13 +106,6 @@ for files in spectrs:
         for listi,filej in [[N2Decay,N2],[N3Decay,N3],[C1Decay,C1]]:
             S=sorted([i for i in listi.items()],key=lambda x:x[1],reverse=True)
             filej.write(str(outNumber)+'\t'+'\t'.join([str(i[0])+': '+str(i[1]) for i in S])+'\n')
-
-        continue
-        sortN2=sorted([i for i in r.Decay.N2.items()],key=lambda x:x[1],reverse=True)
-        N2.write(str(outNumber)+'\t'+'\t'.join([str(i[0])+': '+str(i[1]) for i in sortN2[:2]])+'\n')
-        sortN3=sorted([i for i in r.Decay.N3.items()],key=lambda x:x[1],reverse=True)
-        N3.write(str(outNumber)+'\t'+'\t'.join([str(i[0])+': '+str(i[1]) for i in sortN3[:2]])+'\n')
-        example.write(str(outNumber)+'\t'+'\t'.join([str(i[0])+': '+str(i[1]) for i in r.Decay.N2.items()])+'\n')
 
         # copy files
         outspectr=os.path.join(AnalysedDir,'spectr.'+str(outNumber))

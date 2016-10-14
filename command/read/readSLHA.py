@@ -48,8 +48,8 @@ class readBLOCK:
             self.i+=1
             return True
 
-    def SPINFO(self):
-        self.prob=[]
+    def readSPINFO(self):
+        self.PROB=[]
         while self.InBlock():
             if self.a[0]==4:
                 self.p=False
@@ -59,20 +59,22 @@ class readBLOCK:
                     if Key in self.a[1]:
                         break
                 else:
-                    self.prob.append(self.a[1])
-        if len(self.prob)>0:
-            self.p=False
+                    self.PROB.append(self.a[1])
         return
 
-    def MINPAR(self):
+    def readMINPAR(self):
+        self.MINPAR={}
         self.MinPar={}
-        MinPar_n={0:'SCALE',1:'M0',2:'M12',3:'tanb',5:'A0'}
+        MinPar_n={0:'SCALE',1:'M0',2:'M12',3:'tanB',5:'A0'}
         while self.InBlock():
+            if type(self.a[0]) is int:
+                self.MINPAR[self.a[0]]=self.a[1]
             if self.a[0] in MinPar_n.keys():
                 self.MinPar[MinPar_n[self.a[0]]]=self.a[1]
         return
     
-    def EXTPAR(self):
+    def readEXTPAR(self):
+        self.EXTPAR={}
         self.ExtPar={}
         ExtPar_n={1:'M1',2:'M2',3:'M3'\
                 ,11:'Atop',12:'Abotton',13:'Atau'\
@@ -80,11 +82,12 @@ class readBLOCK:
                 ,61:'lambda',62:'kappa',63:'Alambda',64:'Akappa',65:'mu_eff'\
                 ,124:'MA',125:'MP'}
         while self.InBlock():
+            self.EXTPAR[self.a[0]]=self.a[1]
             if self.a[0] in ExtPar_n.keys():
                 self.ExtPar[ExtPar_n[self.a[0]]]=self.a[1]
         return
 
-    def MASS(self):
+    def readMASS(self):
         self.Mass={}
         self.Mh={}
         Mh_n={25:'h1',35:'h2',45:'h3',36:'A1',46:'A2',37:'Ch'}
@@ -98,7 +101,7 @@ class readBLOCK:
                 self.Msp['X_'+Msp_n[self.a[0]]]=self.a[1]
         return
     
-    def LOWEN(self):
+    def readLOWEN(self):
         self.b_phy={}
         b_phy_n={1:'b_sg',4:'b_mu'}
         self.DM={}
@@ -110,7 +113,7 @@ class readBLOCK:
                 self.DM[DM_n[self.a[0]]]=self.a[1]
         return
     
-    def NMHMIX(self):
+    def readNMHMIX(self):
         if 'Hmix' not in self.__dict__.keys():
             self.Hmix={}
         self.Hmix['S']={}
@@ -119,7 +122,7 @@ class readBLOCK:
                 self.Hmix['S'][tuple(self.a[:2])]=self.a[2]
         return
     
-    def NMAMIX(self):
+    def readNMAMIX(self):
         if 'Hmix' not in self.__dict__.keys():
             self.Hmix={}
         self.Hmix['P']={}
@@ -128,29 +131,36 @@ class readBLOCK:
                 self.Hmix['P'][tuple(self.a[:2])]=self.a[2]
         return
     
-    def NMNMIX(self):
+    def readNMNMIX(self):
         self.Nmix={}
         while self.InBlock():
             if type(self.a[1]) is int:
                 self.Nmix[tuple(self.a[:2])]=self.a[2]
 
 
-    def REDCOUP(self):
+    def readREDCOUP(self):
         self.Hcouplings={}
         while self.InBlock():
             if type(self.a[1]) is int:
                 self.Hcouplings[tuple(self.a[:2])]=self.a[2]
         return
 
-    def FINETUNING(self):
-        self.FT_pi={}
+    def readFINETUNING(self):
+        self.FINETUNING={}
         while self.InBlock():
             if type(self.a[0]) is int:
-                self.FT_pi[self.a[0]]=self.a[1]
-        self.FT=self.FT_pi[sorted(self.FT_pi.keys())[-2]]
+                self.FINETUNING[self.a[0]]=self.a[1]
+        self.FT=self.FINETUNING[sorted(self.FINETUNING.keys())[-2]]
         return
     
-    def LHCFIT(self):
+    def readLHCCROSSSECTIONS(self):
+        self.LHCCROSSSECTIONS={}
+        while self.InBlock():
+            if type(self.a[0]) is int:
+                self.LHCCROSSSECTIONS[self.a[0]]=self.a[1]
+        return
+
+    def readLHCFIT(self):
         self.LHCfit={}
         LHCfit_n={1:'hrr',2:'hff',3:'hVV'}
         while self.InBlock():
@@ -158,20 +168,20 @@ class readBLOCK:
                 self.LHCfit[LHCfit_n[self.a[0]]]=self.a[1]
         return
 
-    def HiggsBoundsResults(self):
+    def readHiggsBoundsResults(self):
         while self.InBlock():
             if self.a[0]==1:
                 if self.a[1]==2:
                     self.HBresult=self.a[2]
         return
     
-    def HiggsSignalsResults(self):
+    def readHiggsSignalsResults(self):
         while self.InBlock():
             if self.a[0]==13:
                 self.HSresult=self.a[1]
         return
     
-    def NDMCROSSSECT(self):
+    def readNDMCROSSSECT(self):
         if 'DM' not in self.__dict__.keys():
             self.DM={}
         while self.InBlock():
@@ -179,7 +189,7 @@ class readBLOCK:
                 self.DM[['CS','csPsi','csNsi','csPsd','csNsd'][self.a[0]]]=self.a[1]
         return
     
-    def ABUNDANCE(self):
+    def readABUNDANCE(self):
         self.DMAnnihilation={}
         while self.InBlock():
             if self.a[0]==7:
@@ -187,7 +197,7 @@ class readBLOCK:
         return
                 
 
-    def DCINFO(self):
+    def readDCINFO(self):
         self.DecayList={}
         id=0
         while self.InBlock():
@@ -221,15 +231,14 @@ class readSLHA(readBLOCK):
     
         self.p=True
         self.i=0
-        while self.i < len(self.lines) and self.p:
-            a=readline(self.lines[self.i])
-            self.i+=1
-            if type(a[0]) is str:
-#                if a[0].upper()=='DECAY':
-#                    if hasattr(readDECAY,a[1]):
-#                        readDECAY.
-                if a[0].upper()=='BLOCK':
-                    if hasattr(readBLOCK,a[1]):
-                        getattr(readBLOCK,a[1])(self)
-
-        self.Decay=translate(self.DecayList)
+        try:
+            while self.p:
+                a=readline(self.lines[self.i])
+                self.i+=1
+                if type(a[0]) is str:
+                    if a[0].upper()=='BLOCK':
+                        if hasattr(readBLOCK,'read'+a[1]):
+                            getattr(readBLOCK,'read'+a[1])(self)
+        except IndexError:# End of the file
+            if hasattr(self,'DecayList'):
+                self.Decay=translate(self.DecayList)

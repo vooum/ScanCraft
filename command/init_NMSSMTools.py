@@ -32,6 +32,6 @@ if os.path.exists(recordDir):
 os.mkdir(recordDir)
 
 if not os.path.exists(os.path.join(NMSSMToolsDir,'main/nmhdecay')):
-    make=subprocess.Popen('make init', cwd=NMSSMToolsDir, shell=True).wait()
-    make=subprocess.Popen('make', cwd=NMSSMToolsDir, shell=True).wait()
+    subprocess.Popen('make init', cwd=NMSSMToolsDir, shell=True).wait()
+    subprocess.Popen('make', cwd=NMSSMToolsDir, shell=True).wait()
 else: print(os.path.join(NMSSMToolsDir,'main/nmhdecay'),'exist')

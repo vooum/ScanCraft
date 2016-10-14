@@ -11,13 +11,12 @@ StepFactor=1. # sigma = n% of (maximum - minimum) of the free parameters
 SlopFactor=.3 # difficulty of accepting a new point with higher chisq
 add_chisq=True
 ignore=[ 'Landau Pole'#27
-        ,'Relic density'
-        ,'excluded by Planck'#30
+        ,'Relic density'#30
         ,'b->s gamma'#32
         ,'B_s->mu+mu-'#35
-        ,'No Higgs in the MHmin-MHmax'#46
-        ,'Relic density'#
-        ,'b -> c tau nu'    # always keep alive
+        ,'Muon magn'#37
+        ,'No Higgs in the'#46
+        ,'b -> c tau nu'#58 always keep alive
         ]
 r=readSLHA(discountKeys=ignore)
 
@@ -36,37 +35,19 @@ free.add('MtauL','EXTPAR'   ,33,	100.,	2.e3,walk=free.Atau)
 free.add('MtauR','EXTPAR'   ,36,	100.,	2.e3,walk=free.Atau)
 free.add('MQ3L'	,'EXTPAR'   ,43,	100.,	2.e3,step=None)
 free.add('MtopR'	,'EXTPAR'   ,46,	100.,	2.e3,step=None)
-free.add('MbottomL','EXTPAR'  ,49,	100.,	2.e3 ,walk=free.MtopR)
+free.add('MbottomR','EXTPAR'  ,49,	100.,	2.e3 ,walk=free.MtopR)
 free.add('Lambda','EXTPAR'  ,61  ,1e-3    ,1. ,walk='log',step=None)
 free.add('Kappa','EXTPAR'   ,62 ,1.e-3    ,1. ,walk='log',step=None)
 free.add('A_kappa','EXTPAR' ,64,-3.e3,3.e3,step=None)
 free.add('mu_eff','EXTPAR'  ,65,100.,1500.,step=None)
 free.add('MA','EXTPAR',124,	0.,	2.e3)
 
-# read start points================================
-inpModel=open(inpModelDir,'r')
-inpModelLines=inpModel.readlines()
-inpModel.close()
-
-if True:#Change inp file
-    inputfile=open('inp','r')
-    inputlines=inputfile.readlines()
-    inputfile.close()
-else:
-    inputlines=inpModelLines
-if True:
-    BLOCK=''
-    for line in inputlines:
-        a=readline(line)
-        if a[-1] and a[0]=='BLOCK':
-            BLOCK=a[1]
-        else:
-            if hasattr(free,BLOCK):
-                P=getattr(free,BLOCK)
-                if a[0] in P.keys():
-                    P[a[0]].value=a[1]
+N=NMSSMTools()
+print('Start point is:')
+GetPoint(free,'inp.dat')
 
 free.SetRandom()
+
 
 L_Nsd=DarkMatter('LUX2016_Nsd.txt')
 L_Psd=DarkMatter('LUX2016_Psd.txt')
@@ -81,36 +62,9 @@ while record < target:
     if trypoint%100==1: print(trypoint,' points tried; ',record,' points recorded')
     trypoint+=1
 
-    # rewrite inp-------------------------------------------------------
-    inp=open(inpDir,'w')
-    BLOCK = ''
-    Nnewline=0
-    for line in inpModelLines:
-        newline=''
-        a=readline(line)
-        if a[0]=='BLOCK':
-            BLOCK = a[1]
-        else:
-            if hasattr(free,BLOCK):
-                P=getattr(free,BLOCK)
-                if a[0] in P.keys():
-                    i=P[a[0]]
-                    newline='\t'+'\t'.join([str(i.PDG),str(i.new_value),a[-2]])+'\n'
-        if newline == '':		#output mcmcinp
-      	    inp.write(line)
-        else:   #inp.write('#--- original line'+line)
-            inp.write(newline)
-    inp.close()
+    N.run(free)
 
-#--------- run nmhdecay.f ----------------------
-    f1=open('err.log','w')
-    nmhdecay =  subprocess.Popen(run
-  	    ,stderr=f1, stdout=f1, cwd=NMSSMToolsDir, shell=True).wait()
-
-#--------- read output ------------------------
-    if not os.path.exists(spectrDir): exit('spectr.dat not exist')
-
-    r.read(spectrDir)
+    r.read(N.spectrDir)
     '''
     print(sorted(r.Decay.__dict__))
     print(list(r.__dict__.keys()))
@@ -156,8 +110,8 @@ while record < target:
             free.print()
 
             record+=1
-            shutil.copyfile(inpDir,os.path.join(recordDir,'inp.'+str(record)))
-            shutil.move(spectrDir,os.path.join(recordDir,'spectr.'+str(record)))
-            shutil.move(omegaDir,os.path.join(recordDir,'omega.'+str(record)))
+            shutil.copyfile(N.inpDir,os.path.join(recordDir,'inp.'+str(record)))
+            shutil.move(N.spectrDir,os.path.join(recordDir,'spectr.'+str(record)))
+            shutil.move(N.omegaDir,os.path.join(recordDir,'omega.'+str(record)))
 
     free.GetNewPoint(StepFactor)

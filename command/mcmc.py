@@ -13,13 +13,15 @@ class mcmcParameter(Parameter):
 
     def flat_walk(self,factor=1):
         run =   random.gauss(self.value,self.step*factor)
-        self.new_value  =   max( min(self.min,self.value) , min(max(self.max,self.value),run))
+        #self.new_value  =   max( min(self.min,self.value) , min(max(self.max,self.value),run))
+        self.new_value = max( self.min, min( self.max, run))
 
     def log_walk(self,factor=1):
         self.new_log    =   random.gauss(self.log,self.step*factor)
         run =   10.**self.new_log
-        self.new_value  =   max( min(self.min,self.value) , min(max(self.max,self.value), run))
-
+        #self.new_value  =   max( min(self.min,self.value) , min(max(self.max,self.value), run))
+        self.new_value = max( self.min, min( self.max, run))
+        
     def follow(self,factor=1):
         self.new_value  =   self.walk.new_value
  
@@ -38,6 +40,8 @@ class mcmcParameter(Parameter):
         elif self.walk=='log':
             self.log = math.log10(self.value)
             self.new_log=self.log
+            self.logmax=math.log10(self.max)
+            self.logmin=math.log10(self.min)
             if self.step==None:
                 self.step = (math.log10( self.max)-math.log10(self.min))/100.
             self.new=self.log_walk
