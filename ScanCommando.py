@@ -81,10 +81,13 @@ while record < target:
                 mainNNo=i+1
         
         #if mainNNo not in [3,4,5]:continue
-        if False:#'csNsd' in r.DM.keys():
-            if abs(r.DM['csNsd'])>L_Nsd.value(r.Msp['X_N1']):continue
-            if abs(r.DM['csPsd'])>L_Psd.value(r.Msp['X_N1']):continue
-            if abs(r.DM['csPsi'])>L_Psi.value(r.Msp['X_N1']):continue
+        if 'csNsd' in r.DM.keys():
+            pass
+            #if abs(r.DM['csNsd'])>L_Nsd.value(r.Msp['X_N1']):continue
+            #if abs(r.DM['csPsd'])>L_Psd.value(r.Msp['X_N1']):continue
+            #if abs(r.DM['csPsi'])>L_Psi.value(r.Msp['X_N1']):continue
+        else:
+            continue
         chisq=0.
         chisq_Q={}
         chisq_A={}
