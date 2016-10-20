@@ -67,7 +67,7 @@ outNumber=0
 for files in spectrs:
     r.read(files)
     if r.p:
-        if r.PROB： continue
+        if r.PROB: continue
         mainNNo=0
         mixV=0
         for i in range(5):
