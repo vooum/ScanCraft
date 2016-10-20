@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from .readSLHA import * 
+from ..read.readSLHA import * 
 def GetPoint(point,inp):
     S=readSLHA()
     S.read(inp)
