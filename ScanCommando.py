@@ -111,9 +111,9 @@ while record < target:
             free.print()
 
             record+=1
-            shutil.copyfile(N.inpDir,os.path.join(recordDir,'inp.'+str(record)))
-            shutil.move(N.spectrDir,os.path.join(recordDir,'spectr.'+str(record)))
-            shutil.move(N.omegaDir,os.path.join(recordDir,'omega.'+str(record)))
+            shutil.copyfile(N.inpDir,os.path.join(N.recordDir,'inp.'+str(record)))
+            shutil.move(N.spectrDir,os.path.join(N.recordDir,'spectr.'+str(record)))
+            shutil.move(N.omegaDir,os.path.join(N.recordDir,'omega.'+str(record)))
 
     free.GetNewPoint(StepFactor)
     
