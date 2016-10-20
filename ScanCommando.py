@@ -12,7 +12,7 @@ StepFactor=1. # sigma = n% of (maximum - minimum) of the free parameters
 SlopFactor=.3 # difficulty of accepting a new point with higher chisq
 add_chisq=True
 ignore=[ 'Landau Pole'#27
-        ,'Relic density'#30
+        ,'relic density'#30
         ,'b->s gamma'#32
         ,'B_s->mu+mu-'#35
         ,'Muon magn'#37
@@ -81,14 +81,18 @@ while record < target:
                 mainNNo=i+1
         
         #if mainNNo not in [3,4,5]:continue
-        if False:#'csNsd' in r.DM.keys():
-            if abs(r.DM['csNsd'])>L_Nsd.value(r.Msp['X_N1']):continue
-            if abs(r.DM['csPsd'])>L_Psd.value(r.Msp['X_N1']):continue
-            if abs(r.DM['csPsi'])>L_Psi.value(r.Msp['X_N1']):continue
+        if 'csNsd' in r.DM.keys():
+            pass
+            #if abs(r.DM['csNsd'])>L_Nsd.value(r.Msp['X_N1']):continue
+            #if abs(r.DM['csPsd'])>L_Psd.value(r.Msp['X_N1']):continue
+            #if abs(r.DM['csPsi'])>L_Psi.value(r.Msp['X_N1']):continue
+        else:
+            continue
         chisq=0.
         chisq_Q={}
         chisq_A={}
         # chisqure
+        chisq_Q['PROB']=len(r.PROB)*1e5
         chisq_Q['mh']=chi2(r.Mh[ism],mh)
         chisq_Q['bsg']=chi2(r.b_phy['b_sg']*1e4,bsg)
         chisq_Q['bmu']=chi2(r.b_phy['b_mu']*1e9,bmu)
