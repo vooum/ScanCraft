@@ -34,7 +34,15 @@ class NMSSMTools():
         self.inpDir=os.path.join(DataDir,'mcmcinp.dat')
         self.spectrDir=self.inpDir.replace('inp','spectr')
         self.omegaDir=self.inpDir.replace('inp','omega')
+        self.recordDir=os.path.join(DataDir,'record/')
         self.runcode='./run '+os.path.join('../',self.inpDir)
+
+        if os.path.exists(self.recordDir):
+            if input('clean record? y/n \n')=='n':
+                exit('Directory record/ is not deleted')
+            else:
+                shutil.rmtree(self.recordDir)
+        os.mkdir(self.recordDir)
 
     def run(self,point,attr='new_value'):
         #write inp file
