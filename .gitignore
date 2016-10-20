@@ -1,0 +1,4 @@
+NMSSMTools*/
+*.pyc
+mcmc/
+Analysed
