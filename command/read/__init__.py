@@ -1,3 +1,4 @@
 #!/usr/bin/env python3
 from .readline import *
-from . import readfile as r 
+from .readSLHA import *
+from .ClassifyDecay import *
