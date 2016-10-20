@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os,shutil,subprocess
 from .read import *
-DataDir='mcmc/'
 
 def _GetDefaultDir():
     NMSSMToolsDir=''

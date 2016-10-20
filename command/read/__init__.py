@@ -2,4 +2,3 @@
 from .readline import *
 from .readSLHA import *
 from .ClassifyDecay import *
-from .getpoint import *
