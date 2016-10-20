@@ -52,7 +52,7 @@ free.SetRandom()
 
 L_Nsd=DarkMatter('LUX2016_Nsd.txt')
 L_Psd=DarkMatter('LUX2016_Psd.txt')
-L_Psi=DarkMatter('LUX2016_Psi.txt')
+L_Psi=DarkMatter('LUX201608_Psi.txt')
 
 record=-1
 trypoint=0
