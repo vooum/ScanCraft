@@ -20,15 +20,11 @@ def GetContent(FileDir):
 
 class NMSSMTools():
     def __init__(self,Dir=_GetDefaultDir(),DataDir='mcmc/'):
-        if Dir not in os.listdir():
+        if Dir not in os.listdir(): # creat new NMSSMTools copy
             Package=_GetDefaultDir()
             subprocess.Popen('make clean', cwd=Package, shell=True).wait()            
             shutil.copytree(Package,Dir)
-        if not os.path.exists(os.path.join(Dir,'main/nmhdecay')):
-            subprocess.Popen('make init', cwd=Dir, shell=True).wait()
-            subprocess.Popen('make', cwd=Dir, shell=True).wait()
-        else: print(os.path.join(Dir,'main/nmhdecay'),'exist')
-    
+
         self.Dir=Dir
         self.inpModelLines=GetContent(os.path.join(DataDir,'inp.dat'))
         self.inpDir=os.path.join(DataDir,'mcmcinp.dat')
@@ -43,6 +39,11 @@ class NMSSMTools():
             else:
                 shutil.rmtree(self.recordDir)
         os.mkdir(self.recordDir)
+
+        if not os.path.exists(os.path.join(Dir,'main/nmhdecay')):
+            subprocess.Popen('make init', cwd=Dir, shell=True).wait()
+            subprocess.Popen('make', cwd=Dir, shell=True).wait()
+        else: print(os.path.join(Dir,'main/nmhdecay'),'exist')
 
     def run(self,point,attr='new_value'):
         #write inp file
