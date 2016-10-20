@@ -8,6 +8,7 @@ class DarkMatter:
         ExpDir={'X1TSI':'Xenon1T_SI_LXe.txt','X1TSDp':'Xenon1T_SDp.txt','X1TSDn':'Xenon1T_SDn.txt'
                 ,'PICO2L_SDp.txt':'PICO2L_run2_SDp.txt','PICO60_SDp.txt':'PICO60_SDp.txt'
                 ,'LUX2016_Nsd.txt':'LUX2016_Nsd.txt','LUX2016_Psd.txt':'LUX2016_Psd.txt','LUX2016_Psi.txt':'LUX2016_Psi.txt'
+                ,'LUX201608_Psi.txt':'LUX201608_Psi.txt'
                 }
         self.line=numpy.loadtxt(os.path.join(Dir,ExpDir[exp]))
     def value(self,mass):
