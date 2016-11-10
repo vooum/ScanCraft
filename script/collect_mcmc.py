@@ -25,6 +25,12 @@ for files in os.listdir():
             if 'mcmc' in directory:
                 number+=1
                 inname=os.path.join(files,directory)
+                screen=os.path.join(files,'screen')
+                oldscreen=os.path.join(inname,'screen')
+                if os.path.isfile(screen):
+                    if os.path.isfile(oldscreen):
+                        os.remove(oldscreen)
+                    shutil.move(screen,inname)
                 outname=os.path.join(OutSteam,'mcmc'+str(number))
                 while os.path.exists(outname):
                     number+=1

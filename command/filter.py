@@ -8,6 +8,7 @@ print(sys.argv)
 
 ignore=[ 'Landau Pole'
         #,'Relic density'
+        ,'Muon magn. mom.'
         ,'b -> c tau nu'
         ]
 r=readSLHA(discountKeys=ignore)
@@ -17,11 +18,13 @@ if len(sys.argv)==1:
     key='mcmc'
 else:
     if sys.argv[1][-1]=='/':
-        key=sys.argv[1]
-    else:
         key=sys.argv[1][:-1]
+    else:
+        key=sys.argv[1]
 if len(sys.argv)==3:
     OutSteam=sys.argv[2]
+elif len(sys.argv)>3:
+    exit('too much argv(argument value)s')
 else:
     OutSteam='Analysed'
 if os.path.exists(OutSteam):exit('Directory '+ OutSteam +' already exist')
@@ -61,7 +64,7 @@ for dirs in os.listdir():
 
 L_Nsd=DarkMatter('LUX2016_Nsd.txt')
 L_Psd=DarkMatter('LUX2016_Psd.txt')
-L_Psi=DarkMatter('LUX2016_Psi.txt')
+L_Psi=DarkMatter('LUX201608_Psi.txt')
 
 outNumber=0
 for files in spectrs:
