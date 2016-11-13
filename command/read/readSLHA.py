@@ -79,7 +79,7 @@ class readBLOCK:
         ExtPar_n={1:'M1',2:'M2',3:'M3'\
                 ,11:'Atop',12:'Abotton',13:'Atau'\
                 ,43:'MQ3',46:'MU3',49:'MB3'\
-                ,61:'lambda',62:'kappa',63:'Alambda',64:'Akappa',65:'mu_eff'\
+                ,61:'Lambda',62:'Kappa',63:'Alambda',64:'Akappa',65:'mu_eff'\
                 ,124:'MA',125:'MP'}
         while self.InBlock():
             self.EXTPAR[self.a[0]]=self.a[1]

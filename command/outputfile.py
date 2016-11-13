@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-
-
-
-
 class outputfile:
     def __init__(self,filename):
         self.file=open(filename,'w')
