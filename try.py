@@ -15,3 +15,5 @@ PP.M1=p
 NT.GetStartPoint(PP,'inp.dat')
 
 print(PP.M1.value)
+if True:
+    print('here')

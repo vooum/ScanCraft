@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{e7336a4f-4803-41d8-a4cd-9ce1944c77dd}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>FreeScan.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+    <InterpreterVersion />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="command\chisqure.py" />
+    <Compile Include="command\darkmatter\darkmatter.py" />
+    <Compile Include="command\darkmatter\__init__.py" />
+    <Compile Include="command\FillDecayIntoSpectr.py" />
+    <Compile Include="command\filter.py" />
+    <Compile Include="command\getnewsample.py" />
+    <Compile Include="command\init_NMSSMTools.py" />
+    <Compile Include="command\mcmc.py" />
+    <Compile Include="command\NMSSMTools.py" />
+    <Compile Include="command\operator\generate.py" />
+    <Compile Include="command\operator\getpoint.py" />
+    <Compile Include="command\operator\__init__.py" />
+    <Compile Include="command\outputfile.py" />
+    <Compile Include="command\read\ClassifyDecay.py" />
+    <Compile Include="command\read\readfile.py" />
+    <Compile Include="command\read\readline.py" />
+    <Compile Include="command\read\readSLHA.py" />
+    <Compile Include="command\read\__init__.py" />
+    <Compile Include="command\scan.py" />
+    <Compile Include="command\__init__.py" />
+    <Compile Include="FreeScan.py" />
+    <Compile Include="ScanCommando.py" />
+    <Compile Include="script\collect_mcmc.py" />
+    <Compile Include="script\count.py" />
+    <Compile Include="try.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="command\darkmatter\LUX201608_Psi.txt" />
+    <Content Include="command\darkmatter\LUX2016_Nsd.txt" />
+    <Content Include="command\darkmatter\LUX2016_Psd.txt" />
+    <Content Include="command\darkmatter\LUX2016_Psi.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="command" />
+    <Folder Include="command\darkmatter" />
+    <Folder Include="command\operator" />
+    <Folder Include="command\read" />
+    <Folder Include="script" />
+  </ItemGroup>
+  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+</Project>
