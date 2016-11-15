@@ -22,7 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="command\chisqure.py" />
-    <Compile Include="command\darkmatter\darkmatter.py" />
+    <Compile Include="command\darkmatter\directdetection.py" />
     <Compile Include="command\darkmatter\__init__.py" />
     <Compile Include="command\FillDecayIntoSpectr.py" />
     <Compile Include="command\filter.py" />
@@ -30,15 +30,15 @@
     <Compile Include="command\init_NMSSMTools.py" />
     <Compile Include="command\mcmc.py" />
     <Compile Include="command\NMSSMTools.py" />
-    <Compile Include="command\operator\generate.py" />
-    <Compile Include="command\operator\getpoint.py" />
-    <Compile Include="command\operator\__init__.py" />
+    <Compile Include="command\sampleoperation\generate.py" />
+    <Compile Include="command\sampleoperation\getpoint.py" />
+    <Compile Include="command\sampleoperation\__init__.py" />
     <Compile Include="command\outputfile.py" />
     <Compile Include="command\read\ClassifyDecay.py" />
-    <Compile Include="command\read\readfile.py" />
     <Compile Include="command\read\readline.py" />
     <Compile Include="command\read\readSLHA.py" />
     <Compile Include="command\read\__init__.py" />
+    <Compile Include="rerun.py" />
     <Compile Include="command\scan.py" />
     <Compile Include="command\__init__.py" />
     <Compile Include="FreeScan.py" />
@@ -56,7 +56,7 @@
   <ItemGroup>
     <Folder Include="command" />
     <Folder Include="command\darkmatter" />
-    <Folder Include="command\operator" />
+    <Folder Include="command\sampleoperation\" />
     <Folder Include="command\read" />
     <Folder Include="script" />
   </ItemGroup>

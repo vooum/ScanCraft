@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 from command.scan import Sample
+import command.darkmatter as DarkMatter
+
+
 
 
 sample=Sample(scan='random')
@@ -24,3 +27,4 @@ free.Add('MA','EXTPAR',124,	0.,	2.e3)
 sample.GetValueFrom('inp.dat')
 new=sample.free
 print(repr([new.tanB.value,new.Lambda.value]))
+LUXPsi=DarkMatter.DirectDetection('LUX201608_Psi.txt')#LUX

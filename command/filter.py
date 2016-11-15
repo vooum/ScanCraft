@@ -7,7 +7,7 @@ import sys,os,re,copy,shutil
 print(sys.argv)
 
 ignore=[ 'Landau Pole'
-        #,'Relic density'
+        #,'relic density'
         ,'Muon magn. mom.'
         ,'b -> c tau nu'
         ]
