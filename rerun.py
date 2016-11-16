@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-import sys,os,copy
+import sys,os,copy,shutil
 from command import scan
 from command.sampleoperation.getpoint import GetPoint
+from command.NMSSMTools import NMSSMTools
 
 ignore=[ 'Landau Pole'
         ,'relic density'
@@ -39,21 +40,37 @@ elif len(sys.argv)==2:
 
 SampleList=[]
 for file in os.listdir(SamplePool):
-    name=os.path.join(SamplePool,file)
-    SampleList.append(copy.deepcopy(SampleModel))
-    GetPoint(SampleList[-1],name)
-    SampleList[-1].infile=file
+    if 'spectr.' in file:
+        name=os.path.join(SamplePool,file)
+        SampleList.append(copy.deepcopy(SampleModel))
+        GetPoint(SampleList[-1],name)
+        SampleList[-1].infile=name
 
+#print([i.infile for i in SampleList])
+def near(sample1,sample2,factor=100):
+    if sample1.VariableList!=sample2.VariableList:
+        exit('degree of freedom of two samples different')
+    for par in sample1.VariableList:
+        s1=getattr(sample1,par)
+        s2=getattr(sample2,par)
+        if abs(s1.value-s2.value)>(s1.max-s1.min)/factor:
+            return False
+    else:
+        return True
 #print(len(SampleList))
 for sample in SampleList:
     for comp in SampleList:
         if comp==sample:
             continue
-        for par in SampleModel.VariableList:
-            if getattr(sample,par).value!=getattr(comp,par).value:
-                break
         else:
-            print('equal')
-            SampleList.remove(comp)
+            if near(sample,comp):
+                SampleList.remove(comp)
+
 print(len(SampleList))
-print([i.infile for i in SampleList])
+
+for sample in SampleList:
+    files=sample.infile
+    outspectr=os.path.join('mcmc/record/','spectr.'+str(SampleList.index(sample)+1))
+    shutil.copyfile(files,outspectr)
+    shutil.copyfile(files.replace('spectr','inp'),outspectr.replace('spectr','inp'))
+    #shutil.copyfile(files.replace('spectr','omega'),outspectr.replace('spectr','omega'))
