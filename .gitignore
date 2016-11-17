@@ -2,3 +2,8 @@ NMSSMTools*/
 *.pyc
 mcmc/
 Analysed
+err.log
+.vs/
+*.pyproj
+*.user
+*.sln
