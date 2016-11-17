@@ -45,7 +45,10 @@ for file in os.listdir(SamplePool):
         SampleList.append(copy.deepcopy(SampleModel))
         GetPoint(SampleList[-1],name)
         SampleList[-1].infile=name
-
+        lenth=len(SampleList)
+        if lenth%1000==0:
+            print(lenth,' smaples recorded ...')
+print(lenth,' samples recorded.\nanalysing...')
 #print([i.infile for i in SampleList])
 def near(sample1,sample2,factor=100):
     if sample1.VariableList!=sample2.VariableList:
@@ -66,11 +69,12 @@ for sample in SampleList:
             if near(sample,comp):
                 SampleList.remove(comp)
 
-print(len(SampleList))
+print(len(SampleList),' samples left.\nrecording samples into ./mcmc/record/')
 
 for sample in SampleList:
     files=sample.infile
     outspectr=os.path.join('mcmc/record/','spectr.'+str(SampleList.index(sample)+1))
     shutil.copyfile(files,outspectr)
     shutil.copyfile(files.replace('spectr','inp'),outspectr.replace('spectr','inp'))
-    #shutil.copyfile(files.replace('spectr','omega'),outspectr.replace('spectr','omega'))
+    shutil.copyfile(files.replace('spectr','omega'),outspectr.replace('spectr','omega'))
+print('recording complate.')
