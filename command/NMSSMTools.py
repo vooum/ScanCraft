@@ -27,14 +27,14 @@ class NMSSMTools():
 
         self.Dir=Dir
         self.inpModelLines=GetContent(os.path.join(DataDir,'inp.dat'))
-        self.inpDir=os.path.join(DataDir,'mcmcinp.dat')
+        self.inpDir=os.path.join(Dir,'mcmcinp.dat')
         self.spectrDir=self.inpDir.replace('inp','spectr')
         self.omegaDir=self.inpDir.replace('inp','omega')
         self.recordDir=os.path.join(DataDir,'record/')
-        self.runcode='./run '+os.path.join('../',self.inpDir)
+        self.runcode='./run mcmcinp.dat'
 
         if os.path.exists(self.recordDir):
-            if input('clean record? y/n \n')=='n':
+            if input('clean record? y/n \n') in ['n','N']:
                 exit('Directory record/ is not deleted')
             else:
                 shutil.rmtree(self.recordDir)
@@ -72,3 +72,12 @@ class NMSSMTools():
         
         if not os.path.exists(self.spectrDir): exit('spectr.dat not exist')
         return
+
+    def record(self,number):
+        recordinp   =os.path.join(self.recordDir,'inp.'+str(number))
+        recordspectr=os.path.join(self.recordDir,'spectr.'+str(number))
+        recordomega =os.path.join(self.recordDir,'omega.'+str(number))
+        shutil.move(self.inpDir,recordinp)
+        shutil.move(self.spectrDir,recordspectr)
+        if os.path.isfile(recordomega):
+            shutil.move(self.omegaDir,recordomega)

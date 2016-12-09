@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from command import *
-from command.operator.getpoint import GetPoint
+from command.sampleoperation.getpoint import GetPoint
 import subprocess,random,math,shutil
 #print([ i for i in globals().keys() if '__' not in i])
 

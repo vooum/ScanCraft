@@ -7,7 +7,7 @@ import sys,os,re,copy,shutil
 print(sys.argv)
 
 ignore=[ 'Landau Pole'
-        #,'Relic density'
+        #,'relic density'
         ,'Muon magn. mom.'
         ,'b -> c tau nu'
         ]
@@ -62,9 +62,9 @@ for dirs in os.listdir():
         spectr0.sort(key=lambda x: int(re.findall(r'\d+',x)[-1]))
         spectrs.extend(spectr0)
 
-L_Nsd=DarkMatter('LUX2016_Nsd.txt')
-L_Psd=DarkMatter('LUX2016_Psd.txt')
-L_Psi=DarkMatter('LUX201608_Psi.txt')
+L_Nsd=DirectDetection('LUX2016_Nsd.txt')
+L_Psd=DirectDetection('LUX2016_Psd.txt')
+L_Psi=DirectDetection('LUX201608_Psi.txt')
 
 outNumber=0
 for files in spectrs:
