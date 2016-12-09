@@ -26,13 +26,13 @@ def GetName(NameTuple):
 
 class translate:
     def __init__(self,DecayList):
+        self.width={}
         for id in DecayList.keys():
-            self.width={}
             setattr(self,ParticleSpectrum[id],{})
             init=getattr(self,ParticleSpectrum[id])
             for outS, outR in DecayList[id].items():
                 if type(outS) is str:
-                    self.width[outS]=outR
+                    self.width[ParticleSpectrum[id]]=outR
                 else:
                     init[GetName(outS)]=outR
         return
