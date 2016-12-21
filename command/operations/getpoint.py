@@ -7,8 +7,5 @@ def GetPoint(point,inp):
     BLOCK=''
     for name in ParameterList:
         Pari=getattr(point,name)
-        #print(S.EXTPAR)
-        #print(S.MINPAR,Pari.block)
         Pari.value=getattr(S,Pari.block)[Pari.PDG]
-        #print(name,Pari.value)
     return

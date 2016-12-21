@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os,shutil,subprocess
+import os,shutil,subprocess,copy
 from .read import *
 
 def _GetDefaultDir():
@@ -71,7 +71,10 @@ class NMSSMTools():
   	    ,stderr=f1, stdout=f1, cwd=self.Dir, shell=True).wait()
         
         if not os.path.exists(self.spectrDir): exit('spectr.dat not exist')
-        return
+
+        result=readSLHA()
+        result.read(self.spectrDir)
+        return copy.deepcopy(result)
 
     def record(self,number):
         recordinp   =os.path.join(self.recordDir,'inp.'+str(number))

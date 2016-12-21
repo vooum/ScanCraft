@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-from command import *
-from command.sampleoperation.getpoint import GetPoint
+#from command import *
+from command.mcmc import Scan
+from command.NMSSMTools import NMSSMTools
+from command.operations.getpoint import GetPoint
+from command.Experiments.directdetection import DirectDetection
+from command.chisqure import *
 import subprocess,random,math,shutil
 #print([ i for i in globals().keys() if '__' not in i])
 
@@ -19,12 +23,12 @@ ignore=[ 'Landau Pole'#27
         ,'No Higgs in the'#46
         ,'b -> c tau nu'#58 always keep alive
         ]
-r=readSLHA(discountKeys=ignore)
+#r=readSLHA(discountKeys=ignore)
 
 #print(read.readline.readline)
 #print(mcmc.Scan)
 
-free=mcmc.Scan()
+free=Scan()
 #free.add(name,block,PDG,min,max,walk='flat',step=None,value=None)
 free.add('tanB','MINPAR',3,2.,60.,step=None)
 free.add('M1','EXTPAR',1  ,20.    ,1000.,step=None)
@@ -44,15 +48,17 @@ free.add('mu_eff','EXTPAR'  ,65,100.,1500.,step=None)
 free.add('MA','EXTPAR',124,	0.,	2.e3)
 
 N=NMSSMTools()
-print('Start point is:')
 GetPoint(free,'inp.dat')
-
+print('Start point is:')
+for name in free.VariableList:
+    parameter=getattr(free,name)
+    print(parameter.name,parameter.PDG,parameter.value)
 free.SetRandom()
 
 
-L_Nsd=DarkMatter('LUX2016_Nsd.txt')
-L_Psd=DarkMatter('LUX2016_Psd.txt')
-L_Psi=DarkMatter('LUX201608_Psi.txt')
+L_Nsd=DirectDetection('LUX2016_Nsd.txt')
+L_Psd=DirectDetection('LUX2016_Psd.txt')
+L_Psi=DirectDetection('LUX201608_Psi.txt')
 
 record=-1
 trypoint=0
@@ -60,39 +66,34 @@ lastchisq=1e10
 # scan ==================================================================
 while record < target:
 
-    if trypoint%100==1: print(trypoint,' points tried; ',record,' points recorded')
+    if trypoint%10==1: print(trypoint,' points tried; ',record,' points recorded')
     trypoint+=1
 
-    N.run(free)
-
-    r.read(N.spectrDir)
-    '''
-    print(sorted(r.Decay.__dict__))
-    print(list(r.__dict__.keys()))
-    print(r.Decay.St_1)
-    exit()'''
+    r=N.run(free)
+    print(r.PROB,r.p)
 
     if r.p:
         mainNNo=0
         mixV=0
-        for i in range(5):
-            if abs(r.Nmix[tuple([1,i+1])]) > abs(mixV):
-                mixV=r.Nmix[tuple([1,i+1])]
-                mainNNo=i+1
+        #for i in range(5):
+        #    if abs(r.Nmix[tuple([1,i+1])]) > abs(mixV):
+        #        mixV=r.Nmix[tuple([1,i+1])]
+        #        mainNNo=i+1
         
         #if mainNNo not in [3,4,5]:continue
+        print(r.DM)
         if 'csNsd' in r.DM.keys():
-            pass
-            #if abs(r.DM['csNsd'])>L_Nsd.value(r.Msp['X_N1']):continue
-            #if abs(r.DM['csPsd'])>L_Psd.value(r.Msp['X_N1']):continue
-            #if abs(r.DM['csPsi'])>L_Psi.value(r.Msp['X_N1']):continue
+            eps=r.DM['DMRD']/0.1197
+            if abs(r.DM['csNsd'])*eps>L_Nsd.value(r.Msp['X_N1']):continue
+            if abs(r.DM['csPsd'])*eps>L_Psd.value(r.Msp['X_N1']):continue
+            if abs(r.DM['csPsi'])*eps>L_Psi.value(r.Msp['X_N1']):continue
         else:
             continue
         chisq=0.
         chisq_Q={}
         chisq_A={}
         # chisqure
-        chisq_Q['PROB']=len(r.PROB)*1e5
+        chisq_Q['PROB']=len(r.PROB)*1e2
         chisq_Q['mh']=chi2(r.Mh[ism],mh)
         chisq_Q['bsg']=chi2(r.b_phy['b_sg']*1e4,bsg)
         chisq_Q['bmu']=chi2(r.b_phy['b_mu']*1e9,bmu)
@@ -115,9 +116,9 @@ while record < target:
             free.print()
 
             record+=1
-            shutil.copyfile(N.inpDir,os.path.join(N.recordDir,'inp.'+str(record)))
-            shutil.move(N.spectrDir,os.path.join(N.recordDir,'spectr.'+str(record)))
-            shutil.move(N.omegaDir,os.path.join(N.recordDir,'omega.'+str(record)))
-
+            #shutil.copyfile(N.inpDir,os.path.join(N.recordDir,'inp.'+str(record)))
+            #shutil.move(N.spectrDir,os.path.join(N.recordDir,'spectr.'+str(record)))
+            #shutil.move(N.omegaDir,os.path.join(N.recordDir,'omega.'+str(record)))
+            N.record(record)
     free.GetNewPoint(StepFactor)
     
