@@ -82,5 +82,5 @@ class NMSSMTools():
         recordomega =os.path.join(self.recordDir,'omega.'+str(number))
         shutil.move(self.inpDir,recordinp)
         shutil.move(self.spectrDir,recordspectr)
-        if os.path.isfile(recordomega):
+        if os.path.isfile(self.omegaDir):
             shutil.move(self.omegaDir,recordomega)
