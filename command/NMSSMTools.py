@@ -45,7 +45,7 @@ class NMSSMTools():
             subprocess.Popen('make', cwd=Dir, shell=True).wait()
         else: print(os.path.join(Dir,'main/nmhdecay'),'exist')
 
-    def run(self,point,attr='new_value'):
+    def run(self,point,attr='new_value',ignore=[]):
         #write inp file
         inp=open(self.inpDir,'w')
         BLOCK=''
@@ -72,7 +72,7 @@ class NMSSMTools():
         
         if not os.path.exists(self.spectrDir): exit('spectr.dat not exist')
 
-        result=readSLHA()
+        result=readSLHA(discountKeys=ignore)
         result.read(self.spectrDir)
         return copy.deepcopy(result)
 

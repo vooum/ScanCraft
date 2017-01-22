@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from .Experiments.colliders import EXP
+#from Experiments.colliders import EXP
 def chi2(mu, data): 
     return (mu-data[0])**2/(data[1]**2+data[2]**2)
 mh =[125.7, 0.4, 1.5]
@@ -26,21 +27,28 @@ LimitKeys_defult=[]
 '''
 
 def X2(**items):
+    sum=0.
     for item,value in items.items():
-        obs=EXP(item)
-        if obs.UB()!=None:
-            if obs.LB()!=None:# both bound
-                return (obs.v()-value)**2/((obs.v()-obs.LB())**+(obs.v()-obs.UB())**2)
+        obs=EXP(item).data
+        if obs[2]!=None:
+            if obs[0]!=None:# both bound
+                sum+=(obs[1]-value)**2/((obs[1]-obs[0])**2+(obs[1]-obs[2])**2)
+                continue
             else:# Upper bound
-                if value<obs.UB():
-                    return 0.
+                if value<obs[2]:
+                    sum+=0.
+                    continue
                 else:
-                    return ((value-obs.UB())/obs.UB())**2
+                    sum+=((value-obs[2])/obs[2])**2
+                    continue
         else:#Lower bound
-            if value>obs.UB():
-                return 0.
+            if value>obs[2]:
+                sum+=0.
+                continue
             else:
-                return ((value-obs.LB())/obs.LB())**2
+                sum+=((value-obs[0])/obs[0])**2
+                continue
+    return sum
             
 if __name__=='__main__':
-    print(X2(HiggsMass=123.))
+    print(X2(HiggsMass=123.,bsg=3.e-4))

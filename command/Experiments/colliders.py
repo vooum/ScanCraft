@@ -21,25 +21,9 @@ class OtherEXPs():
 
 class EXP(LHC,OtherEXPs):
     def __init__(self,name):
-        self.data=getattr(self,name)
-    def value(name):
         if type(name) is str:
-            return getattr(EXP,name)[0]
-        else:
-            return name.data[0]
-    def LowerBound(name):
-        if type(name) is str:
-            return getattr(EXP,name)[1]
-        else:
-            return name.data[1]
-    def UpperBound(name):
-        if type(name) is str:
-            return getattr(EXP,name)[2]
-        else:
-            return name.data[2]
-    v=value
-    UB=UpperBound
-    LB=LowerBound
+            self.data=getattr(self,name)
+
 
 
 def chi2(sample,X2List):

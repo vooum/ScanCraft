@@ -12,9 +12,8 @@ import subprocess,random,math,shutil
 # settings
 ism='M_h2'
 target=1000
-StepFactor=1. # sigma = n% of (maximum - minimum) of the free parameters
+StepFactor=.1 # sigma = n% of (maximum - minimum) of the free parameters
 SlopFactor=.3 # difficulty of accepting a new point with higher chisq
-add_chisq=True
 ignore=[ 'Landau Pole'#27
         ,'relic density'#30
         ,'b->s gamma'#32
@@ -60,17 +59,22 @@ L_Nsd=DirectDetection('LUX2016_Nsd.txt')
 L_Psd=DirectDetection('LUX2016_Psd.txt')
 L_Psi=DirectDetection('LUX201608_Psi.txt')
 
+rec_list=open('./mcmc/record_list','w')
+rec_X2=open('./mcmc/record_chisq','w')
+rec_full=open('./mcmc/record_full','w')
+
+
 record=-1
 trypoint=0
 lastchisq=1e10
 # scan ==================================================================
 while record < target:
 
-    if trypoint%10==1: print(trypoint,' points tried; ',record,' points recorded')
+    if trypoint%100==1: print(trypoint,' points tried; ',record,' points recorded')
     trypoint+=1
 
     r=N.run(free)
-    print(r.PROB,r.p)
+    #print(r.PROB,r.p)
 
     if r.p:
         mainNNo=0
@@ -81,29 +85,33 @@ while record < target:
         #        mainNNo=i+1
         
         #if mainNNo not in [3,4,5]:continue
-        print(r.DM)
-        if 'csNsd' in r.DM.keys():
-            eps=r.DM['DMRD']/0.1197
-            if abs(r.DM['csNsd'])*eps>L_Nsd.value(r.Msp['X_N1']):continue
-            if abs(r.DM['csPsd'])*eps>L_Psd.value(r.Msp['X_N1']):continue
-            if abs(r.DM['csPsi'])*eps>L_Psi.value(r.Msp['X_N1']):continue
-        else:
-            continue
+        #print(r.DM)
+
         chisq=0.
         chisq_Q={}
-        chisq_A={}
         # chisqure
-        chisq_Q['PROB']=len(r.PROB)*1e2
+        chisq_Q['PROB']=len(r.PROB)*1e4
         chisq_Q['mh']=chi2(r.Mh[ism],mh)
         chisq_Q['bsg']=chi2(r.b_phy['b_sg']*1e4,bsg)
         chisq_Q['bmu']=chi2(r.b_phy['b_mu']*1e9,bmu)
-        chisq_Q['DM']=chi2(r.DM['DMRD'],omg)
-        #chisq_A['FT']=(max(r.FT,40.)-40.)**2/100.
+
+        if 'DMRD' in r.DM.keys():
+            eps=r.DM['DMRD']/0.1197
+            chisq_Q['DM']=X2(OMG=r.DM['DMRD'])#chi2(r.DM['DMRD'],omg)
+            if 'csNsd' in r.DM.keys():
+                #if abs(r.DM['csNsd'])*eps>L_Nsd.value(r.Msp['X_N1']):continue
+                #if abs(r.DM['csPsd'])*eps>L_Psd.value(r.Msp['X_N1']):continue
+                #if abs(r.DM['csPsi'])*eps>L_Psi.value(r.Msp['X_N1']):continue
+                for key,DDexp in {'csNsd':L_Nsd,'csPsd':L_Psd,'csPsi':L_Psi}.items():
+                    cs=abs(r.DM[key])*eps
+                    limit=DDexp.value(r.Msp['X_N1'])
+                    if cs>limit:
+                        chisq_Q[key]=((cs-limit)/limit)**2
+        else:
+            chisq_Q['DM']=1e4
+        #chisq_Q['FT']=(max(r.FT,40.)-40.)**2/100.
         for i in chisq_Q.values():
             chisq+=i
-        if add_chisq :
-            for i in chisq_A.values(): 
-                chisq+=i
         #   record point
         if (random.random() < math.exp(max(SlopFactor*min(lastchisq-chisq,0.),-745))
     	    or chisq<10.):
@@ -111,14 +119,13 @@ while record < target:
             free.record()
             print(record,'points recorded.')
             print('\nnew point accepted: -------------------')
-            print('x2=  ',chisq,'\nx2_i= ',chisq_Q,chisq_A)
+            print('x2=  ',chisq,'\nx2_i= ',chisq_Q)
             print('Higgs masses: ',r.Mh)
             free.print()
 
             record+=1
-            #shutil.copyfile(N.inpDir,os.path.join(N.recordDir,'inp.'+str(record)))
-            #shutil.move(N.spectrDir,os.path.join(N.recordDir,'spectr.'+str(record)))
-            #shutil.move(N.omegaDir,os.path.join(N.recordDir,'omega.'+str(record)))
             N.record(record)
+
+            rec_X2.write(str(record)+'\tchisq: '+str(chisq)+'\t'+repr(chisq_Q)+'\n')
     free.GetNewPoint(StepFactor)
     
