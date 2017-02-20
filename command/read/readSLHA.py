@@ -88,13 +88,13 @@ class readBLOCK:
         return
 
     def readMASS(self):
-        self.Mass={}
+        self.MASS={}
         self.Mh={}
         Mh_n={25:'h1',35:'h2',45:'h3',36:'A1',46:'A2',37:'Ch'}
         self.Msp={}
         Msp_n={1000022:'N1',1000023:'N2',1000025:'N3',1000035:'N4',1000045:'N5',1000024:'C1',1000037:'C2'}
         while self.InBlock():
-            self.Mass[self.a[0]]=self.a[1]
+            if self.a[-1]:self.MASS[self.a[0]]=self.a[1]
             if self.a[0] in Mh_n.keys():
                 self.Mh['M_'+Mh_n[self.a[0]]]=self.a[1]
             elif self.a[0] in Msp_n.keys():

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-from read import *
-from darkmatter import *
-from outputfile import *
+from command.read import *
+from command.Experiments.directdetection import *
+from command.outputfile import *
 
 import sys,os,re,copy,shutil
 print(sys.argv)
@@ -31,7 +31,7 @@ if os.path.exists(OutSteam):exit('Directory '+ OutSteam +' already exist')
 os.mkdir(OutSteam)
 AnalysedDir=os.path.join(OutSteam,'record')
 os.mkdir(AnalysedDir)
-
+Data=DataFile(Dir=OutSteam)
 
 # output files ===================================
 DataFiles={\
@@ -70,29 +70,15 @@ outNumber=0
 for files in spectrs:
     r.read(files)
     if r.p:
-        if r.PROB: continue
+        #if r.PROB: continue
         mainNNo=0
         mixV=0
-        for i in range(5):
-            if abs(r.Nmix[tuple([1,i+1])]) > abs(mixV):
-                mixV=r.Nmix[tuple([1,i+1])]
-                mainNNo=i+1
         # Constrants ==================================================================================
-
-        #if mainNNo not in [5]:continue
-        #if min(r.ExtPar['M1'],r.ExtPar['M2'],r.ExtPar['Atau'])<300. : continue 
-
-        if abs(r.DM['csNsd'])>L_Nsd.value(r.Msp['X_N1']):continue
-        if abs(r.DM['csPsd'])>L_Psd.value(r.Msp['X_N1']):continue
-        if abs(r.DM['csPsi'])>L_Psi.value(r.Msp['X_N1']):continue
 
         # Record sample which pass all constraints=====================================================
         inNumber=re.findall(r'\d+',files)[-1]
         outNumber+=1   # reNumber
         #outNumber=int(inNumber) #keep original Number
-
-        DMAnni=ClassifyDMAnni(r.DMAnnihilation)# DarkMatter Annihilation
-
 
         for i in DataFiles.values():i.number(str(outNumber))
         DataFiles['Allpar'].Data([r.MinPar,r.ExtPar])
@@ -101,15 +87,7 @@ for files in spectrs:
         DataFiles['FT'].number('FT: '+str(r.FT))
         DataFiles['FT'].Data([])
         DataFiles['Nmix'].Data([r.Nmix])
-
-
-        N2Decay=ClassifyEWino(r.DecayList[1000023])
-        N3Decay=ClassifyEWino(r.DecayList[1000025])
-        C1Decay=ClassifyEWino(r.DecayList[1000024])
-        #print(C1Decay)
-        for listi,filej in [[N2Decay,N2],[N3Decay,N3],[C1Decay,C1]]:
-            S=sorted([i for i in listi.items()],key=lambda x:x[1],reverse=True)
-            filej.write(str(outNumber)+'\t'+'\t'.join([str(i[0])+': '+str(i[1]) for i in S])+'\n')
+        Data.In('BlockMass').record(r.Mass)
 
         # copy files
         outspectr=os.path.join(AnalysedDir,'spectr.'+str(outNumber))

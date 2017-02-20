@@ -91,7 +91,12 @@ while record < target:
         chisq_Q={}
         # chisqure
         chisq_Q['PROB']=len(r.PROB)*1e4
-        chisq_Q['mh']=chi2(r.Mh[ism],mh)
+
+        if ism.upper()=='ALL':  # X2_mh
+            chisq_Q['mh']=min(chi2(r.Mh['M_h1'],mh),chi2(r.Mh['M_h2'],mh))
+        else:
+            chisq_Q['mh']=chi2(r.Mh[ism],mh)
+
         chisq_Q['bsg']=chi2(r.b_phy['b_sg']*1e4,bsg)
         chisq_Q['bmu']=chi2(r.b_phy['b_mu']*1e9,bmu)
 
@@ -127,5 +132,6 @@ while record < target:
             N.record(record)
 
             rec_X2.write(str(record)+'\tchisq: '+str(chisq)+'\t'+repr(chisq_Q)+'\n')
+            rec_X2.flush()
     free.GetNewPoint(StepFactor)
     
