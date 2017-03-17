@@ -17,11 +17,13 @@ class OpenDataFile():
     def record(self,*Datalists,Number=None):
         self.Number+=1
         if type(Number) is int:
+            self.file.write(str(Number))
+        elif type(Number) is str:
             self.file.write(Number)
         elif Number==None:
             self.file.write(str(self.Number))
         else:
-            exit(repr(Number)+' is not an integer')
+            exit(repr(Number)+' is not integer or string')
 
         for d in Datalists:
             self.file.write('\t')

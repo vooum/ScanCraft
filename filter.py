@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+import sys,os,re,copy,shutil
+sys.path.append('/home/heyangle/Desktop/programing/ScanCommando/')
+
 from command.read import *
 from command.Experiments.directdetection import *
 from command.outputfile import *
 
-import sys,os,re,copy,shutil
 print(sys.argv)
 
 ignore=[ 'Landau Pole'
@@ -34,19 +36,10 @@ os.mkdir(AnalysedDir)
 Data=DataFile(Dir=OutSteam)
 
 # output files ===================================
-DataFiles={\
-'Allpar':outputfile(os.path.join(OutSteam,'AllParameters')) #open(os.path.join(OutSteam,'AllParameters'),'w')
-,'DM':outputfile(os.path.join(OutSteam,'DarkMatter'))
-,'Mass':outputfile(os.path.join(OutSteam,'Mass'))
-,'FT':outputfile(os.path.join(OutSteam,'FT'))
-,'Nmix':outputfile(os.path.join(OutSteam,'Nmix'))
-#,'Va':outputfile(os.path.join(OutSteam,'Vacuum'))
-}#=open(os.path.join(OutSteam,'Obs'),'w')
 
-
-N2=open(os.path.join(OutSteam,'N2Decay'),'w')
-N3=open(os.path.join(OutSteam,'N3Decay'),'w')
-C1=open(os.path.join(OutSteam,'C1Decay'),'w')
+# N2=open(os.path.join(OutSteam,'N2Decay'),'w')
+# N3=open(os.path.join(OutSteam,'N3Decay'),'w')
+# C1=open(os.path.join(OutSteam,'C1Decay'),'w')
 #-------------- get all spectr and omega files
 spectrs=[]
 #omegas=[]
@@ -62,15 +55,15 @@ for dirs in os.listdir():
         spectr0.sort(key=lambda x: int(re.findall(r'\d+',x)[-1]))
         spectrs.extend(spectr0)
 
-L_Nsd=DirectDetection('LUX2016_Nsd.txt')
-L_Psd=DirectDetection('LUX2016_Psd.txt')
+L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
+L_Psd=DirectDetection('PandaX_Psd_2016.txt')
 L_Psi=DirectDetection('LUX201608_Psi.txt')
 
 outNumber=0
 for files in spectrs:
     r.read(files)
     if r.p:
-        #if r.PROB: continue
+        if r.PROB: continue
         mainNNo=0
         mixV=0
         # Constrants ==================================================================================
@@ -80,14 +73,12 @@ for files in spectrs:
         outNumber+=1   # reNumber
         #outNumber=int(inNumber) #keep original Number
 
-        for i in DataFiles.values():i.number(str(outNumber))
-        DataFiles['Allpar'].Data([r.MinPar,r.ExtPar])
-        DataFiles['DM'].Data([r.DM])
-        DataFiles['Mass'].Data([r.Mh,r.Msp])
-        DataFiles['FT'].number('FT: '+str(r.FT))
-        DataFiles['FT'].Data([])
-        DataFiles['Nmix'].Data([r.Nmix])
-        Data.In('BlockMass').record(r.Mass)
+        Data.In('AllParameters.txt').record(r.MinPar,r.ExtPar,Number=str(outNumber))
+        Data.In('DarkMatter.txt').record(r.DM,Number=outNumber)
+        Data.In('Mass.txt').record(r.Mh,r.Msp,Number=outNumber)
+        Data.In('BlockMass').record(r.Mass,Number=outNumber)
+        Data.In('Nmix.txt').record(r.Nmix,Number=outNumber)
+        Data.In('Ft.txt').record(r.FT,r.FINETUNING[sorted(r.FINETUNING.keys())[-1]],Number=outNumber)
 
         # copy files
         outspectr=os.path.join(AnalysedDir,'spectr.'+str(outNumber))

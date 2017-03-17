@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+import subprocess,random,math,shutil,sys,re,os
+import numpy as np
+sys.path.append('/home/heyangle/Desktop/programing/ScanCommando/')
+
 from command import *
 from command.operations.getpoint import GetPoint
 from command.read.readSLHA import readSLHA
@@ -6,8 +10,7 @@ from command import mcmc
 from command.NMSSMTools import NMSSMTools
 from command.Experiments.directdetection import DirectDetection
 from command.chisqure import *
-import subprocess,random,math,shutil,sys,re,os
-import numpy as np
+from command.outputfile import *
 #print([ i for i in globals().keys() if '__' not in i])
 
 
@@ -18,6 +21,7 @@ SlopFactor=1. # difficulty of accepting a new point with higher chisq
 add_chisq=True
 ignore=['Landau Pole'#27
         ,'relic density'#30
+        ,'DM direct detection rate'
         ,'b->s gamma'#32
         ,'B_s->mu+mu-'#35
         ,'Muon magn'#37
@@ -55,8 +59,8 @@ print('Start point is:')
 #free.SetRandom()
 
 
-L_Nsd=DirectDetection('LUX2016_Nsd.txt')
-L_Psd=DirectDetection('LUX2016_Psd.txt')
+L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
+L_Psd=DirectDetection('PandaX_Psd_2016.txt')
 L_Psi=DirectDetection('LUX201608_Psi.txt')
 
 record=-1
@@ -95,7 +99,7 @@ for point in spectrs:
         chisq_A={}
         if 'DMRD' in r.DM.keys():
             eps=r.DM['DMRD']/0.1197
-            chisq_Q['DM']=X2(OMG=r.DM['DMRD'])#chi2(r.DM['DMRD'],omg)
+            chisq_Q['DMRD']=X2(OMG=r.DM['DMRD'])#chi2(r.DM['DMRD'],omg)
             if 'csNsd' in r.DM.keys():
                 for key,DDexp in {'csNsd':L_Nsd,'csPsd':L_Psd,'csPsi':L_Psi}.items():
                     cs=abs(r.DM[key])*eps
@@ -114,10 +118,6 @@ for point in spectrs:
         chisq_Q['mh']=chi2(r.Mh[ism],mh)
         chisq_Q['bsg']=chi2(r.b_phy['b_sg']*1e4,bsg)
         chisq_Q['bmu']=chi2(r.b_phy['b_mu']*1e9,bmu)
-        #chisq_Q['DM']=chi2(r.DM['DMRD'],omg)
-        #chisq_A['FT']=(max(r.FT,40.)-40.)**2/100.
-        #chisq_A['h1']=(r.Mh['M_h1']-98.)**2
-        #chisq_A['ggrr']=(1./r.LHCCROSSSECTIONS[18])**2
 
         for i in chisq_Q.values():
             chisq+=i
@@ -133,6 +133,10 @@ for point in spectrs:
             print('x2=  ',chisq,'\nx2_i= ',chisq_Q,chisq_A)
             print('Higgs masses: ',r.Mh)
             free.print()
+
+            Data.In('BlockMass').record(r.Mass)
+            Data.In('Ft.txt').record(r.FT,r.FINETUNING[sorted(r.FINETUNING.keys())[-1]])
+
             N.record(record)
 
     
