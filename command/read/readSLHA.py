@@ -41,7 +41,7 @@ class translate:
 
 class readBLOCK:
     def InBlock(self):
-        if self.lines[self.i][:5] == 'BLOCK':
+        if self.lines[self.i][:5].upper() == 'BLOCK':
             return False
         else:
             self.a=readline(self.lines[self.i])
