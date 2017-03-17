@@ -47,7 +47,7 @@ free.add('mu_eff','EXTPAR'  ,65,100.,1500.,step=None)
 free.add('MA','EXTPAR',124,	0.,	2.e3)
 
 N=NMSSMTools()
-GetPoint(free,'inp.dat')
+GetPoint(free,'./mcmc/inp.dat')
 print('Start point is:')
 for name in free.VariableList:
     parameter=getattr(free,name)
@@ -55,8 +55,8 @@ for name in free.VariableList:
 free.SetRandom()
 
 
-L_Nsd=DirectDetection('LUX2016_Nsd.txt')
-L_Psd=DirectDetection('LUX2016_Psd.txt')
+L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
+L_Psd=DirectDetection('PandaX_Psd_2016.txt')
 L_Psi=DirectDetection('LUX201608_Psi.txt')
 
 rec_list=open('./mcmc/record_list','w')
@@ -102,7 +102,7 @@ while record < target:
 
         if 'DMRD' in r.DM.keys():
             eps=r.DM['DMRD']/0.1197
-            chisq_Q['DM']=X2(OMG=r.DM['DMRD'])#chi2(r.DM['DMRD'],omg)
+            chisq_Q['DMRD']=X2(OMG=r.DM['DMRD'])#chi2(r.DM['DMRD'],omg)
             if 'csNsd' in r.DM.keys():
                 #if abs(r.DM['csNsd'])*eps>L_Nsd.value(r.Msp['X_N1']):continue
                 #if abs(r.DM['csPsd'])*eps>L_Psd.value(r.Msp['X_N1']):continue
@@ -113,7 +113,7 @@ while record < target:
                     if cs>limit:
                         chisq_Q[key]=((cs-limit)/limit)**2
         else:
-            chisq_Q['DM']=1e4
+            chisq_Q['DMRD']=1e4
         #chisq_Q['FT']=(max(r.FT,40.)-40.)**2/100.
         for i in chisq_Q.values():
             chisq+=i
