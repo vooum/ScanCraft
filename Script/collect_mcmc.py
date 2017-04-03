@@ -20,7 +20,7 @@ for files in os.listdir(OutSteam):
         exit('mcmc files in '+OutSteam)
 #------ get all mcmc files
 number = 0
-for files in os.listdir():
+for files in sorted(os.listdir()):
     if (key in files) and os.path.isdir(files):
         for directory in os.listdir(files):
             if 'mcmc' in directory:
@@ -31,10 +31,11 @@ for files in os.listdir():
                 if os.path.isfile(screen):
                     if os.path.isfile(oldscreen):
                         os.remove(oldscreen)
-                    shutil.move(screen,inname)
+                    shutil.copy2(screen,inname)
                 outname=os.path.join(OutSteam,'mcmc'+str(number))
                 while os.path.exists(outname):
                     number+=1
                     outname=os.path.join(OutSteam,'mcmc'+str(number))
                 shutil.copytree(inname,outname)
+                print(inname,'  '+'-'*10+'>  ',outname)
 print(number,' files copied')
