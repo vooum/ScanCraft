@@ -76,7 +76,7 @@ for files in spectrs:
         Data.In('AllParameters.txt').record(r.MinPar,r.ExtPar,Number=str(outNumber))
         Data.In('DarkMatter.txt').record(r.DM,Number=outNumber)
         Data.In('Mass.txt').record(r.Mh,r.Msp,Number=outNumber)
-        Data.In('BlockMass').record(r.Mass,Number=outNumber)
+        Data.In('BlockMass').record(r.MASS,Number=outNumber)
         Data.In('Nmix.txt').record(r.Nmix,Number=outNumber)
         Data.In('Ft.txt').record(r.FT,r.FINETUNING[sorted(r.FINETUNING.keys())[-1]],Number=outNumber)
 
