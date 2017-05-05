@@ -111,6 +111,8 @@ class readBLOCK:
                 self.b_phy[b_phy_n[self.a[0]]]=self.a[1]
             elif self.a[0] in DM_n.keys():
                 self.DM[DM_n[self.a[0]]]=self.a[1]
+            elif self.a[0]==6:
+                self.gm2=self.a[1]
         return
     
     def readNMHMIX(self):
@@ -195,7 +197,12 @@ class readBLOCK:
             if self.a[0]==7:
                 self.DMAnnihilation[tuple(self.a[2:6])]=self.a[6]
         return
-                
+    
+    def readANNIHILATION(self):
+        while self.InBlock():
+            if self.a[0]==0:
+                self.sigmaV=self.a[1]
+        return
 
     def readDCINFO(self):
         self.DecayList={}

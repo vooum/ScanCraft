@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys,os,re,copy,shutil
 sys.path.append('/home/heyangle/Desktop/programing/ScanCommando/')
+sys.path.append('/home/vooum/Desktop/ScanCommando')
 
 from command.read import *
 from command.Experiments.directdetection import *

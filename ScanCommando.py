@@ -73,7 +73,7 @@ while record < target:
     if trypoint%100==1: print(trypoint,' points tried; ',record,' points recorded')
     trypoint+=1
 
-    r=N.run(free)
+    r=N.run(free,ignore=ignore)
     #print(r.PROB,r.p)
 
     if r.p:
