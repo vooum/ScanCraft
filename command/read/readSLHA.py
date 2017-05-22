@@ -26,13 +26,13 @@ def GetName(NameTuple):
 
 class translate:
     def __init__(self,DecayList):
+        self.width={}
         for id in DecayList.keys():
-            self.width={}
             setattr(self,ParticleSpectrum[id],{})
             init=getattr(self,ParticleSpectrum[id])
             for outS, outR in DecayList[id].items():
                 if type(outS) is str:
-                    self.width[outS]=outR
+                    self.width[ParticleSpectrum[id]]=outR
                 else:
                     init[GetName(outS)]=outR
         return
@@ -41,7 +41,7 @@ class translate:
 
 class readBLOCK:
     def InBlock(self):
-        if self.lines[self.i][:5] == 'BLOCK':
+        if self.lines[self.i][:5].upper() == 'BLOCK':
             return False
         else:
             self.a=readline(self.lines[self.i])
@@ -79,7 +79,7 @@ class readBLOCK:
         ExtPar_n={1:'M1',2:'M2',3:'M3'\
                 ,11:'Atop',12:'Abotton',13:'Atau'\
                 ,43:'MQ3',46:'MU3',49:'MB3'\
-                ,61:'lambda',62:'kappa',63:'Alambda',64:'Akappa',65:'mu_eff'\
+                ,61:'Lambda',62:'Kappa',63:'Alambda',64:'Akappa',65:'mu_eff'\
                 ,124:'MA',125:'MP'}
         while self.InBlock():
             self.EXTPAR[self.a[0]]=self.a[1]
@@ -88,13 +88,13 @@ class readBLOCK:
         return
 
     def readMASS(self):
-        self.Mass={}
+        self.MASS={}
         self.Mh={}
         Mh_n={25:'h1',35:'h2',45:'h3',36:'A1',46:'A2',37:'Ch'}
         self.Msp={}
         Msp_n={1000022:'N1',1000023:'N2',1000025:'N3',1000035:'N4',1000045:'N5',1000024:'C1',1000037:'C2'}
         while self.InBlock():
-            self.Mass[self.a[0]]=self.a[1]
+            if self.a[-1]:self.MASS[self.a[0]]=self.a[1]
             if self.a[0] in Mh_n.keys():
                 self.Mh['M_'+Mh_n[self.a[0]]]=self.a[1]
             elif self.a[0] in Msp_n.keys():
@@ -111,6 +111,8 @@ class readBLOCK:
                 self.b_phy[b_phy_n[self.a[0]]]=self.a[1]
             elif self.a[0] in DM_n.keys():
                 self.DM[DM_n[self.a[0]]]=self.a[1]
+            elif self.a[0]==6:
+                self.gm2=self.a[1]
         return
     
     def readNMHMIX(self):
@@ -195,7 +197,12 @@ class readBLOCK:
             if self.a[0]==7:
                 self.DMAnnihilation[tuple(self.a[2:6])]=self.a[6]
         return
-                
+    
+    def readANNIHILATION(self):
+        while self.InBlock():
+            if self.a[0]==0:
+                self.sigmaV=self.a[1]
+        return
 
     def readDCINFO(self):
         self.DecayList={}

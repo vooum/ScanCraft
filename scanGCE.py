@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 #from command import *
+import subprocess,random,math,shutil
 from command.mcmc import Scan
 from command.NMSSMTools import NMSSMTools
 from command.operations.getpoint import GetPoint
 from command.Experiments.directdetection import DirectDetection
 from command.chisqure import *
-import subprocess,random,math,shutil
+from GCE.GCE import chisq_GCE as GCE
 #print([ i for i in globals().keys() if '__' not in i])
 
 
 # settings
 ism='M_h2'
 target=1000
-StepFactor=.1 # sigma = n% of (maximum - minimum) of the free parameters
+StepFactor=.2 # sigma = n% of (maximum - minimum) of the free parameters
 SlopFactor=.3 # difficulty of accepting a new point with higher chisq
 ignore=[ 'Landau Pole'#27
         ,'relic density'#30
@@ -111,7 +112,10 @@ while record < target:
                     cs=abs(r.DM[key])*eps
                     limit=DDexp.value(r.Msp['X_N1'])
                     if cs>limit:
-                        chisq_Q[key]=((cs-limit)/limit)**2
+                        chisq_Q[key]=((cs-limit)/limit)**2/10.
+            
+            chisq_Q['GCE']=(max(GCE(N.spectrDir)-20.,0))**2
+            print(chisq_Q['GCE'])#;exit()
         else:
             chisq_Q['DMRD']=1e4
         #chisq_Q['FT']=(max(r.FT,40.)-40.)**2/100.

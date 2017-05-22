@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import random,copy
 from .read.readSLHA import readSLHA
-from .operator.generate import *
+from .sampleoperation.generate import *
 
 class Parameter:
     def __init__(self,name,block,PDG,value):
