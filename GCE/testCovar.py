@@ -70,8 +70,8 @@ def SpectrList(path):
             spectrs.append(name)
     spectrs.sort(key=lambda x: int(re.findall(r'\d+',x)[-1]))
     return spectrs
-f_OUT = open("Chi2_min.dat",'w')
-f_OUT2 = open("Chi2_J_1.dat",'w')
+#f_OUT = open("Chi2_min.dat",'w')
+#f_OUT2 = open("Chi2_J_1.dat",'w')
 
 #for jj in range(num_tot):
 #   if  os.path.exists('micromegas'+ss2+'/NMSSM/GCE_'+ss+'/GCE'+str(jj+1)+'.dat'): 
@@ -83,11 +83,12 @@ if os.path.isfile(path):
     spectrs=[path]
 else:
     spectrs=SpectrList(path)
-record=open('X2record.txt','w')
+
+#record=open('X2record.txt','w')
 for spectr in spectrs:
     # number=re.findall(r'\d+',spectr)[-1]
     # omega=os.path.join(sys.argv[1],'Omega'+number+'.dat')
-    omega='Omega.dat'
+    omega=spectr.replace('GCE_out','Omega')
     eps=loadtxt(omega,comments=['#','BLOCK'])[1,1]
     mydata = loadtxt(spectr)
     myE = mydata[:,0]
@@ -108,13 +109,14 @@ for spectr in spectrs:
 #     MinChi2=-1
 #     J_find=0
 #     chisq_1=-1
-    print ("Min Chi^2 = "+str(MinChi2)+" at J = "+str(J_find))
-    f_OUT.write( str(MinChi2)+"\t"+str(J_find)+'\n' )
-    f_OUT2.write( str(chisq_1)+"\t"+str(1.0)+'\n' )
-    record.write('eps = %.5f\tX2_min =%3.5f\tat A=%5.3f\n'%(eps,MinChi2,J_find))
-f_OUT.close()
-f_OUT2.close()
-record.close()
+    print(MinChi2)
+    #print ("Min Chi^2 = "+str(MinChi2)+" at J = "+str(J_find))
+    #f_OUT.write( str(MinChi2)+"\t"+str(J_find)+'\n' )
+    #f_OUT2.write( str(chisq_1)+"\t"+str(1.0)+'\n' )
+    #record.write('eps = %.5f\tX2_min =%3.5f\tat A=%5.3f\n'%(eps,MinChi2,J_find))
+#f_OUT.close()
+#f_OUT2.close()
+#record.close()
 
 # Plot measured fluxes
 #
