@@ -8,3 +8,4 @@ err.log
 *.user
 *.sln
 GCE/micromegas*/
+packages
