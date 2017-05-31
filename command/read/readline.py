@@ -2,17 +2,14 @@
 
 def interpret_str(string):
     try:
-        out=int(string)
+        out=float(string)
+        return out
     except ValueError:
         try:
-            out=float(string)
-            return out
+            out=float(string.upper().replace('D','E',1))
         except ValueError:
-            try:
-                out=float(string.upper().replace('D','E',1))
-            except ValueError:
-                out=string
-    return out
+            out=string
+    return out 
 
 
 def readline(line):
@@ -34,6 +31,6 @@ def readline(line):
             return semanteme #-------------------------> [ infos, annotation, whether commented out ]
 
 if __name__=='__main__':
-    #string='\t 1 1..5e3 1d5 aa# 1#a # \t\n'
-    string='##\n'
+    string='\t 1 1..5e3 1d5 aa# 1#a # \t\n'
+    #string='##\n'
     print(readline(string))
