@@ -1,0 +1,7 @@
+# input file is:	spectr1609.dat
+BLOCK DMRD
+     1	1.21709340e-01	# dark matter relic density
+     2	1.01678647e+00	# ratio omega_N/omega_0
+BLOCK IndirectDetection
+     0	5.99541965e-27	# total SigmaV
+     

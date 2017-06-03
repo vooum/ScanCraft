@@ -51,28 +51,28 @@ class mcmcParameter(Parameter):
 
 class Scan():
     def __init__(self):
-        self.list=[]
+        self.VariableList=[]
     
     def add(self,name,block,PDG,min,max,walk='flat',step=None,value=None):
         setattr(self,name,mcmcParameter(name,block,PDG,min,max,walk,step,value))
-        self.list.append(name)
+        self.VariableList.append(name)
         if not hasattr(self,block):
             setattr(self,block,{})
         getattr(self,block)[PDG]=getattr(self,name)
         getattr(self,block)[name]=getattr(self,name)
     def SetRandom(self):
-        for i in self.list:
+        for i in self.VariableList:
             getattr(self,i).SetRandom()
     def GetNewPoint(self,factor=1):
-        for i in self.list:
+        for i in self.VariableList:
             getattr(self,i).new(factor)
     def record(self):
-        for i in self.list:
+        for i in self.VariableList:
             P=getattr(self,i)
             P.value=P.new_value
             if P.walk=='log':
                 P.log=P.new_log
     def print(self):
-        for i in self.list:
+        for i in self.VariableList:
             P=getattr(self,i)
             print(P.name,'\t',P.value)
