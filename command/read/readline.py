@@ -19,7 +19,7 @@ def commented_out(line):
     else:
         return commented
 
-def readline(line):
+def ReadLine(line):
     stripped=line.lstrip(' #\t').rstrip(' \t\n').split('#',maxsplit=1)
     #if not stripped[0]: return None #--------------> empty line
     semanteme=[interpret_str(i) for i in stripped[0].split()]
@@ -34,6 +34,6 @@ def readline(line):
 
 if __name__=='__main__':
     #string='\t 1 1..5e3 1d5 aa# 1#a # \t\n'
-    string='##a 1# 1#3\n'
-    print(readline(string))
-    print(commented('abc 2 \n'))
+    string='### #\n'
+    print(ReadLine(string))
+    #print(commented('abc 2 \n'))

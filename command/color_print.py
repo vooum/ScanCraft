@@ -132,6 +132,18 @@ def UseStyle(string,mode='',fore='',back=''):
     end   = '\033[%sm' % STYLE['default']['end'] if style else ''
     
     return '%s%s%s' % (begin, string, end)
+
+def Caution(*arguments,**keywords):
+    ColorPrint(1,33,'',"\nCaution:\n  ",end='')
+    ColorPrint(0,33,'',*arguments,**keywords)
+def Error(*arguments,**keywords):
+    ColorPrint(1,31,'',"\nError:\n  ",end='')
+    ColorPrint(0,31,'',*arguments,**keywords)
+    exit()
+
+
+
+
 # def UseStyle(string, mode = '', fore = '', back = ''):
 
 #     mode  = '%s' % STYLE['mode'][mode] if STYLE['mode'].has_key(mode) else ''
