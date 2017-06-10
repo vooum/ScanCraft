@@ -14,8 +14,7 @@ def _GetSphenoDir():
                 print('SPheno file:\n->',package)
                 return package
     else:
-        print('SPheno package not found in ',package_path)
-        exit()
+        Error('SPheno package not found in ',package_path)
         
 class SPheno():
     def __init__(self,
@@ -35,9 +34,10 @@ class SPheno():
 
         self.package_dir=package_dir
         self.inp_model_lines=open(os.path.join(data_dir,in_model),'r').readlines()
-        self.inp_file='SPheno.in'
+        self.inp_file='SPheno.in'#-----------
         self.inp_dir=os.path.join(package_dir,self.inp_file)
-        self.spectr_dir=os.path.join(package_dir,'SPheno.spc.NInvSeesaw')
+        self.output_file='SPheno.spc.NInvSeesaw'#--------------
+        self.output_dir=os.path.join(package_dir,self.output_file)
         self.record_dir=os.path.join(data_dir,'./record/')
         self.command=' '.join([main_routine,self.inp_file])
 
@@ -49,7 +49,7 @@ class SPheno():
                 exit('folder record/ is not deleted')
         os.mkdir(self.record_dir)
 
-    def run(self,point):
+    def Run(self,point):
         # write input file for SPheno
         code_list={}
         inp=open(self.inp_dir,'w')
@@ -78,16 +78,19 @@ class SPheno():
                         continue
             inp.write(line)
         inp.close()
-        # run SPheno
-        #subprocess.Popen('./bin/SPhenoNInvSeesaw SPheno.in',cwd=self.package_dir,shell=True,)
+        # ------------run SPheno
 
-        # run=subprocess.Popen(self.command,cwd=self.package_dir,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
-        # run.wait()
-        # print(run.communicate())
-        # if (run.returncode):
-        #     ColorPrint(0,33,'',run.communicate()[0])
-        #     Error(run.communicate()[1])
-        # else:
+        run=subprocess.Popen(self.command,cwd=self.package_dir,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
+        run.wait()
+        print(i for i in run.communicate())
+        if (run.returncode):
+            ColorPrint(0,33,'',run.communicate()[0])
+            Error(run.communicate()[1])
+        else:
+            result=ReadFiles(self.output_dir)
+        return result
 
-        r=ReadFiles(self.spectr_dir)
-        print(r.MINPAR,r.LAMN)
+    def Record(self,number):
+        shutil.copy(self.inp_dir,os.path.join(self.record_dir,self.inp_file+'.'+str(int(number))))
+        shutil.copy(self.output_dir,os.path.join(self.record_dir,self.output_file+'.'+str(int(number))))
+        

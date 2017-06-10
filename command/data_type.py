@@ -2,24 +2,20 @@
 import numpy
 from .color_print import Error
 class scalar:
-    def __init__(self,name,block,PDG,value):
+    def __init__(self,name,block,PDG,value=None):
         self.name   =   name
         self.block  =   block
         self.PDG    =   PDG
         self.value  =   value
 class matrix:
-    def __init__(self,name,block,shape,value):
-        # if type(value) is numpy.ndarray or value==None:
-        #     Error("value of '%s' should be type of numpy.ndarry"%name+
-        #         "or leave None")
-        #     exit()
+    def __init__(self,name,block,shape,element_list={}):
         self.name=name
         self.block=block
         self.shape=shape
-        self.value=value
+        self.element_list=element_list
 
-
-
+class data_list():
+    pass
 
 
 if __name__=='__main__':

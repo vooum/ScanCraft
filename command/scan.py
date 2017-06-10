@@ -1,17 +1,29 @@
 #!/usr/bin/env python3
-import numpy
+import numpy,copy
 from .data_type import scalar,matrix
 from .read.readline import ReadLine
 from .color_print import *
+from .read.readSLHA import ReadSLHAFile
+
+class Random():
+    normal=numpy.random.normal
+    lognormal=numpy.random.lognormal
+
+class data_list():
+    pass
 
 class scan():
     def __init__(self,method='mcmc'):
         self.variable_list={}
         self.scalar_list={}
         self.matrix_list={}
+        self.follow_list={}
         self.block_list={}
+
         self.Add=self.AddMcmcScalar
         self.AddMatrix=self.AddMcmcMatrix
+        self.GetNewPoint=self.GetNewPoint_mcmc
+
 
     def AddMcmcScalar(self,name,block,PDG,minimum=None,maximum=None,pace='normal',step_width=None,value=None):
         block=block.upper()
@@ -25,55 +37,93 @@ class scan():
             Caution("'pace' should be 'normal', 'lognormal' or 'follow name_of_target'")
             exit()
         scl.pace=pace[0]
-        if scl.pace!='follow':
+        if scl.pace=='follow':
+            scl.follow=pace[1]
+            self.follow_list[name]=scl
+        else:
             scl.minimum=minimum
             scl.maximum=maximum
-        else:
-            scl.target=pace[1]
-        if step_width:
-            scl.step_width=step_width
-        else:
-            try:
-                scl.step_width=(scl.maximum-scl.minimum)/1000.
-            except TypeError:
-                Caution(
-                    "  Both maximum and minimum of '%s' should be given with pace='%s'"%(name,pace[0])
-                +   " if step width is not specified. Later, step width will be 1% of its initial value")
-                pass
 
-        # add scalar into lists
-        if name in self.variable_list.keys():
-            Caution("scalar '%s' overridden"%name)
-        self.variable_list[name]=scl
+            if step_width:
+                scl.step_width=step_width
+            else:
+                try:
+                    scl.step_width=(scl.maximum-scl.minimum)/1000.
+                except TypeError:
+                    Caution(
+                        "  Both maximum and minimum of '%s' should be given with pace='%s'"%(name,pace[0])
+                    +   " if step width is not specified. Later, step width will be 1% of its initial value")
 
-        if block not in self.block_list.keys():
-            self.block_list[block]={}
-        block_i=self.block_list[block]
-        block_i[PDG]=scl
+            # add scalar into lists
+            if name in self.variable_list.keys():
+                Caution("scalar '%s' overridden"%name)
+            self.variable_list[name]=scl
+            self.scalar_list[name]=scl
+
+            if block not in self.block_list.keys():
+                self.block_list[block]={}
+            block_i=self.block_list[block]
+            block_i[PDG]=scl
     
-    def AddMcmcMatrix(self,name,block,shape,free_element=[],minimum=None,maximum=None,pace='normal',step_width=None,value=None):
+    def AddMcmcMatrix(self,name,block,shape,free_element={},minimum=None,maximum=None,pace='normal',step_width=None,element_list={}):
         block=block.upper()
         # set one matrix
-        mtx=matrix(name,block,shape,value)
-        mtx.free_element=[]
-        if type(free_element) is str:
-            pass
-        else:
-            if (type(free_element[0]) is tuple) or (type(free_element[0]) is list):
-                for i in free_element:
-                    mtx.free_element.append(tuple(i))
-        mtx.element_list=dict.fromkeys(mtx.free_element)
+        mtx=matrix(name,block,shape,element_list={})
+        
+        if type(free_element) is dict:
+            mtx.element_list.update(free_element)
+        elif type(free_element) is list or type(free_element) is tuple:
+            if all( type(coords) is tuple for coords in free_element ):
+                mtx.element_list.update(dict.fromkeys(free_element))
 
         mtx.minimum=minimum
         mtx.maximum=maximum
         mtx.pace=pace
-        mtx.step_width=step_width
+        if step_width:
+            mtx.step_width=step_width
+        else:
+            try:
+                mtx.step_width=(mtx.maximum-mtx.minimum)/1000.
+            except TypeError:
+                Caution(
+                    "  Both maximum and minimum of '%s' should be given with pace='%s'"%(name,pace[0])
+                +   " if step width is not specified. Later, step width will be 1% of its initial value")
 
         # add matrix into lists
         if name in self.variable_list.keys():
             Caution("parameter '%s' overridden"%name)
         self.variable_list[name]=mtx
+        self.matrix_list[name]=mtx
 
         if block in self.block_list.keys():
             Caution("matrix '%s' overridden"%name)
         self.block_list[block]=mtx
+
+    def GetNewPoint_mcmc(self,step_factor=1.):
+        new_point=copy.deepcopy(self)
+        for name in self.scalar_list.keys():
+            old=self.scalar_list[name]
+            new_point.scalar_list[name].value=getattr(Random,old.pace)(old.value,old.step_width*step_factor)
+        for name in self.follow_list.keys():
+            par=self.follow_list[name]
+            par.value=self.variable_list[par.follow].value
+        for name in self.matrix_list.keys():
+            old=self.matrix_list[name]
+            for coords in old.element_list.keys():
+                new_point.matrix_list[name].element_list[coords]=getattr(Random,old.pace)(old.element_list[coords],old.step_width*step_factor)
+        return new_point
+    
+    def GetValue(self,file_name):
+        target=data_list()
+        ReadSLHAFile(target,file_name)
+        #print(target.LAMN);exit()
+        for name in self.scalar_list.keys():
+            par=self.scalar_list[name]
+            par.value=getattr(target,par.block)[par.PDG]
+        for name in self.follow_list.keys():
+            par=self.follow_list[name]
+            par.value=self.variable_list[par.follow].value
+        for name in self.matrix_list.keys():
+            par=self.matrix_list[name]
+            for coords in par.element_list.keys():
+                par.element_list[coords]=getattr(target,par.block[:-2])[coords]

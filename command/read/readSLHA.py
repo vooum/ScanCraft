@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+from ..data_type import data_list
 from .readline import commented_out,ReadLine
 class ReadBlock():
     scalar_block=dict.fromkeys(['MINPAR'],'Scalar')
@@ -30,9 +31,6 @@ class ReadBlock():
 def PassLine(*args):
     return# {}
 
-
-
-
 def ReadSLHAFile(sample,file_name):
     read=PassLine
     sample.DECAY={}
@@ -47,6 +45,7 @@ def ReadSLHAFile(sample,file_name):
                 if hasattr(ReadBlock,bi):
                     read=getattr(ReadBlock,bi)
                 elif bi in ReadBlock.block_types.keys():
+                    #print(ReadBlock.block_types)###
                     read=getattr(ReadBlock,ReadBlock.block_types[bi])
                 else:
                     read=PassLine
@@ -64,17 +63,8 @@ def ReadSLHAFile(sample,file_name):
             continue
 
 
-
-class empty():
-    pass
-class readSLHA():
-    def __init__(self,sample=None):
-        if sample==None:
-            self.sample=empty()
-        else:
-            self.sample=sample
 def ReadFiles(*files):
-    sample=empty()
+    sample=data_list()
     for file_i in files:
         ReadSLHAFile(sample,file_i)
     return sample
