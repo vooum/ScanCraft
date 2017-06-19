@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
-import numpy,copy
+import numpy,copy,math
 from .data_type import scalar,matrix
 from .read.readline import ReadLine
 from .color_print import *
 from .read.readSLHA import ReadSLHAFile
 
 class Random():
-    normal=numpy.random.normal
-    lognormal=numpy.random.lognormal
+    def normal(mean,minimum,maximum,step_factor=1.):
+        deviation=(maximum-minimum)/100.*step_factor
+        v=numpy.random.normal(mean,deviation)
+        return max( minimum, min( maximum, v ) )
+    def lognormal(mean,minimum,maximum,step_factor=1.):
+        log_mean=math.log(mean)
+        log_deviation=math.log(maximum/minimum)/100.*step_factor
+        v=numpy.random.lognormal(log_mean,log_deviation)
+        return max( minimum, min( maximum, v ) )
 
 class data_list():
     pass
@@ -48,7 +55,7 @@ class scan():
                 scl.step_width=step_width
             else:
                 try:
-                    scl.step_width=(scl.maximum-scl.minimum)/1000.
+                    scl.step_width=(scl.maximum-scl.minimum)/100.
                 except TypeError:
                     Caution(
                         "  Both maximum and minimum of '%s' should be given with pace='%s'"%(name,pace[0])
@@ -83,7 +90,7 @@ class scan():
             mtx.step_width=step_width
         else:
             try:
-                mtx.step_width=(mtx.maximum-mtx.minimum)/1000.
+                mtx.step_width=(mtx.maximum-mtx.minimum)/100.
             except TypeError:
                 Caution(
                     "  Both maximum and minimum of '%s' should be given with pace='%s'"%(name,pace[0])
@@ -103,16 +110,27 @@ class scan():
         new_point=copy.deepcopy(self)
         for name in self.scalar_list.keys():
             old=self.scalar_list[name]
-            new_point.scalar_list[name].value=getattr(Random,old.pace)(old.value,old.step_width*step_factor)
+            v=getattr(Random,old.pace)(old.value , old.minimum , old.maximum ,step_factor)
+            new_point.scalar_list[name].value=v
         for name in self.follow_list.keys():
             par=self.follow_list[name]
             par.value=self.variable_list[par.follow].value
         for name in self.matrix_list.keys():
             old=self.matrix_list[name]
             for coords in old.element_list.keys():
-                new_point.matrix_list[name].element_list[coords]=getattr(Random,old.pace)(old.element_list[coords],old.step_width*step_factor)
+                v=getattr(Random,old.pace)(old.element_list[coords] , old.minimum , old.maximum ,step_factor)
+                new_point.matrix_list[name].element_list[coords]=v
         return new_point
     
+    def Print(self):
+        for name in self.scalar_list.keys():
+            print('\t',name,self.scalar_list[name].value)
+        for name in self.follow_list.keys():
+            print('\t',name,self.follow_list[name].value)
+        for name in self.matrix_list.keys():
+            print('\t',name,self.matrix_list[name].element_list)
+            
+
     def GetValue(self,file_name):
         target=data_list()
         ReadSLHAFile(target,file_name)
@@ -126,4 +144,4 @@ class scan():
         for name in self.matrix_list.keys():
             par=self.matrix_list[name]
             for coords in par.element_list.keys():
-                par.element_list[coords]=getattr(target,par.block[:-2])[coords]
+                par.element_list[coords]=getattr(target,par.block[:])[coords]

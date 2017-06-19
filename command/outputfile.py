@@ -35,6 +35,7 @@ class OpenDataFile():
                 self.file.write(repr(d))
 
         self.file.write('\n')
+        self.file.flush()
 
 class EmpytClass():
     pass

@@ -1,29 +1,55 @@
 #! /usr/bin/env python3
-import sys
+import sys,copy
 sys.path.append('/home/vooum/Desktop/ScanCommando')
 
 from command.data_type import *
 from command.SPheno import SPheno
+from command.MicrOMEGAs import MicrOMEGAs
 from command.scan import scan
+
+import subprocess
+
+
+
+ism='all'
+target_number=1000
+step_factor=1. # sigma = n% of (maximum - minimum) of the free parameters
+slop_factor=1. # difficulty of accepting a new point with higher chisq
+
+
+
+
+
 
 mcmc=scan()
 mcmc.Add('tanB','MINPAR',3,1,40)
-mcmc.AddMatrix('lambda_N','LAMNIN',shape=(3,3),free_element=((3,3),),pace='normal')
+mcmc.AddMatrix('lambda_N','LAMNIN',shape=(3,3),free_element={(3,3):None},minimum=0.,maximum=0.5)
 
+mcmc.GetValue('./mcmc/SPheno.spc.NInvSeesaw')
 
-# print(mcmc.variable_list['try'].block)
-# mcmc.variable_list['try'].value=3232
-# print([mcmc.block_list['temp'][i].value for i in mcmc.block_list['temp'].keys()])
-print(mcmc.variable_list['lambda_N'].free_element)
-print(mcmc.variable_list['lambda_N'].element_list)
-
-#print(type(mcmc.variable_list['trymtx'])is matrix)
-#print(mcmc.variable_list.keys(),'\n',mcmc.block_list.keys())
-
+newpoint=copy.deepcopy(mcmc) #=mcmc.GetNewPoint()
 
 S=SPheno(main_routine='./bin/SPhenoNInvSeesaw',in_model='LesHouches.in.NInvSeesaw_low.ES1')
-mcmc.variable_list['tanB'].value=15.8
-mcmc.variable_list['lambda_N'].element_list[(3,3)]=0.07
-#print(mcmc.variable_list['lambda_N'].element_list)
+M=MicrOMEGAs()
 
-S.run(mcmc)
+
+#spectr=S.Run(newpoint)
+#print(spectr.MINPAR[3])
+record_number=-1
+try_point=0
+last_chisq=1e10
+while record_number < target_number:
+    if try_point%100==1:
+        print('%i points tried; %i points recorded; current X2 is %.3e'%(try_point,record_number,last_chisq))
+    try_point+=1
+    if try_point>1e3:break
+
+    chisq=0
+    chisq_list={}
+    #-- run SPheno
+    spectr=S.Run(newpoint)
+    #-- run MicrOMEGAs
+    omega=M.Run(S.output_dir)
+    #-- Dwarf Spheroidal Galaxies of Fermi-LAT
+    subprocess.Popen('./')
+    

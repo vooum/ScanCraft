@@ -13,7 +13,6 @@ def _GetMicrOMEGAsDir():
                 return package
     else:
         Error('MicrOMEGAs package not found in ',package_path)
-        exit()
 
 class MicrOMEGAs():
     def __init__(self,

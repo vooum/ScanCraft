@@ -21,7 +21,8 @@ class SPheno():
                     package_dir=None,
                     main_routine='./bin/SPheno',
                     data_dir='mcmc/',
-                    in_model='LesHouches.in'):
+                    in_model='LesHouches.in',
+                    output_file='SPheno.spc.NInvSeesaw'):
         if package_dir==None:
             package_dir=_GetSphenoDir()
         elif not os.path.exists(package_dir):
@@ -36,7 +37,7 @@ class SPheno():
         self.inp_model_lines=open(os.path.join(data_dir,in_model),'r').readlines()
         self.inp_file='SPheno.in'#-----------
         self.inp_dir=os.path.join(package_dir,self.inp_file)
-        self.output_file='SPheno.spc.NInvSeesaw'#--------------
+        self.output_file=output_file
         self.output_dir=os.path.join(package_dir,self.output_file)
         self.record_dir=os.path.join(data_dir,'./record/')
         self.command=' '.join([main_routine,self.inp_file])
@@ -79,16 +80,24 @@ class SPheno():
             inp.write(line)
         inp.close()
         # ------------run SPheno
-
+        try:
+            os.remove(self.output_dir)
+        except:
+            pass
+            
         run=subprocess.Popen(self.command,cwd=self.package_dir,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
         run.wait()
-        print(i for i in run.communicate())
+        #print(i for i in run.communicate())
         if (run.returncode):
             ColorPrint(0,33,'',run.communicate()[0])
             Error(run.communicate()[1])
-        else:
+        
+        try:
             result=ReadFiles(self.output_dir)
-        return result
+        except:
+            result=None
+        finally:
+            return result
 
     def Record(self,number):
         shutil.copy(self.inp_dir,os.path.join(self.record_dir,self.inp_file+'.'+str(int(number))))

@@ -1,15 +1,40 @@
 #! /usr/bin/env python3
 
-from ..data_type import data_list
-from .readline import commented_out,ReadLine
+try:
+    from ..data_type import data_list
+    from .readline import commented_out,ReadLine
+except:
+    if __name__=='__main__':
+        pass
+    else:
+        raise
+
+scalar_groups={
+    'SUSY_input':   ['MINPAR','EXTPAR'],
+    'additional':   ['NMSSMRUN','MSOFT'],
+    'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV']
+}
+scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]
+
+
+matrix_groups={
+    'Mass'      :   ['MSD2','MSE2','MSL2','MSQ2','MSU2'],
+    'Triliner'  :   ['TD','TE','TU'],
+    'SeeSaw'    :   ['LAMN',],
+    'output'    :   ['YE','YU','YD']
+}
+matrix_groups['input']=[ i+'IN' for j in ['Mass','Triliner','SeeSaw'] for i in matrix_groups[j] ]
+
+
+scalar_list=[ i.upper() for j in scalar_groups.values()  for i in j ]
+matrix_list=[ i.upper() for j in matrix_groups.values()  for i in j ]
+
 class ReadBlock():
-    scalar_block=dict.fromkeys(['MINPAR'],'Scalar')
-    matrix_block=dict.fromkeys(['LAMN'],'Matrix')
+    scalar_block=dict.fromkeys(scalar_list,'Scalar')
+    matrix_block=dict.fromkeys(matrix_list,'Matrix')
     block_types=dict(list(scalar_block.items())+list(matrix_block.items()))
     def Scalar(line):
-        if commented_out(line):
-            return {}
-        else:
+        if not commented_out(line):
             semanteme=ReadLine(line)
             try:
                 return {int(semanteme[0]):semanteme[1]}
@@ -17,15 +42,17 @@ class ReadBlock():
                 return {}
     def Matrix(line):
         #print(line)
-        if commented_out(line):
-            print(2)#return {1:1}
-        else:
+        if not commented_out(line):
             semanteme=ReadLine(line)
             try:
                 return {tuple([int(semanteme[0]),int(semanteme[1])]):semanteme[2]}
             except IndexError:
                 return {}
 
+    def HIGGSBOUNDSRESULTS(line):
+        if not commented_out(line):
+            pass
+            
 
 
 def PassLine(*args):
@@ -70,4 +97,6 @@ def ReadFiles(*files):
     return sample
 
 if __name__=='__main__':
-    print(ReadBlock.block_types)
+    #print(ReadBlock.block_types)
+    print(scalar_list)
+    print(matrix_list)
