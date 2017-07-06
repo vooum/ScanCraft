@@ -31,7 +31,6 @@ class scan():
         self.AddMatrix=self.AddMcmcMatrix
         self.GetNewPoint=self.GetNewPoint_mcmc
 
-
     def AddMcmcScalar(self,name,block,PDG,minimum=None,maximum=None,pace='normal',step_width=None,value=None):
         block=block.upper()
 
@@ -39,11 +38,11 @@ class scan():
         scl=scalar(name,block,PDG,value)
         
         # set scan strategy
-        pace=pace.lower().split()
-        if pace[0] not in ('normal','lognormal','follow'):
+        pace=pace.split()
+        if pace[0].lower() not in ('normal','lognormal','follow'):
             Caution("'pace' should be 'normal', 'lognormal' or 'follow name_of_target'")
             exit()
-        scl.pace=pace[0]
+        scl.pace=pace[0].lower()
         if scl.pace=='follow':
             scl.follow=pace[1]
             self.follow_list[name]=scl
@@ -62,15 +61,15 @@ class scan():
                     +   " if step width is not specified. Later, step width will be 1% of its initial value")
 
             # add scalar into lists
-            if name in self.variable_list.keys():
-                Caution("scalar '%s' overridden"%name)
-            self.variable_list[name]=scl
             self.scalar_list[name]=scl
 
-            if block not in self.block_list.keys():
-                self.block_list[block]={}
-            block_i=self.block_list[block]
-            block_i[PDG]=scl
+        if name in self.variable_list.keys():
+            Caution("scalar '%s' overridden"%name)
+        self.variable_list[name]=scl
+        if block not in self.block_list.keys():
+            self.block_list[block]={}
+        block_i=self.block_list[block]
+        block_i[PDG]=scl
     
     def AddMcmcMatrix(self,name,block,shape,free_element={},minimum=None,maximum=None,pace='normal',step_width=None,element_list={}):
         block=block.upper()

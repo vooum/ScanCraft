@@ -52,12 +52,13 @@ class SPheno():
 
     def Run(self,point):
         # write input file for SPheno
-        code_list={}
         inp=open(self.inp_dir,'w')
         for line in self.inp_model_lines:
             if not commented_out(line):
                 semanteme=ReadLine(line)
                 if str(semanteme[0]).upper()=='BLOCK':
+                    code_list={}
+                    code_lenth=0
                     if semanteme[1] in point.block_list.keys():
                         block_i=point.block_list[semanteme[1]]
                         if type(block_i) is dict:
@@ -68,9 +69,6 @@ class SPheno():
                             code_lenth=2
                             for index,element in block_i.element_list.items():
                                 code_list[index]=list(index)+[element]
-                    else:
-                        code_list={}
-                        code_lenth=0
                     #print(semanteme[1],code_list,'-'*5)
                 else:
                     line_code=tuple(semanteme[:code_lenth])

@@ -1,86 +1,129 @@
-#!/usr/bin/env python3
-import os,shutil,subprocess,copy
-from .read import *
+#! /usr/bin/env python3
+import os,shutil,subprocess
+try:
+    from .operations.GetDir import GetDir
+    from .data_type import scalar,matrix
+    from .read.readSLHA import ReadSLHAFile
 
-def _GetDefaultDir():
-    NMSSMToolsDir=''
-    for i in os.listdir():
-        if 'NMSSMTools' in i and os.path.isdir(i):
-            NMSSMToolsDir=max(NMSSMToolsDir,i)
+    from .read.readSLHA import ReadBlock
+    from .read.readline import commented_out,ReadLine
+    from .data_type import data_list
+
+    from .color_print import ColorPrint,UseStyle,Error
+except:
+    raise
+    pass
+
+
+def output_information_of_NMSSMTools(line):
+    if not commented_out(line):
+        semanteme=ReadLine(line)
+        if semanteme[0] in [3,4]:
+            return {semanteme[1]:int(semanteme[0])}
+        else:
+            return {}
+ReadBlock.SPINFO=output_information_of_NMSSMTools
+
+def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
+    result=data_list
+    ReadSLHAFile(result,spectr_dir)
+    omega_dir=spectr_dir.replace('spectr','omega')
+    try:
+        ReadSLHAFile(result,omega_dir)
+    except:
+        pass
+    result.ERROR=False
+    result.constraints=[]
+    if 4 in result.SPINFO.values():
+        result.ERROR=True
     else:
-        if NMSSMToolsDir=='':
-            exit('no NMSSMTools package found')
-    return NMSSMToolsDir
-
-def GetContent(FileDir):
-    File=open(FileDir,'r')
-    FileLines=File.readlines()
-    File.close()
-    return FileLines
+        for constraint in result.SPINFO.keys():
+            for const in ignore:
+                if const in constraint:
+                    break
+            else:
+                result.constraints.append(constraint)
+    return result
 
 class NMSSMTools():
-    def __init__(self,Dir=_GetDefaultDir(),DataDir='mcmc/'):
-        if Dir not in os.listdir(): # creat new NMSSMTools copy
-            Package=_GetDefaultDir()
-            subprocess.Popen('make clean', cwd=Package, shell=True).wait()            
-            shutil.copytree(Package,Dir)
+    def __init__(self,
+                    package_dir=None,
+                    data_dir='mcmc/',
+                    in_model='inp.dat',
+                    output_file='spectr.dat'):
+        if package_dir==None:
+            package_dir=GetDir('NMSSMTools')
+        elif not os.path.exists(package_dir):
+            Error('directory --%s-- not found, please check its path'%package_dir)
 
-        self.Dir=Dir
-        self.inpModelLines=GetContent(os.path.join(DataDir,'inp.dat'))
-        self.inpDir=os.path.join(Dir,'mcmcinp.dat')
-        self.spectrDir=self.inpDir.replace('inp','spectr')
-        self.omegaDir=self.inpDir.replace('inp','omega')
-        self.recordDir=os.path.join(DataDir,'record/')
-        self.runcode='./run mcmcinp.dat'
+        self.package_dir=package_dir
+        self.inp_model_lines=open(os.path.join(data_dir,in_model),'r').readlines()
+        self.inp_file='inp.dat'#-----------
+        self.inp_dir=os.path.join(package_dir,self.inp_file)
+        self.output_file=output_file
+        self.output_dir=os.path.join(package_dir,self.output_file)
+        self.output_omega_file=self.output_file.replace('spectr','omega')
+        self.output_omega_dir=self.output_dir.replace('spectr','omega')
+        self.record_dir=os.path.join(data_dir,'./record/')
+        main_routine='./run'
+        self.command=' '.join([main_routine,self.inp_file])
 
-        if os.path.exists(self.recordDir):
-            if input('clean record? y/n \n') in ['n','N']:
-                exit('Directory record/ is not deleted')
+        if os.path.exists(self.record_dir):
+            if input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']:
+                shutil.rmtree(self.record_dir)
             else:
-                shutil.rmtree(self.recordDir)
-        os.mkdir(self.recordDir)
-
-        if not os.path.exists(os.path.join(Dir,'main/nmhdecay')):
-            subprocess.Popen('make init', cwd=Dir, shell=True).wait()
-            subprocess.Popen('make', cwd=Dir, shell=True).wait()
-        else: print(os.path.join(Dir,'main/nmhdecay'),'exist')
-
-    def run(self,point,attr='new_value',ignore=[]):
-        #write inp file
-        inp=open(self.inpDir,'w')
-        BLOCK=''
-        for line in self.inpModelLines:
-            newline=''
-            a=readline(line)
-            if a[0]=='BLOCK':
-                BLOCK=a[1]
-            else:
-                if hasattr(point,BLOCK):
-                    P=getattr(point,BLOCK)
-                    if a[0] in P.keys():
-                        i=P[a[0]]
-                        newline='\t'+'\t'.join([str(i.PDG),str(getattr(i,attr)),a[-2]])+'\n'
-            if newline == '':		#output mcmcinp
-                inp.write(line)
-            else:   #inp.write('#--- original line'+line)
-                inp.write(newline)
+                exit('folder record/ is not deleted')
+        os.mkdir(self.record_dir)
+    
+    def Run(self,point,ignore=[]):
+        # write input file for SPheno
+        inp=open(self.inp_dir,'w')
+        for line in self.inp_model_lines:
+            if not commented_out(line):
+                semanteme=ReadLine(line)
+                if str(semanteme[0]).upper()=='BLOCK':
+                    code_list={}
+                    code_lenth=0
+                    if semanteme[1] in point.block_list.keys():
+                        block_i=point.block_list[semanteme[1]]
+                        if type(block_i) is dict:
+                            code_lenth=1
+                            for PDG,p_i in block_i.items():
+                                code_list[tuple([PDG])]=[p_i.PDG,p_i.value]
+                        elif type(block_i) is matrix:
+                            code_lenth=2
+                            for index,element in block_i.element_list.items():
+                                code_list[index]=list(index)+[element]
+                    #print(semanteme[1],code_list,'-'*5)
+                else:
+                    line_code=tuple(semanteme[:code_lenth])
+                    if line_code in code_list.keys():
+                        inp.write('\t'+'\t'.join([str(i) for i in code_list[line_code]+semanteme[code_lenth+1:]])+'\n')
+                        continue
+            inp.write(line)
         inp.close()
-        #run NMSSMTools
-        f1=open('err.log','w')
-        subprocess.Popen(self.runcode
-  	    ,stderr=f1, stdout=f1, cwd=self.Dir, shell=True).wait()
+        # ------------run
+        try:
+            os.remove(self.output_dir)
+            os.remove(self.output_omega_dir)
+        except:
+            pass
+
+        run=subprocess.Popen(self.command,cwd=self.package_dir,shell=True,
+                stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
+        run.wait()
+        if (run.returncode):
+            ColorPrint(0,33,'',run.communicate()[0])
+            Error(run.communicate()[1])
         
-        if not os.path.exists(self.spectrDir): exit('spectr.dat not exist')
+        result=ReadNMSSMToolsSpectr(self.output_dir,ignore=ignore)
 
-        result=readSLHA(discountKeys=ignore)
-        result.read(self.spectrDir)
-        return copy.deepcopy(result)
-
-    def record(self,number):
-        recordinp   =os.path.join(self.recordDir,'inp.'+str(number))
-        recordspectr=os.path.join(self.recordDir,'spectr.'+str(number))
-        recordomega =os.path.join(self.recordDir,'omega.'+str(number))
-        shutil.move(self.inpDir,recordinp)
-        shutil.move(self.spectrDir,recordspectr)
-        if os.path.isfile(self.omegaDir):
-            shutil.move(self.omegaDir,recordomega)
+        return result
+        
+    def Record(self,number):
+        shutil.copy(self.inp_dir,os.path.join(self.record_dir,self.inp_file+'.'+str(int(number))))
+        shutil.copy(self.output_dir,os.path.join(self.record_dir,self.output_file+'.'+str(int(number))))
+        try:
+            shutil.copy(self.output_omega_dir,os.path.join(self.record_dir,self.output_omega_file+'.'+str(int(number))))
+        except:
+            pass

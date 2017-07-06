@@ -12,7 +12,8 @@ except:
 scalar_groups={
     'SUSY_input':   ['MINPAR','EXTPAR'],
     'additional':   ['NMSSMRUN','MSOFT'],
-    'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV']
+    'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LOWEN'],
+    'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT','ANNIHILATION']
 }
 scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]
 

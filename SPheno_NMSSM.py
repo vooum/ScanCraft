@@ -54,8 +54,6 @@ while record_number < target_number:
         print('Trying point %i; %i points recorded; current X2 is %.3e'%(try_point,record_number,last_chisq))
     if try_point>1e10:break
 
-    chisq=0
-    chisq_list={}
     #-- run SPheno
     spectr=S.Run(newpoint)
     if not spectr:
@@ -63,6 +61,7 @@ while record_number < target_number:
         newpoint=mcmc.GetNewPoint(step_factor)
         continue
 
+    chisq_list={}
     chisq_list['h_sm']=min(chi2(spectr.MASS[25],mh),chi2(spectr.MASS[35],mh))
     chisq_list['bsg']=chi2(spectr.FLAVORKITQFV[200]*1e4,bsg)
     chisq_list['bmu']=chi2(spectr.FLAVORKITQFV[4006]*1e9,bmu)

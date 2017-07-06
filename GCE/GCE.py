@@ -4,7 +4,7 @@ import subprocess,os,sys,shutil
 def chisq_GCE(spectr):
     workdir=os.path.dirname(__file__)
     print(workdir)
-    order=['./main',os.path.join('../',spectr)]
+    order=['./main',os.path.join(spectr)]
     subprocess.Popen(order,cwd=workdir,stdout=subprocess.PIPE).wait()
 
     run=subprocess.Popen(['./testCovar.py','./GCE_out.txt'],stdout=subprocess.PIPE,cwd=workdir)
