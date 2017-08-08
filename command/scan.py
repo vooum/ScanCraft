@@ -132,7 +132,7 @@ class scan():
 
     def GetValue(self,file_name):
         target=data_list()
-        ReadSLHAFile(target,file_name)
+        ReadSLHAFile(file_name,target)
         #print(target.LAMN);exit()
         for name in self.scalar_list.keys():
             par=self.scalar_list[name]

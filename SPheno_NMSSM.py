@@ -41,6 +41,8 @@ newpoint=copy.deepcopy(mcmc) #=mcmc.GetNewPoint()
 
 S=SPheno(main_routine='./bin/SPhenoNMSSM',in_model='SPheno.in',output_file='SPheno.spc.NMSSM')
 #M=MicrOMEGAs()
+HB=HiggsBounds(S.package_dir,mode='SARAH')
+HS=HiggsSignals(S.package_dir,mode='SARAH')
 
 
 #spectr=S.Run(newpoint)
@@ -61,10 +63,20 @@ while record_number < target_number:
         newpoint=mcmc.GetNewPoint(step_factor)
         continue
 
+    #-- run HiggsBounds and HiggsSignals
+    hb=HB.RunSARAH()
+    # if hb.HBresult==0.:
+    #     newpoint=mcmc.GetNewPoint(step_factor)
+    #     continue
+    hs=HS.RunSARAH()
+
     chisq_list={}
     chisq_list['h_sm']=min(chi2(spectr.MASS[25],mh),chi2(spectr.MASS[35],mh))
     chisq_list['bsg']=chi2(spectr.FLAVORKITQFV[200]*1e4,bsg)
     chisq_list['bmu']=chi2(spectr.FLAVORKITQFV[4006]*1e9,bmu)
+
+    chisq_list['HB']=(max(hb.obsratio,1)-1.)*10.
+    chisq_list['HS']=abs(math.log(hs.Pvalue))
 
     chisq=sum(chisq_list.values())
     # print(chisq,chisq_list)

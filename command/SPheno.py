@@ -1,9 +1,13 @@
 #! /usr/bin/env python3
 import os,shutil,subprocess
-from .data_type import scalar,matrix
-from .read.readline import commented_out,ReadLine
-from .read.readSLHA import ReadFiles
-from .color_print import ColorPrint,UseStyle,Error
+try:
+    from .operations.GetDir import GetDir
+    from .data_type import scalar,matrix
+    from .read.readline import commented_out,ReadLine
+    from .read.readSLHA import ReadFiles
+    from .color_print import ColorPrint,UseStyle,Error
+except:
+    pass
 
 def _GetSphenoDir():
     package_path=os.path.join(os.path.dirname(os.path.dirname(__file__)),'packages/')
@@ -24,14 +28,14 @@ class SPheno():
                     in_model='LesHouches.in',
                     output_file='SPheno.spc.NInvSeesaw'):
         if package_dir==None:
-            package_dir=_GetSphenoDir()
+            package_dir=GetDir('SPheno')
         elif not os.path.exists(package_dir):
             Error('directory',package_dir,'not found, please check its path',sep=' -- ')
 
         if os.path.exists(os.path.join(package_dir,main_routine)):
             print('SPheno main routine specified:\n->',os.path.join(package_dir,main_routine))
         else:
-            Error('main program of SPheno dosen\'t exist:\n->',os.path.join(package_dir,main_routine))
+            Error('SPheno main routine --%s-- not found, please check its path'%main_routine)
 
         self.package_dir=package_dir
         self.inp_model_lines=open(os.path.join(data_dir,in_model),'r').readlines()

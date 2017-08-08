@@ -15,34 +15,78 @@ except:
     pass
 
 
-def output_information_of_NMSSMTools(line):
-    if not commented_out(line):
-        semanteme=ReadLine(line)
-        if semanteme[0] in [3,4]:
-            return {semanteme[1]:int(semanteme[0])}
+def output_information_of_NMSSMTools(text):
+    semanteme=ReadLine(text.lines[text.i])
+    if semanteme[1].upper()!='SPINFO':
+        Error('wrong when entering Read_SPINFO')
+    info={}
+    for i in range(1,5):
+        info[i]=[]
+    while True:
+        try:
+            line=text.NextLine()
+        except IndexError:
+            break
         else:
-            return {}
+            if commented_out(line):
+                continue
+            semanteme=ReadLine(line)
+            if str(semanteme[0]).upper()=='BLOCK':
+                break
+
+            info_number=int(semanteme[0])
+            if info_number in info.keys():
+                info[info_number].append(semanteme[1])
+                # print(info_number,info[info_number])
+            else:
+                Error(line)
+    return info
+
+def Annihilation_in_omegas(text):
+    anni={}
+    while True:
+        try:
+            line=text.NextLine()
+        except IndexError:
+            break
+        else:
+            if commented_out(line):
+                continue
+            semanteme=ReadLine(line)
+            try:
+                number=semanteme[0]
+            except IndexError:
+                continue
+            else:
+                if str(number).upper()=='BLOCK':
+                    break
+                elif int(number)==0:
+                    anni.update({(0,0):semanteme[1]})
+                else:
+                    nf=int(semanteme[2])
+                    tuple_f=tuple([int(i) for i in semanteme[3:3+nf]])
+                    anni.update({tuple_f:semanteme[1]})
+    return anni
+
 ReadBlock.SPINFO=output_information_of_NMSSMTools
+ReadBlock.ANNIHILATION=Annihilation_in_omegas
 
 def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
     result=data_list
-    ReadSLHAFile(result,spectr_dir)
+    ReadSLHAFile(spectr_dir,result)
     omega_dir=spectr_dir.replace('spectr','omega')
     try:
-        ReadSLHAFile(result,omega_dir)
+        ReadSLHAFile(omega_dir,result)
     except:
         pass
-    result.ERROR=False
+    result.ERROR=not bool(result.SPINFO[4])
     result.constraints=[]
-    if 4 in result.SPINFO.values():
-        result.ERROR=True
-    else:
-        for constraint in result.SPINFO.keys():
-            for const in ignore:
-                if const in constraint:
-                    break
-            else:
-                result.constraints.append(constraint)
+    for constraint in result.SPINFO[3]:
+        for const in ignore:
+            if const in constraint:
+                break
+        else:
+            result.constraints.append(constraint)
     return result
 
 class NMSSMTools():

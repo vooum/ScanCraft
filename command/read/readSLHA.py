@@ -3,17 +3,18 @@
 try:
     from ..data_type import data_list
     from .readline import commented_out,ReadLine
+    from .special_blocks import HiggsBounds_and_HiggsSingals
 except:
     if __name__=='__main__':
         pass
     else:
-        raise
+        pass#raise
 
 scalar_groups={
     'SUSY_input':   ['MINPAR','EXTPAR'],
     'additional':   ['NMSSMRUN','MSOFT'],
     'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LOWEN'],
-    'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT','ANNIHILATION']
+    'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT']
 }
 scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]
 
@@ -22,7 +23,8 @@ matrix_groups={
     'Mass'      :   ['MSD2','MSE2','MSL2','MSQ2','MSU2'],
     'Triliner'  :   ['TD','TE','TU'],
     'SeeSaw'    :   ['LAMN',],
-    'output'    :   ['YE','YU','YD']
+    'output'    :   ['YE','YU','YD',
+                     'HiggsLHC13','HiggsLHC14']
 }
 matrix_groups['input']=[ i+'IN' for j in ['Mass','Triliner','SeeSaw'] for i in matrix_groups[j] ]
 
@@ -30,7 +32,7 @@ matrix_groups['input']=[ i+'IN' for j in ['Mass','Triliner','SeeSaw'] for i in m
 scalar_list=[ i.upper() for j in scalar_groups.values()  for i in j ]
 matrix_list=[ i.upper() for j in matrix_groups.values()  for i in j ]
 
-class ReadBlock():
+class ReadBlock(HiggsBounds_and_HiggsSingals):
     scalar_block=dict.fromkeys(scalar_list,'Scalar')
     matrix_block=dict.fromkeys(matrix_list,'Matrix')
     block_types=dict(list(scalar_block.items())+list(matrix_block.items()))
@@ -49,52 +51,79 @@ class ReadBlock():
                 return {tuple([int(semanteme[0]),int(semanteme[1])]):semanteme[2]}
             except IndexError:
                 return {}
-
-    def HIGGSBOUNDSRESULTS(line):
+    def ReadDecay(line):
         if not commented_out(line):
-            pass
-            
+            semanteme=ReadLine(line)
+            try:
+                nf=int(semanteme[1])# number of final particles
+                f=tuple([int(i) for i in semanteme[2:2+nf]])# final particles' PDG tuple
+                return {f:semanteme[0]}
+            except:
+                return {}
 
+
+    # def HIGGSBOUNDSRESULTS(line):
+    #     print(line)
+    #     if not commented_out(line):
+    #         pass
+            
+class content():
+    def __init__(self,file_name):
+        self.lines=open(file_name,'r').readlines()
+        self.i=-1
+    def NextLine(self):
+        self.i+=1
+        return self.lines[self.i]
 
 def PassLine(*args):
-    return# {}
+    return {}
 
-def ReadSLHAFile(sample,file_name):
+
+def ReadSLHAFile(file_name,sample):#read information in file_name and store in sample.
     read=PassLine
-    sample.DECAY={}
-    for line in open(file_name,'r').readlines():
+    text=content(file_name)
+    if not hasattr(sample,'DECAY'): setattr(sample,'DECAY',{})
+
+    while True:
+        try:
+            line=text.NextLine()# iterator
+        except IndexError:
+            break
+
         semanteme=ReadLine(line)
         #print(semanteme)
         try:
             if str(semanteme[0]).upper()=='BLOCK':
                 bi=semanteme[1].upper()
-                setattr(sample,bi,{})
+                if not hasattr(sample,bi): setattr(sample,bi,{})
                 data_dict=getattr(sample,bi)
-                if hasattr(ReadBlock,bi):
-                    read=getattr(ReadBlock,bi)
-                elif bi in ReadBlock.block_types.keys():
+                if bi in ReadBlock.block_types.keys():
                     #print(ReadBlock.block_types)###
                     read=getattr(ReadBlock,ReadBlock.block_types[bi])
                 else:
+                    if hasattr(ReadBlock,bi):
+                        data_dict.update(getattr(ReadBlock,bi)(text))
+                        text.i-=1
                     read=PassLine
             elif str(semanteme[0]).upper()=='DECAY':
                 di=int(semanteme[1])
-                width_i=semanteme[2]
-                data_dict=sample.DECAY[di]={}
-                read=PassLine
+                sample.DECAY[di]={}
+                data_dict=sample.DECAY[di]
+                data_dict['width']=float(semanteme[2])
+                read=ReadBlock.ReadDecay
             else:
                 try:
                     data_dict.update(read(line))
                 except:
                     pass
-        except:
-            continue
+        except IndexError:
+            pass
 
 
-def ReadFiles(*files):
+def ReadFiles(*files):# read information in multiple files and return a data_list object which store information.
     sample=data_list()
     for file_i in files:
-        ReadSLHAFile(sample,file_i)
+        ReadSLHAFile(file_i,sample)
     return sample
 
 if __name__=='__main__':
