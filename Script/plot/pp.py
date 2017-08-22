@@ -21,7 +21,9 @@ if read_from_files:
     data.columns=['m_N1','relic','Psi','Nsd','X2_GCE','color']
     data.to_csv('data_for_plot.csv')
 else:
-    data=pandas.read_csv('data_for_plot.csv')
+    from command.analyse.ReadData import StringToIFT as STI
+    data=pandas.read_csv('data_for_plot.csv',index_col=0)
+    data.columns=([STI(i) for i in data.columns])
 
 
 good=data[0.1197*.9<data['relic']<0.1197*1.1]

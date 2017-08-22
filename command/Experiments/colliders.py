@@ -2,15 +2,15 @@
 
 class LHC():
     # (value, Minimum, Maximum)
-    HiggsMass=(125.7,125.3,127.2)
+    HiggsMass=(125.09, 0.24, 0.24)
     mh=HiggsMass
 
-    b__Xs_gamma=(3.43e-4,2.99e-4,3.87e-4)
+    b__Xs_gamma=(3.43e-4,0.28e-4,0.28e-4)
     bsg=b__Xs_gamma
 
     b__Xd_gamma=(1.41e-5,0.27e-5,2.55e-5)
 
-    bs__mu_mu=(2.9e-9,1.7e-9,4.5e-9)
+    bs__mu_mu=(2.8e-9,.7e-9,.6e-9)
     bmu=bs__mu_mu
 
     Z__h_a=(None,None,5.78e-3)

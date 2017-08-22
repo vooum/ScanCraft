@@ -79,8 +79,6 @@ while record_number < target_number:
     chisq_list['HS']=abs(math.log(hs.Pvalue))
 
     chisq=sum(chisq_list.values())
-    # print(chisq,chisq_list)
-    # print('1111111')
     if (random.random() < math.exp(max(slop_factor * min( last_chisq-chisq,0.),-745))
     	or chisq<10.):
         last_chisq=chisq

@@ -3,6 +3,7 @@ import sys,os,re,copy,shutil
 sys.path.append('/home/vooum/Desktop/ScanCommando')
 from command.Experiments.directdetection import DirectDetection
 from command.read.readSLHA import ReadFiles
+from command.Experiments.colliders import LHC
 from command.outputfile import *
 
 print(sys.argv)
@@ -45,3 +46,33 @@ outNumber=-1
 for dirs in spectrs.keys():
     for files in spectrs[dirs]:
         spectr=ReadFiles(files)
+
+        ism=None
+        for hi in [25,35]:
+            mh=spectr.MASS[hi]
+            if mh>121 and mh<129:
+                ism=hi
+                break
+        else:
+            if ism==None:
+                continue
+            else:
+                exit('wrong')
+
+        mh=spectr.MASS[25]
+        bsg=spectr.FLAVORKITQFV[200]
+        if bsg<min(LHC.bsg) or bsg>max(LHC.bsg):continue
+        bmu=spectr.FLAVORKITQFV[4006]
+        if bmu<min(LHC.bmu) or bmu>max(LHC.bmu):continue
+
+        outNumber+=1
+        #Data.In('AllParameters.txt').record(spectr.MINPAR,spectr.EXTPAR,spectr.NMSSMRUN)
+        for file_name in [
+            'MINPAR','EXTPAR','NMSSMRUN','MSOFT','HMIX','MASS',
+            'YD','YE','YU','TD','TE','TU','MSQ2','MSL2','MSD2','MSU2','MSE2']:
+            Data.In(file_name).record(getattr(spectr,file_name))
+        
+        # continue
+        out_spectr=os.path.join(AnalysedDir,'SPheno.spc.NMSSM.'+str(outNumber))
+        shutil.copyfile(files,out_spectr)
+        shutil.copyfile(files.replace('spc.NMSSM','in'),out_spectr.replace('spc.NMSSM','in'))

@@ -13,7 +13,7 @@ class outputfile:
 class OpenDataFile():
     def __init__(self,file):
         self.file=open(file,'w')
-        self.Number=0
+        self.Number=-1
     def record(self,*Datalists,Number=None):
         self.Number+=1
         if type(Number) is int:
