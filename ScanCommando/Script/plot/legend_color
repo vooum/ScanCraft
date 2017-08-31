@@ -1,0 +1,4 @@
+L=plt.legend(loc=4)
+colormap=map(lambda x,y: [x,y], L.get_texts() ,['b'])
+for x,y in colormap:
+    x.set_color(y)
