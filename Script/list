@@ -1,2 +1,0 @@
-#!/bin/bash
-ps -ef | grep 'yle' | grep 'python3' | grep -v grep

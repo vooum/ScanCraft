@@ -1,7 +1,0 @@
-# input file is:	/home/vooum/Desktop/GCE/output/out_0523/mcmc5/record/spectr.1000
-BLOCK DMRD
-     1	1.58823514e-01	# dark matter relic density
-     2	1.32684640e+00	# ratio omega_N/omega_0
-BLOCK IndirectDetection
-     0	1.17135050e-26	# total SigmaV
-     
