@@ -1,10 +1,14 @@
+
+**.pyc
 /*
-*.pyc
 !.gitignore
+!README.md
+!/ScanCommando/
+/ScanCommando/*
 !/ScanCommando/command/
 !/ScanCommando/Script/
 !/ScanCommando/*.py
-!/ScanCommando/README.md
+
 
 #NMSSMTools*/
 #*.pyc
