@@ -3,7 +3,7 @@
 try:
     from ..data_type import data_list
     from .readline import commented_out,ReadLine
-    from .special_blocks import HiggsBounds_and_HiggsSingals
+    from .special_blocks import special_blocks
 except:
     if __name__=='__main__':
         pass
@@ -16,7 +16,7 @@ scalar_groups={
     'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LOWEN'],
     'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT']
 }
-scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]
+scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]# for Spheno
 
 
 matrix_groups={
@@ -26,13 +26,13 @@ matrix_groups={
     'output'    :   ['YE','YU','YD',
                      'HiggsLHC13','HiggsLHC14']
 }
-matrix_groups['input']=[ i+'IN' for j in ['Mass','Triliner','SeeSaw'] for i in matrix_groups[j] ]
+matrix_groups['input']=[ i+'IN' for j in ['Mass','Triliner','SeeSaw'] for i in matrix_groups[j] ]# for Spheno
 
 
 scalar_list=[ i.upper() for j in scalar_groups.values()  for i in j ]
 matrix_list=[ i.upper() for j in matrix_groups.values()  for i in j ]
 
-class ReadBlock(HiggsBounds_and_HiggsSingals):
+class ReadBlock(special_blocks):
     scalar_block=dict.fromkeys(scalar_list,'Scalar')
     matrix_block=dict.fromkeys(matrix_list,'Matrix')
     block_types=dict(list(scalar_block.items())+list(matrix_block.items()))
@@ -69,7 +69,9 @@ class ReadBlock(HiggsBounds_and_HiggsSingals):
             
 class content():
     def __init__(self,file_name):
-        self.lines=open(file_name,'r').readlines()
+        document=open(file_name,'r')
+        self.lines=document.readlines()
+        document.close()
         self.i=-1
     def NextLine(self):
         self.i+=1
@@ -79,7 +81,9 @@ def PassLine(*args):
     return {}
 
 
-def ReadSLHAFile(file_name,sample):#read information in file_name and store in sample.
+def ReadSLHAFile(file_name,sample=None):#read information in file_name and store in sample.
+    if sample==None:
+        sample=data_list()
     read=PassLine
     text=content(file_name)
     if not hasattr(sample,'DECAY'): setattr(sample,'DECAY',{})
@@ -118,10 +122,11 @@ def ReadSLHAFile(file_name,sample):#read information in file_name and store in s
                     pass
         except IndexError:
             pass
+    return sample
 
-
-def ReadFiles(*files):# read information in multiple files and return a data_list object which store information.
-    sample=data_list()
+def ReadFiles(*files,sample=None):# read information in multiple files and return a data_list object which store information.
+    if sample==None:
+        sample=data_list()
     for file_i in files:
         ReadSLHAFile(file_i,sample)
     return sample

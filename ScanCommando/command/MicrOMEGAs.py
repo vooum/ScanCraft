@@ -1,43 +1,61 @@
 #! /usr/bin/env python3
 
 import os,shutil,subprocess
+from .operations.GetDir import GetDir
 from .color_print import ColorPrint,UseStyle,Error
-
-def _GetMicrOMEGAsDir():
-    package_path=os.path.join(os.path.dirname(os.path.dirname(__file__)),'packages/')
-    for i in os.listdir(package_path):
-        if 'micromegas' in i:
-            package=os.path.join(package_path,i)
-            if os.path.isdir(package):
-                print('MicrOMEGAs file:\n->',package)
-                return package
-    else:
-        Error('MicrOMEGAs package not found in ',package_path)
+from .read.readSLHA import ReadSLHAFile
+from .data_type import data_list
+from .Experiments.dSphs.IDD import X2_dSphs
+from .Experiments.GCE.testCovar import X2_GCE
 
 class MicrOMEGAs():
     def __init__(self,
                     package_dir=None,
-                    model='InV_SS',
-                    main_routine='./InV_SS',
+                    model='NMSSM',
+                    main_routine='./main',
                     data_dir='mcmc/',):
         if package_dir==None:
-            package_dir=_GetMicrOMEGAsDir()
+            package_dir=GetDir('micromegas')
         elif not os.path.exists(package_dir):
-            Error('directory',package_dir,'not found, please check its path',sep=' -- ')
+            Error('=self.output_dir --%s-- not found, please check its path'%package_dir)
         
         self.package_dir=package_dir
         self.model_dir=model
         self.work_dir=os.path.join(package_dir,model)
-        self.inp_file='SPheno.spc.NInvSeesaw'#------------
-        self.inp_dir=os.path.join(self.work_dir,self.inp_file)
-        self.output_file='omega.txt'#------------
+        # self.inp_file='SPheno.spc.NInvSeesaw'#------------
+        # self.inp_dir=os.path.join(self.work_dir,self.inp_file)
+        self.output_file='Omega.txt'#------------
         self.output_dir=os.path.join(self.work_dir,self.output_file)
         self.record_dir=os.path.join(data_dir,'./record/')
-        self.command=' '.join([main_routine])
+        self.command=main_routine
 
-    def Run(self,point_file):
-        shutil.copy(point_file,self.inp_dir)
-        run=subprocess.Popen(self.command,
+    def GCE_X2(self,sample=None):
+        if sample is None:
+            sample=self.result
+        return X2_GCE(os.path.join(self.work_dir,'EEdN_dEdO_sight.txt'),eps=sample.ABUNDANCE[4]/0.1197)
+
+        # command=' '.join(['./testCovar.py',os.path.join(self.work_dir,'EEdN_dEdO_sight.txt')])
+        # run=subprocess.Popen(command,
+        #     # cwd='./command/Experiments/GCE/',
+        #     cwd='/home/heyangle/Desktop/ScanCommando/ScanCommando/command/Experiments/GCE',
+        #     shell=True,
+        #     stdout=subprocess.PIPE)
+        # run.wait()
+        # return float(run.stdout.read())
+
+    def IDD_X2(self,sample):
+        return X2_dSphs(os.path.join(self.work_dir,'E_dNdE_single.txt'),
+                        sample.ABUNDANCE[0],# m_DM
+                        sample.ABUNDANCE[4],# Omega
+                        sample.ANNIHILATION['SigmaV']# SigmaV
+                        )
+
+    def Run(self,in_file='',sample=None):
+        if sample is None:  sample=data_list()
+        try:delattr(self,'result')
+        except:pass
+        command=' '.join([self.command,in_file])
+        run=subprocess.Popen(command,
             cwd=self.work_dir,shell=True,
             stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
         run.wait()
@@ -45,8 +63,10 @@ class MicrOMEGAs():
             ColorPrint(0,33,'',run.communicate()[0])
             Error(run.communicate()[1])
         else:
-            result=ReadFiles(self.output_dir)
-        return result
+            ReadSLHAFile(self.output_dir,sample=sample)
+            self.result=sample
+        return sample
     
-    def Record(self,number):
-        shutil.copy(self.inp_dir,os.path.join(self.record_dir,self.inp_file+'.'+str(int(number))))
+    def Record(self,number,directory=None):
+        if directory is None: directory=self.record_dir
+        shutil.move(self.output_dir,os.path.join(directory,self.output_file+'.'+str(int(number))))
