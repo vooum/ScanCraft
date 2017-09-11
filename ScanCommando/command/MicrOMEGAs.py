@@ -3,6 +3,7 @@
 import os,shutil,subprocess
 from .operations.GetDir import GetDir
 from .color_print import ColorPrint,UseStyle,Error
+from .read.readSLHA import ReadBlock
 from .read.readSLHA import ReadSLHAFile
 from .data_type import data_list
 from .Experiments.dSphs.IDD import X2_dSphs
@@ -29,29 +30,8 @@ class MicrOMEGAs():
         self.record_dir=os.path.join(data_dir,'./record/')
         self.command=main_routine
 
-    def GCE_X2(self,sample=None):
-        if sample is None:
-            sample=self.result
-        return X2_GCE(os.path.join(self.work_dir,'EEdN_dEdO_sight.txt'),eps=sample.ABUNDANCE[4]/0.1197)
 
-        # command=' '.join(['./testCovar.py',os.path.join(self.work_dir,'EEdN_dEdO_sight.txt')])
-        # run=subprocess.Popen(command,
-        #     # cwd='./command/Experiments/GCE/',
-        #     cwd='/home/heyangle/Desktop/ScanCommando/ScanCommando/command/Experiments/GCE',
-        #     shell=True,
-        #     stdout=subprocess.PIPE)
-        # run.wait()
-        # return float(run.stdout.read())
-
-    def IDD_X2(self,sample):
-        return X2_dSphs(os.path.join(self.work_dir,'E_dNdE_single.txt'),
-                        sample.ABUNDANCE[0],# m_DM
-                        sample.ABUNDANCE[4],# Omega
-                        sample.ANNIHILATION['SigmaV']# SigmaV
-                        )
-
-    def Run(self,in_file='',sample=None):
-        if sample is None:  sample=data_list()
+    def Run(self,in_file=''):
         try:delattr(self,'result')
         except:pass
         command=' '.join([self.command,in_file])
@@ -63,10 +43,41 @@ class MicrOMEGAs():
             ColorPrint(0,33,'',run.communicate()[0])
             Error(run.communicate()[1])
         else:
-            ReadSLHAFile(self.output_dir,sample=sample)
-            self.result=sample
-        return sample
+            self.result=ReadSLHAFile(self.output_dir)
+        return self.result
     
     def Record(self,number,directory=None):
         if directory is None: directory=self.record_dir
         shutil.move(self.output_dir,os.path.join(directory,self.output_file+'.'+str(int(number))))
+
+    def GCE_X2(self):
+        sample=self.result
+        self.result.X2_GCE=X2_GCE(os.path.join(self.work_dir,'EEdN_dEdO_sight.txt'),eps=self.result.ABUNDANCE[4]/0.1197)
+        return self.result.X2_GCE
+
+        # command=' '.join(['./testCovar.py',os.path.join(self.work_dir,'EEdN_dEdO_sight.txt')])
+        # run=subprocess.Popen(command,
+        #     # cwd='./command/Experiments/GCE/',
+        #     cwd='/home/heyangle/Desktop/ScanCommando/ScanCommando/command/Experiments/GCE',
+        #     shell=True,
+        #     stdout=subprocess.PIPE)
+        # run.wait()
+        # return float(run.stdout.read())
+
+    def dSphs_X2(self):
+        self.result.X2_dSphs=X2_dSphs(os.path.join(self.work_dir,'E_dNdE_single.txt'),
+                                    self.result.ABUNDANCE[0],# m_DM
+                                    self.result.ABUNDANCE[4],# Omega
+                                    self.result.ANNIHILATION['SigmaV']# SigmaV
+                                    )
+        return self.result.X2_dSphs
+
+    def IDD_X2(self):
+        self.result.INDIRECT_CHISQUARES = {
+                                    1:self.GCE_X2(),
+                                    2:self.dSphs_X2()
+                                    }
+        out_file=open(self.output_dir,'a')
+        out_file.write('BLOCK INDIRECT_CHISQUARES\n')
+        out_file.write('%8i %15.10e\t# X2_GCE\n'%(1,self.result.X2_GCE))
+        out_file.write('%8i %15.10e\t# X2_dSphs\n'%(2,self.result.X2_dSphs))

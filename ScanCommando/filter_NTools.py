@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys,os,re,copy,shutil
-sys.path.append('/home/vooum/Desktop/ScanCommando')
 sys.path.append('/home/heyangle/Desktop/ScanCommando/ScanCommando')
 
 from command.read.readSLHA import *

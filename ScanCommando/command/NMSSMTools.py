@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-import os,shutil,subprocess
+import os,shutil,subprocess,copy
 try:
     from .operations.GetDir import GetDir
     from .data_type import scalar,matrix
@@ -68,18 +68,19 @@ def Annihilation_in_omegas(text):
                     anni.update({tuple_f:semanteme[1]})
     return anni
 
-ReadBlock.SPINFO=output_information_of_NMSSMTools
-ReadBlock.ANNIHILATION=Annihilation_in_omegas
+class new_ReadBlock(ReadBlock):
+    SPINFO=output_information_of_NMSSMTools
+    ANNIHILATION=Annihilation_in_omegas
 
 def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
-    result=data_list
-    ReadSLHAFile(spectr_dir,result)
+    result=data_list()
+    ReadSLHAFile(spectr_dir,result,block_format=new_ReadBlock)
     omega_dir=spectr_dir.replace('spectr','omega')
     try:
         ReadSLHAFile(omega_dir,result)
     except:
         pass
-    result.ERROR=not bool(result.SPINFO[4])
+    result.ERROR=bool(result.SPINFO[4])
     result.constraints=[]
     for constraint in result.SPINFO[3]:
         for const in ignore:

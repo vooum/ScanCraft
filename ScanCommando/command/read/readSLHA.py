@@ -14,7 +14,7 @@ scalar_groups={
     'SUSY_input':   ['MINPAR','EXTPAR'],
     'additional':   ['NMSSMRUN','MSOFT'],
     'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LOWEN'],
-    'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT']
+    'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT','INDIRECT_CHISQURES']
 }
 scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]# for Spheno
 
@@ -81,7 +81,7 @@ def PassLine(*args):
     return {}
 
 
-def ReadSLHAFile(file_name,sample=None):#read information in file_name and store in sample.
+def ReadSLHAFile(file_name,sample=None,block_format=ReadBlock):#read information in file_name and store in sample.
     if sample==None:
         sample=data_list()
     read=PassLine
@@ -101,12 +101,12 @@ def ReadSLHAFile(file_name,sample=None):#read information in file_name and store
                 bi=semanteme[1].upper()
                 if not hasattr(sample,bi): setattr(sample,bi,{})
                 data_dict=getattr(sample,bi)
-                if bi in ReadBlock.block_types.keys():
-                    #print(ReadBlock.block_types)###
-                    read=getattr(ReadBlock,ReadBlock.block_types[bi])
+                if bi in block_format.block_types.keys():
+                    #print(block_format.block_types)###
+                    read=getattr(block_format,block_format.block_types[bi])
                 else:
-                    if hasattr(ReadBlock,bi):
-                        data_dict.update(getattr(ReadBlock,bi)(text))
+                    if hasattr(block_format,bi):
+                        data_dict.update(getattr(block_format,bi)(text))
                         text.i-=1
                     read=PassLine
             elif str(semanteme[0]).upper()=='DECAY':
@@ -114,7 +114,7 @@ def ReadSLHAFile(file_name,sample=None):#read information in file_name and store
                 sample.DECAY[di]={}
                 data_dict=sample.DECAY[di]
                 data_dict['width']=float(semanteme[2])
-                read=ReadBlock.ReadDecay
+                read=block_format.ReadDecay
             else:
                 try:
                     data_dict.update(read(line))

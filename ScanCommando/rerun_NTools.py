@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 import sys,os,re,copy,shutil
-sys.path.append('/home/vooum/Desktop/ScanCommando')
+sys.path.append('/home/heyangle/Desktop/ScanCommando/ScanCommando')
 
 from command.read.readSLHA import *
 from command.NMSSMTools import *
 from command.Experiments.directdetection import *
 from command.outputfile import *
 from command.scan import scan
+from command.operations.GetFiles import GetFiles
+from command.MicrOMEGAs import MicrOMEGAs
+
 
 print(sys.argv)
 
@@ -15,6 +18,7 @@ ignore=[ 'Landau Pole'
         ,'Muon magn. mom.'
         ,'b -> c tau nu'
         ,'direct detection'
+        ,'b -> c tau nu'#58 always keep alive
         ]
 
 free=scan()
@@ -37,14 +41,15 @@ free.Add('mu_eff','EXTPAR'  ,65,100.,1500.)
 free.Add('MA','EXTPAR',124,	0.,	2.e3)
 
 if len(sys.argv)==1:
-    key='mcmc'
+    similarity='mcmc'
 else:
-    if sys.argv[1][-1]=='/':
-        key=sys.argv[1][:-1]
-    else:
-        key=sys.argv[1]
+    # if sys.argv[1][-1]=='/':
+    #     key=sys.argv[1][:-1]
+    # else:
+    #     key=sys.argv[1]
+    similarity=sys.argv[1].rstrip('/')
 if len(sys.argv)==3:
-    OutSteam=sys.argv[2]
+    OutSteam=sys.argv[2].rstrip('/')
 elif len(sys.argv)>3:
     exit('too much argv(argument value)s')
 else:
@@ -58,40 +63,58 @@ except:
     pass
 Data=DataFile(Dir=OutSteam)
 
-spectrs={}
-record='record'
-for dirs in os.listdir():
-    spectri=[]
-    if key in dirs and os.path.isdir(dirs):
-        for files in os.listdir(os.path.join(dirs,record)):
-            #if files=='spectr.0':continue
-            name=os.path.join(os.getcwd(),dirs,record,files)
-            if 'spectr' in files and os.path.isfile(name) and 'from' not in files:
-                spectri.append(name)
-        spectri.sort(key=lambda x: int(re.findall(r'\d+',x)[-1]))
-        spectrs[dirs]=spectri
+directory_list=GetFiles('./',similarity=similarity)
+input_list=[]
+print(
+'getting documents from:'
+)
+for directory in directory_list:
+    print('   ',directory)
+    if os.path.isdir( os.path.join(directory,'record') ):
+        input_list_i=GetFiles(os.path.join(directory,'record'),similarity='inp')
+    else:
+        input_list_i=GetFiles(directory,similarity='inp')
+    input_list.extend(input_list_i)
+total=len(input_list)
+print(total,' found:\n',input_list[:5],'...')
 
-L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
-L_Psd=DirectDetection('PandaX_Psd_2016.txt')
-L_Psi=DirectDetection('LUX201608_Psi.txt')
+# L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
+# L_Psd=DirectDetection('PandaX_Psd_2016.txt')
+# L_Psi=DirectDetection('LUX201608_Psi.txt')
 
 N=NMSSMTools(data_dir=OutSteam)
-N.output_file='spectr_MG'
-outNumber=0
-for dirs in spectrs.keys():
-    for files in spectrs[dirs]:
-        free.GetValue(files)
-        spectr=N.Run(free,ignore=ignore)
-        if spectr.ERROR:print(spectr.SPINFO);continue
-        if len(spectr.constraints)>0:print(spectr.SPINFO);continue
+MOmega=MicrOMEGAs(data_dir=OutSteam)
 
-        inNumber=re.findall(r'\d+',files)[-1]
-        outNumber+=1   # reNumber
-        #outNumber=int(inNumber) #keep original Number
+outNumber=-1
+for ith,document in enumerate(input_list):
+    free.GetValue(document)
+    spectr=N.Run(free,ignore=ignore)
+    if spectr.ERROR:print(spectr.SPINFO);continue
+    if spectr.constraints:print(spectr.SPINFO);continue
 
-        Data.In('AllParameters.txt').record(spectr.MINPAR,spectr.EXTPAR,spectr.NMSSMRUN,Number=str(outNumber))
-        #Data.In('DarkMatter.txt').record({'DMRD':spectr.ABUNDANCE[4]},spectr.NDMCROSSSECT,Number=outNumber)
-        Data.In('Mass.txt').record(spectr.MASS,Number=outNumber)
+    omega=MOmega.Run(N.output_dir)
+    MOmega.IDD_X2()
 
-        N.Record(outNumber)
-        print('%i recorded'%outNumber)
+    X2_GCE_old=GCE(N.output_dir)
+    inNumber=re.findall(r'\d+',document)[-1]
+    outNumber+=1   # reNumber
+    #outNumber=int(inNumber) #keep original Number
+
+    for file_name in [
+        'MINPAR','EXTPAR','NMSSMRUN','MSOFT','HMIX','MASS',
+        'YD','YE','YU','TD','TE','TU','MSQ2','MSL2','MSD2','MSU2','MSE2',
+        'NDMCROSSSECT','ABUNDANCE','ANNIHILATION'
+        ]:
+        if hasattr(spectr,file_name):
+            Data.In(file_name).record(getattr(spectr,file_name))
+
+    for file_name in [
+        'NDMCROSSSECT','ABUNDANCE','INDIRECT_CHISQUARES','ANNIHILATION'
+        ]:
+        if hasattr(omega,file_name):
+            Data.In(file_name+'_O').record(getattr(omega,file_name))
+    N.Record(outNumber)
+    MOmega.Record(outNumber)
+
+
+    print('%i recorded, runing %ith, total %i'%(outNumber,ith+1,total))
