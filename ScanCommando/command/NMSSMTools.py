@@ -68,10 +68,35 @@ def Annihilation_in_omegas(text):
                     anni.update({tuple_f:semanteme[1]})
     return anni
 
+def read_ABUNDANCE_in_omegas(text):
+    DM={}#{'contribution_vSigma':[],'contribution_Omega':[]}
+    while True:
+        try:
+            line=text.NextLine()
+        except IndexError:
+            break
+        else:
+            if commented_out(line):
+                continue
+            semanteme=ReadLine(line)
+            try:
+                number=semanteme[0]
+            except IndexError:
+                continue
+            else:
+                if str(number).upper()=='BLOCK':
+                    break
+                # elif int(number)==6:
+                #     DM['contribution_vSigma'][tuple(semanteme[4:6])]=semanteme[6]
+                # elif int(number)==7:
+                #     DM['contribution_Omega'][tuple(semanteme[4:6])]=semanteme[6]
+                elif int(number)<5:
+                    DM[semanteme[0]]=semanteme[1]
+
 class new_ReadBlock(ReadBlock):
     SPINFO=output_information_of_NMSSMTools
     ANNIHILATION=Annihilation_in_omegas
-
+    ABUNDANCE=read_ABUNDANCE_in_omegas
 def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
     result=data_list()
     ReadSLHAFile(spectr_dir,result,block_format=new_ReadBlock)

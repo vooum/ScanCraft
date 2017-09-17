@@ -14,7 +14,7 @@ scalar_groups={
     'SUSY_input':   ['MINPAR','EXTPAR'],
     'additional':   ['NMSSMRUN','MSOFT'],
     'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LOWEN'],
-    'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT','INDIRECT_CHISQURES']
+    'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT','INDIRECT_CHISQUARES']
 }
 scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]# for Spheno
 

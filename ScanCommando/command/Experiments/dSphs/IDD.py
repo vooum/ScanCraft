@@ -177,5 +177,6 @@ for dwarf,j,e in dSphs_List:
     dSphs[dwarf]=set_dSphs(dwarf,j,e)
 print('')
 
-def X2_dSphs(E_dNdE_file,mDM,Omega,SigmaV):
+def X2_dSphs(E_dNdE_file,mDM,Omega,SigmaV):# <2.71/2
     return run_sample(E_dNdE_file,mDM,Omega,SigmaV)
+

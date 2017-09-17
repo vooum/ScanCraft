@@ -43,10 +43,6 @@ free.Add('MA','EXTPAR',124,	0.,	2.e3)
 if len(sys.argv)==1:
     similarity='mcmc'
 else:
-    # if sys.argv[1][-1]=='/':
-    #     key=sys.argv[1][:-1]
-    # else:
-    #     key=sys.argv[1]
     similarity=sys.argv[1].rstrip('/')
 if len(sys.argv)==3:
     OutSteam=sys.argv[2].rstrip('/')
