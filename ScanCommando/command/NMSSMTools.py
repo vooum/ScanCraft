@@ -5,7 +5,7 @@ try:
     from .data_type import scalar,matrix
     from .read.readSLHA import ReadSLHAFile
 
-    from .read.readSLHA import ReadBlock
+    from .read.readSLHA import ReadBlock,scalar_list
     from .read.readline import commented_out,ReadLine
     from .data_type import data_list
 
@@ -14,6 +14,8 @@ except:
     raise
     pass
 
+scalar_list.append('LHCCROSSSECTIONS')
+# print(scalar_list)
 
 def output_information_of_NMSSMTools(text):
     semanteme=ReadLine(text.lines[text.i])
