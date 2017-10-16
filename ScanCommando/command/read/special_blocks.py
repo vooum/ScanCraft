@@ -1,6 +1,12 @@
 #! /usr/bin/env python3
 from .readline import commented_out,ReadLine
 
+'''
+including:
+    HiggsBoundsInputHiggsCouplingsBosons
+    Annihilation
+'''
+
 class special_blocks():
     def HIGGSBOUNDSINPUTHIGGSCOUPLINGSBOSONS(text):
         eff_C={}        

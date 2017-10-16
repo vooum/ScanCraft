@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-import sys,copy,random,math,subprocess,shutil
+import sys,os,re,copy,shutil,subprocess,random,math
+sys.path.append('/home/heyangle/Desktop/ScanCommando/ScanCommando')
 
-from command.data_type import *
-from command.NMSSMTools import NMSSMTools
-from command.MicrOMEGAs import MicrOMEGAs
 from command.scan import scan
-from command.chisqure import *
-from command.outputfile import *
-
-#from command.operations.getpoint import GetPoint
+from command.NMSSMTools import NMSSMTools
+from command.operations.getpoint import GetPoint
 from command.Experiments.directdetection import DirectDetection
-#from GCE.GCE import chisq_GCE as GCE
+from command.chisqure import *
+from command.data_type import *
+# from command.MicrOMEGAs import MicrOMEGAs
+from command.outputfile import *
 #print([ i for i in globals().keys() if '__' not in i])
 
 
 # settings
-ism='all'
+ism='M_h2'
+mh=[mh[0],3,3]
 target_number=1000
-step_factor=.2 # sigma = n% of (maximum - minimum) of the free parameters
-slop_factor=.3 # difficulty of accepting a new point with higher chisq
+step_factor=.1 # sigma = n% of (maximum - minimum) of the free parameters
+slop_factor=1.1 # difficulty of accepting a new point with higher chisq
 ignore=[ 'Landau Pole'#27
         ,'relic density'#30
         ,'b->s gamma'#32
@@ -33,8 +33,7 @@ ignore=[ 'Landau Pole'#27
 #print(mcmc.Scan)
 
 free=scan()
-#free.add(name,block,PDG,min,max,walk='flat',step=None,value=None)
-free.Add('tanB','MINPAR',3,2.,60.)
+free.Add('tanB','MINPAR',3,1.,60.)
 free.Add('M1','EXTPAR',1  ,20.    ,1000.)
 free.Add('M2'	,'EXTPAR'   ,2  ,100.    ,2000.)
 free.Add('Atop'	,'EXTPAR'   ,11  ,  -6e3    ,6e3)
@@ -51,29 +50,17 @@ free.Add('A_kappa','EXTPAR' ,64,-3.e3,3.e3)
 free.Add('mu_eff','EXTPAR'  ,65,100.,1500.)
 free.Add('MA','EXTPAR',124,	0.,	2.e3)
 
-#print(free.block_list);exit()
-
-L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
-L_Psd=DirectDetection('PandaX_Psd_2016.txt')
-L_Psi=DirectDetection('LUX201608_Psi.txt')
-
-rec_list=open('./mcmc/record_list','w')
-rec_X2=open('./mcmc/record_chisq','w')
-rec_full=open('./mcmc/record_full','w')
+N=NMSSMTools()
+free.GetValue('inp.dat')
+print('Start point is:')
+newpoint=copy.deepcopy(free)
+newpoint.Print()
 
 Data=DataFile(Dir='mcmc')
 
-N=NMSSMTools(in_model='inpZ3.dat')
-free.GetValue('inp.dat')
-print('Start point is:')
-for name,par in free.variable_list.items():
-    print(name,par.block,par.PDG,par.value)
-
-newpoint=copy.deepcopy(free)
-
 record_number=-1
 try_point=0
-last_chisq=1e50
+last_chisq=1e10
 # scan ==================================================================
 while record_number < target_number:
     try_point+=1
@@ -82,37 +69,31 @@ while record_number < target_number:
     if try_point>1e10:break
 
     spectr=N.Run(newpoint,ignore=ignore)
+
     if spectr.ERROR:
         newpoint=free.GetNewPoint(step_factor)
+        print(spectr.SPINFO)
         continue
     
     chisq_list={}
 
     chisq_list['constraints']=len(spectr.constraints)*1e4
-    chisq_list['h_sm']=min(chi2(spectr.MASS[25],mh),chi2(spectr.MASS[35],mh))
-    chisq_list['bsg']=chi2(spectr.LOWEN[1]*1e4,bsg)
+    chi_h1=chi2(spectr.MASS[25],mh)
+    chi_h2=chi2(spectr.MASS[35],mh)
+    if 'h1' in ism.lower():
+        chisq_list['h_sm']=chi_h1
+    elif 'h2' in ism.lower():
+        chisq_list['h_sm']=chi_h2
+    else:     
+        chisq_list['h_sm']=min(chi_h1,chi_h2)    chisq_list['bsg']=chi2(spectr.LOWEN[1]*1e4,bsg)
     chisq_list['bmu']=chi2(spectr.LOWEN[4]*1e9,bmu)
-
-    if hasattr(spectr,'ABUNDANCE'):
-        omg=spectr.ABUNDANCE[4]
-        eps=omg/0.1197
-        chisq_list['DMRD']=X2(OMG=omg)#chi2(r.DM['DMRD'],omg)
-    else:
-        chisq_list['DMRD']=1e4
-    if hasattr(spectr,'NDMCROSSSECT'):
-        for name,ID,DDexp in [ ['csPsi',1,L_Psi],['csPsd',3,L_Psd],['csNsd',4,L_Nsd] ]:
-            cs=abs(spectr.NDMCROSSSECT[ID])*eps
-            limit=DDexp.value(spectr.LSP[0])
-            if cs>limit:
-                chisq_list[name]=((cs-limit)/limit)**2/10.
-
-    
-    #         chisq_Q['GCE']=(max(GCE(N.spectrDir)-20.,0))**2
-    #         print(chisq_Q['GCE'])#;exit()
-    
+    chisq_list['LHCfit']=sum(spectr.LHCFIT.values())
     chisq=sum(chisq_list.values())
+
+    #   record point
     if (random.random() < math.exp(max(slop_factor * min( last_chisq-chisq,0.),-745))
-    	or chisq<10.):
+        # or chisq<10.
+        ):
         last_chisq=chisq
         free=newpoint
         print(record_number,'points recorded.\n')
@@ -126,7 +107,17 @@ while record_number < target_number:
         record_number+=1
         N.Record(record_number)
 
-        Data.In('AllParameters.txt').record(spectr.MINPAR,spectr.EXTPAR,spectr.NMSSMRUN)
-        Data.In('Mass.txt').record(spectr.MASS)
         Data.In('Chisqure.txt').record({'Total':chisq},chisq_list)
+
+        for file_name in [
+            'MINPAR','EXTPAR','NMSSMRUN','MSOFT','HMIX','MASS',
+            'YD','YE','YU','TD','TE','TU','MSQ2','MSL2','MSD2','MSU2','MSE2',
+            'NDMCROSSSECT','ABUNDANCE','ANNIHILATION'
+            ]:
+            if hasattr(spectr,file_name):
+                Data.In(file_name).record(getattr(spectr,file_name))
+    else:
+        print(chisq,chisq_list,'unphysical')
     newpoint=free.GetNewPoint(step_factor)
+
+    
