@@ -16,4 +16,4 @@ def Higgs_CS(file_naame):
     data=GetCS(os.path.join(os.path.dirname(__file__),file_naame))
     mass=data[:,0]
     CS=data[:,1]
-    return interp1d(mass,CS,bounds_error=True)
+    return interp1d(mass,CS,bounds_error=True,fill_value='extrapolate')
