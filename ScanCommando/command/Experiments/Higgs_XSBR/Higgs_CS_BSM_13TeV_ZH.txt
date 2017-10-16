@@ -1,7 +1,3 @@
-#	ZH								
-#MH	Cross		Uncertainty					1+δEW	gg→ZH
-#	Section		Scale		PDF+αs	PDF	αs		(box diag.)
-#[GeV]	[pb]		pos [%]	neg [%]	[%]	[%]	[%]		[pb]
 10.00	1.064E+02	+1.3	-1.8	±2.2				
 15.00	6.773E+01	+0.9	-1.6	±2.1				
 20.00	4.639E+01	+0.8	-1.5	±2.1				

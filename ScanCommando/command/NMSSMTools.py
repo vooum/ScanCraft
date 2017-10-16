@@ -14,7 +14,7 @@ except:
     raise
     pass
 
-scalar_list.append('LHCCROSSSECTIONS')
+# scalar_list.append('LHCCROSSSECTIONS')
 # print(scalar_list)
 
 def output_information_of_NMSSMTools(text):
@@ -99,6 +99,7 @@ class new_ReadBlock(ReadBlock):
     SPINFO=output_information_of_NMSSMTools
     ANNIHILATION=Annihilation_in_omegas
     ABUNDANCE=read_ABUNDANCE_in_omegas
+    ReadBlock.block_types.update({'LHCCROSSSECTIONS':'Scalar'})
 def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
     result=data_list()
     ReadSLHAFile(spectr_dir,result,block_format=new_ReadBlock)
