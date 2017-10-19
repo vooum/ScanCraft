@@ -33,6 +33,32 @@ class special_blocks():
                 eff_C.update({tuple_p:v})
         return eff_C
 
+    def HIGGSBOUNDSINPUTHIGGSCOUPLINGSFERMIONS(text):
+        eff_C={}
+        while True:
+            try:
+                line=text.NextLine()
+            except IndexError:
+                break
+            else:
+                if commented_out(line):
+                    continue
+                semanteme=ReadLine(line)
+
+                try:
+                    v=max(semanteme[:2])
+                except IndexError:
+                    continue
+
+                if str(semanteme[0]).upper()=='BLOCK':
+                    break
+
+                np=int(semanteme[2])
+                tuple_p=tuple([int(i) for i in semanteme[3:3+np]])
+                eff_C.update({tuple_p:v})
+        return eff_C
+
+
     def ANNIHILATION(text):
         anni={}
         while True:
@@ -58,3 +84,6 @@ class special_blocks():
                 else:
                     anni[' '.join(semanteme[2:])]=semanteme[1]
         return anni
+
+# class general_blocks():
+#     def 
