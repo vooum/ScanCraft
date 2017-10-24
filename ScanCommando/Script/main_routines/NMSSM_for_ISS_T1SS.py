@@ -27,7 +27,7 @@ mcmc=scan()
 mcmc.Add('tanB',    'MINPAR',3,1,40)
 mcmc.Add('Lambda',  'EXTPAR',61,1e-5,1.,pace='normal')
 mcmc.Add('Kappa',   'EXTPAR',62,1e-5,1.,pace='normal')
-mcmc.Add('MuEff',   'EXTPAR',65,1e2,1.5e3)
+# mcmc.Add('MuEff',   'EXTPAR',65,1e2,1.5e3)
 mcmc.Add('T_Lambda','NMSSMRUNIN',3,-2e3,2e3,pace='normal')
 mcmc.Add('T_Kappa', 'NMSSMRUNIN',4,-1e3,1e3,pace='normal')
 
@@ -88,7 +88,7 @@ while record_number < target_number:
     chisq_list['HS']=abs(math.log(hs.Pvalue))
 
     chisq_list['h1']=max( (spectr.MASS[25]-75.)**2-25. , 0.)
-    chisq_list['A1']=max( (spectr.MASS[36]-180.)**2)-400. , 0. )
+    chisq_list['A1']=max( (spectr.MASS[36]-180.)**2-400. , 0. )
 
 
 
