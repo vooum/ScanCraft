@@ -87,6 +87,11 @@ while record_number < target_number:
     chisq_list['HB']=(max(hb.obsratio,1)-1.)*100.+5.
     chisq_list['HS']=abs(math.log(hs.Pvalue))
 
+    chisq_list['h1']=max( (spectr.MASS[25]-75.)**2-25. , 0.)
+    chisq_list['A1']=max( (spectr.MASS[36]-180.)**2)-400. , 0. )
+
+
+
     chisq=sum(chisq_list.values())
     if (random.random() < math.exp(max(slop_factor * min( last_chisq-chisq,0.),-745))
     	or chisq<10.):

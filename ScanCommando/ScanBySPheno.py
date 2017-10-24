@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 import sys,copy
-sys.path.append('/home/vooum/Desktop/ScanCommando')
+sys.path.append('/home/heyangle/Desktop/ScanCommando/ScanCommando')
 
 from command.data_type import *
 from command.SPheno import SPheno

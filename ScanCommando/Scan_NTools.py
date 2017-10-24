@@ -7,6 +7,7 @@ from command.NMSSMTools import NMSSMTools
 from command.operations.getpoint import GetPoint
 from command.Experiments.directdetection import DirectDetection
 from command.chisqure import *
+mh=[125.09, 3., 3.]
 from command.data_type import *
 # from command.MicrOMEGAs import MicrOMEGAs
 from command.outputfile import *
@@ -15,7 +16,6 @@ from command.outputfile import *
 
 # settings
 ism='M_h2'
-mh=[mh[0],3,3]
 target_number=1000
 step_factor=.1 # sigma = n% of (maximum - minimum) of the free parameters
 slop_factor=1.1 # difficulty of accepting a new point with higher chisq
@@ -85,7 +85,8 @@ while record_number < target_number:
     elif 'h2' in ism.lower():
         chisq_list['h_sm']=chi_h2
     else:     
-        chisq_list['h_sm']=min(chi_h1,chi_h2)    chisq_list['bsg']=chi2(spectr.LOWEN[1]*1e4,bsg)
+        chisq_list['h_sm']=min(chi_h1,chi_h2)
+    chisq_list['bsg']=chi2(spectr.LOWEN[1]*1e4,bsg)
     chisq_list['bmu']=chi2(spectr.LOWEN[4]*1e9,bmu)
     chisq_list['LHCfit']=sum(spectr.LHCFIT.values())
     chisq=sum(chisq_list.values())
