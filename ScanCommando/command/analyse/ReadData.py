@@ -63,7 +63,8 @@ class standard_form_data():
                 value_row=[int(row[0])]
                 for name_value in row[1:]:
                     nv_list=name_value.split(':')
-                    col_name.append(StringToIFT(nv_list[0]))
+                    # col_name.append(StringToIFT(nv_list[0]))
+                    col_name.append(nv_list[0])
                     value_row.append(StringToIFT(nv_list[1]))
             return DataFrame(numpy.array([value_row]),columns=col_name)
                         

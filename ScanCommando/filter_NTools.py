@@ -64,9 +64,9 @@ for directory in directory_list:
 total=len(input_list)
 print(total,' found:\n',input_list[:5],'...')
 
-L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
-L_Psd=DirectDetection('PandaX_Psd_2016.txt')
-L_Psi=DirectDetection('LUX201608_Psi.txt')
+# L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
+# L_Psd=DirectDetection('PandaX_Psd_2016.txt')
+# L_Psi=DirectDetection('LUX201608_Psi.txt')
 
 outNumber=-1
 for ith,document in enumerate(input_list):

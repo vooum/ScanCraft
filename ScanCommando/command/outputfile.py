@@ -1,14 +1,38 @@
 #!/usr/bin/env python3
 import os
-class outputfile:
-    def __init__(self,filename):
-        self.file=open(filename,'w')
-    def number(self,N):
-        self.file.write(N+'\t')
-    def Data(self,ParList):
-        for d in ParList:
-            self.file.write('\t'.join([(str(ii)+': '+str(d[ii])) for ii in sorted(d)])+'\t')
-        self.file.write('\n')
+
+def sorted_keys(key_list):
+    try:
+        return sorted(key_list)
+    except TypeError:
+        dict_by_type={}
+        for k in set([type(i) for i in key_list]):
+            dict_by_type[k]=[]
+        for i in key_list:
+            dict_by_type[type(i)].append(i)
+
+        try:
+            out=sorted(dict_by_type.pop(type('1')))
+        except KeyError:
+            out=[]
+
+        for i in dict_by_type.values():
+            out.extend(sorted(i))
+        return out
+        
+
+
+
+
+# class outputfile:
+#     def __init__(self,filename):
+#         self.file=open(filename,'w')
+#     def number(self,N):
+#         self.file.write(N+'\t')
+#     def Data(self,ParList):
+#         for d in ParList:
+#             self.file.write('\t'.join([(str(ii)+': '+str(d[ii])) for ii in sorted(d)])+'\t')
+#         self.file.write('\n')
 
 class OpenDataFile():
     def __init__(self,file):
@@ -28,7 +52,7 @@ class OpenDataFile():
         for d in Datalists:
             self.file.write('\t')
             if type(d) is dict:
-                self.file.write('\t'.join([(str(ii)+': '+str(d[ii])) for ii in sorted(d)]))
+                self.file.write('\t'.join([(str(ii)+': '+str(d[ii])) for ii in sorted_keys(d.keys()) ]))
             elif type(d) is str:
                 self.file.write(d)
             else:
@@ -45,6 +69,10 @@ class DataFile():
         self.Dir=Dir
         self.filelist=EmpytClass()#All file names are stored in this EmpytClass' attributes which will not conflict
     def In(self,filename):
-        if not hasattr(self.filelist,filename):
+        try:
+            data_file=getattr(self.filelist,filename)
+        except AttributeError:
             setattr(self.filelist,filename,OpenDataFile(os.path.join(self.Dir,filename)))
-        return getattr(self.filelist,filename)
+            data_file=getattr(self.filelist,filename)
+        finally:
+            return data_file
