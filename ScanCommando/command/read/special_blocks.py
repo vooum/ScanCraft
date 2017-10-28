@@ -58,6 +58,50 @@ class special_blocks():
                 eff_C.update({tuple_p:v})
         return eff_C
 
+    def HIGGSBOUNDSRESULTS(text):
+        HBresult={}
+        while True:
+            try:
+                line=text.NextLine()
+            except IndexError:
+                break
+            else:
+                if commented_out(line):
+                    continue
+                semanteme=ReadLine(line)
+
+                if str(semanteme[0]).upper()=='BLOCK':
+                    break
+                
+                if semanteme[1]==1:
+                    HBresult['channel'+str(int(semanteme[0]))]=int(semanteme[2])
+                elif semanteme[1]==2:
+                    HBresult['HBresult'+str(int(semanteme[0]))]=int(semanteme[2])
+                elif semanteme[1]==3:
+                    HBresult['obsratio'+str(int(semanteme[0]))]=semanteme[2]
+        return HBresult
+
+    def HIGGSSIGNALSRESULTS(text):
+        HSresult={}
+        while True:
+            try:
+                line=text.NextLine()
+            except IndexError:
+                break
+            else:
+                if commented_out(line):
+                    continue
+                semanteme=ReadLine(line)
+
+                if str(semanteme[0]).upper()=='BLOCK':
+                    break
+
+                if semanteme[0]==13:
+                    HSresult['Probability']=semanteme[1]
+                elif semanteme[0]==12:
+                    HSresult['X2_total']=semanteme[1]
+        return HSresult
+
 
     def ANNIHILATION(text):
         anni={}

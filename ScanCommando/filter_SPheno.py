@@ -37,9 +37,9 @@ for dirs in os.listdir():
         spectri.sort(key=lambda x: int(re.findall(r'\d+',x)[-1]))
         spectrs[dirs]=spectri
 
-L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
-L_Psd=DirectDetection('PandaX_Psd_2016.txt')
-L_Psi=DirectDetection('LUX201608_Psi.txt')
+# L_Nsd=DirectDetection('PandaX_Nsd_2016.txt')
+# L_Psd=DirectDetection('PandaX_Psd_2016.txt')
+# L_Psi=DirectDetection('LUX201608_Psi.txt')
 
 outNumber=-1
 
@@ -68,7 +68,7 @@ for dirs in spectrs.keys():
         outNumber+=1
         #Data.In('AllParameters.txt').record(spectr.MINPAR,spectr.EXTPAR,spectr.NMSSMRUN)
         for file_name in [
-            'MINPAR','EXTPAR','NMSSMRUN','MSOFT','HMIX','MASS',
+            'MINPAR','EXTPAR','NMSSMRUN','MSOFT','HMIX','MASS','NMNMIX'
             'YD','YE','YU','TD','TE','TU','MSQ2','MSL2','MSD2','MSU2','MSE2']:
             Data.In(file_name).record(getattr(spectr,file_name))
         

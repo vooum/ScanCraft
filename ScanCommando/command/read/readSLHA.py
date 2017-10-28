@@ -8,7 +8,7 @@ except:
     if __name__=='__main__':
         pass
     else:
-        pass#raise
+        raise
 
 scalar_groups={
     'SUSY_input':   ['MINPAR','EXTPAR'],
@@ -24,7 +24,8 @@ matrix_groups={
     'Triliner'  :   ['TD','TE','TU'],
     'SeeSaw'    :   ['LAMN',],
     'output'    :   ['YE','YU','YD',
-                     'HiggsLHC13','HiggsLHC14']
+                     'HiggsLHC13','HiggsLHC14',
+                     'NMNMIX']
 }
 matrix_groups['input']=[ i+'IN' for j in ['Mass','Triliner','SeeSaw'] for i in matrix_groups[j] ]# for Spheno
 
