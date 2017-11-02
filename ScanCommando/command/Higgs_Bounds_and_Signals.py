@@ -52,7 +52,9 @@ class HiggsBounds():
         semanteme=ReadLine(result.output_line)        
         result.HBresult=semanteme[7]
         result.obsratio=semanteme[9]
+        result.channel=semanteme[8]
         return result
+
         
 class HiggsSignals():
     def __init__(self,

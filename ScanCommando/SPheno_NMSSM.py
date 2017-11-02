@@ -41,7 +41,7 @@ mcmc.GetValue('./mcmc/SPheno.in')
 
 newpoint=copy.deepcopy(mcmc) #=mcmc.GetNewPoint()
 
-S=SPheno(main_routine='./bin/SPhenoNMSSM',in_model='SPheno.in',output_file='SPheno.spc.NMSSM')
+S=SPhSeno(main_routine='./bin/SPhenoNMSSM',in_model='SPheno.in',output_file='SPheno.spc.NMSSM')
 #M=MicrOMEGAs()
 HB=HiggsBounds(S.package_dir,mode='SARAH')
 HS=HiggsSignals(S.package_dir,mode='SARAH')
