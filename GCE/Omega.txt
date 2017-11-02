@@ -1,7 +1,0 @@
-# input file is:	../NMSSMTools_5.0.2/mcmcspectr.dat
-BLOCK DMRD
-     1	8.49996369e-02	# dark matter relic density
-     2	7.10105572e-01	# ratio omega_N/omega_0
-BLOCK IndirectDetection
-     0	3.07483747e-27	# total SigmaV
-     
