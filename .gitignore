@@ -1,3 +1,14 @@
+<<<<<<< HEAD
+NMSSMTools*/
+*.pyc
+mcmc/
+Analysed
+err.log
+.vs/
+*.pyproj
+*.user
+*.sln
+=======
 
 **.pyc
 /*
@@ -21,3 +32,4 @@
 #*.sln
 #GCE/micromegas*/
 #packages
+>>>>>>> Multi_Pack
