@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 NMSSMTools*/
 *.pyc
 mcmc/
@@ -7,3 +8,28 @@ err.log
 *.pyproj
 *.user
 *.sln
+=======
+
+**.pyc
+/*
+!.gitignore
+!README.md
+!/ScanCommando/
+/ScanCommando/*
+!/ScanCommando/command/
+!/ScanCommando/Script/
+!/ScanCommando/*.py
+
+
+#NMSSMTools*/
+#*.pyc
+#mcmc/
+#Analysed
+#err.log
+#.vs/
+#*.pyproj
+#*.user
+#*.sln
+#GCE/micromegas*/
+#packages
+>>>>>>> Multi_Pack
