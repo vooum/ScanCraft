@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 import sys,os,re,copy,shutil
-sys.path.append('/home/heyangle/Desktop/ScanCommando/ScanCommando')
+sys.path.append('/home/heyangle/Desktop/ScanCraft/ScanCraft')
 from command.Experiments.directdetection import DirectDetection
 from command.read.readSLHA import ReadFiles
 from command.Experiments.colliders import LHC
