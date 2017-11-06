@@ -14,10 +14,10 @@ class matrix_block():
     def __call__(self,element):
         return '_'.join(flat_to_str([self.name,element]))
         
-
+MINPAR={3:'tanB'}
 class SLHA():
-    MNPAR=list_block({3:'tanB'})
+    MINPAR=list_block(MINPAR)
     HMIX=matrix_block('Hmix')
 
 # try: SLHA.HMIX((3,3))
-#      SLHA.MNPAR(3)
+#      SLHA.MINPAR(3)
