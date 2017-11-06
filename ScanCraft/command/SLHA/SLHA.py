@@ -11,7 +11,7 @@ class list_block():
 class matrix_block():
     def __init__(self,name):
         self.name=name
-    def __call__(self,*element):
+    def __call__(self,element):
         return '_'.join(flat_to_str([self.name,element]))
         
 
