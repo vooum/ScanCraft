@@ -18,3 +18,6 @@ class matrix_block():
 class SLHA():
     MNPAR=list_block({3:'tanB'})
     HMIX=matrix_block('Hmix')
+
+# try: SLHA.HMIX((3,3))
+#      SLHA.MNPAR(3)
