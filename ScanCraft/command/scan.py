@@ -112,8 +112,8 @@ class scan():
             v=getattr(Random,old.pace)(old.value , old.minimum , old.maximum ,step_factor)
             new_point.scalar_list[name].value=v
         for name in self.follow_list.keys():
-            par=self.follow_list[name]
-            par.value=self.variable_list[par.follow].value
+            par=new_point.follow_list[name]
+            par.value=new_point.variable_list[par.follow].value
         for name in self.matrix_list.keys():
             old=self.matrix_list[name]
             for coords in old.element_list.keys():
