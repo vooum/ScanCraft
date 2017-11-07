@@ -140,6 +140,3 @@ class SLHA():
     GUTAU=matrix_block('GUTAU')
     GUTAD=matrix_block('GUTAD')
     GUTAE=matrix_block('GUTAE')
-    
-
-
