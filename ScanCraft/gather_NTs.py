@@ -8,6 +8,14 @@ from command.operations.GetFiles import GetFiles
 
 # from command.
 
+ignore=[ 'Landau Pole'
+        ,'relic density'
+        ,'Muon magn. mom.'
+        ,'b -> c tau nu'
+        ,'direct detection'
+        ,'b -> c tau nu'#58 always keep alive
+        ]
+
 if len(sys.argv)>3:
     exit('too much argv(argument value)s')
 
@@ -39,3 +47,10 @@ for directory in directory_list:
 total=len(input_list)
 print(total,' found:\n',input_list[:5],'...')
 
+for ith,document in enumerate(input_list):
+    if ith%100==1:
+        print('%i recorded, runing %ith, total %i'%(outNumber,ith+1,total))
+
+    spectr=ReadNMSSMToolsSpectr(document,ignore=ignore)
+    inNumber=re.findall(r'\d+',document)[-1]
+    outNumber+=1   # reNumber
