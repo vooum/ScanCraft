@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys,os,re,copy,shutil,subprocess,random,math
-sys.path.append('/home/heyangle/Desktop/ScanCommando/ScanCommando')
+sys.path.append('/home/heyangle/Desktop/ScanCraft/ScanCraft')
 
 from command.scan import scan
 from command.NMSSMTools import NMSSMTools
@@ -15,10 +15,10 @@ from command.outputfile import *
 
 
 # settings
-ism='M_h2'
+ism='all'
 target_number=1000
 step_factor=.1 # sigma = n% of (maximum - minimum) of the free parameters
-slop_factor=1.1 # difficulty of accepting a new point with higher chisq
+slop_factor=1. # difficulty of accepting a new point with higher chisq
 ignore=[ 'Landau Pole'#27
         ,'relic density'#30
         ,'b->s gamma'#32
@@ -51,7 +51,7 @@ free.Add('mu_eff','EXTPAR'  ,65,100.,1500.)
 free.Add('MA','EXTPAR',124,	0.,	2.e3)
 
 N=NMSSMTools()
-free.GetValue('inp.dat')
+free.GetValue('./mcmc/inp.dat')
 print('Start point is:')
 newpoint=copy.deepcopy(free)
 newpoint.Print()
@@ -118,7 +118,7 @@ while record_number < target_number:
             if hasattr(spectr,file_name):
                 Data.In(file_name).record(getattr(spectr,file_name))
     else:
-        print(chisq,chisq_list,'unphysical')
+        print(chisq,chisq_list,'discarded')
     newpoint=free.GetNewPoint(step_factor)
 
     
