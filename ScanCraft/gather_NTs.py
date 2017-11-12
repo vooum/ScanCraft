@@ -21,18 +21,22 @@ if len(sys.argv)>3:
 
 try:
     similarity=sys.argv[1].rstrip('/')
+except IndexError:
+    similarity='mcmc'
+    OutSteam='Analysed'
+else:
     try:
         OutSteam=sys.argv[2].rstrip('/')
     except:
         OutSteam='Analysed'
-except:
-    similarity='mcmc'    
+
+
 os.mkdir(OutSteam)
 AnalysedDir=os.path.join(OutSteam,'record')
 os.mkdir(AnalysedDir)
-Data=DataFile(Dir=OutSteam)
+# Data=DataFile(Dir=OutSteam)
 
-directory_list=GetFiles('./',similarity=similarity)
+directory_list=GetFiles('./',similarity=similarity,HasNumber=False)
 input_list=[]
 print(
 'getting documents from:'   #------------------
@@ -52,5 +56,11 @@ for ith,document in enumerate(input_list):
         print('%i recorded, runing %ith, total %i'%(outNumber,ith+1,total))
 
     spectr=ReadNMSSMToolsSpectr(document,ignore=ignore)
-    inNumber=re.findall(r'\d+',document)[-1]
-    outNumber+=1   # reNumber
+    # inNumber=re.findall(r'\d+',document)[-1]
+    # outNumber+=1   # reNumber
+
+    col_name=['No_']
+    value_row=[ith]
+    for block_name,block_dict in spectr.__dict__.items():
+        # print(block_name)
+        if 
