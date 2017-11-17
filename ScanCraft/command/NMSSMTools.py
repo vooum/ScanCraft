@@ -123,7 +123,9 @@ class NMSSMTools():
                     package_dir=None,
                     data_dir='mcmc/',
                     in_model='inp.dat',
-                    output_file='spectr.dat'):
+                    output_file='spectr.dat',
+                    clean=None
+                    ):
         if package_dir==None:
             package_dir=GetDir('NMSSMTools')
         elif not os.path.exists(package_dir):
@@ -141,13 +143,25 @@ class NMSSMTools():
         main_routine='./run'
         self.command=' '.join([main_routine,self.inp_file])
 
-        if os.path.exists(self.record_dir):
-            if input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']:
-                shutil.rmtree(self.record_dir)
+        # if os.path.exists(self.record_dir):
+        #     if input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']:
+        #         shutil.rmtree(self.record_dir)
+        #     else:
+        #         exit('folder record/ is not deleted')
+        try:
+            os.mkdir(self.record_dir)
+        except FileExistsError:
+            if clean==False:
+                pass
             else:
-                exit('folder record/ is not deleted')
-        os.mkdir(self.record_dir)
-    
+                if (clean==None and
+                    input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']
+                    ):
+                    shutil.rmtree(self.record_dir)
+                elif clean=='force':
+                    exit('folder record/ is not deleted')
+                os.mkdir(self.record_dir)
+            
     def Run(self,point,ignore=[]):
         # write input file for SPheno
         inp=open(self.inp_dir,'w')
