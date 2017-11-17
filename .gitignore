@@ -6,5 +6,6 @@
 /ScanCraft/*
 !/ScanCraft/command/
 !/ScanCraft/Script/
+!/ScanCraft/laboratory
 !/ScanCraft/*.py
 
