@@ -14,6 +14,6 @@ def merge(*capsules):
     return new_cps
 
 
-class shuttle():
-    def merge(self,*capsules):
-        self.cabin=merge(self.cabin,*capsules)
+# class shuttle():
+#     def merge(self,*capsules):
+#         self.cabin=merge(self.cabin,*capsules)

@@ -27,9 +27,16 @@ class scan():
         self.follow_list={}
         self.block_list={}
 
-        self.Add=self.AddMcmcScalar
-        self.AddMatrix=self.AddMcmcMatrix
-        self.GetNewPoint=self.GetNewPoint_mcmc
+        if method.lower()=='mcmc':
+            self.Add=self.AddMcmcScalar
+            self.AddMatrix=self.AddMcmcMatrix
+            self.GetNewPoint=self.GetNewPoint_mcmc
+        elif method.lower()=='random':
+            self.Add=self.AddMcmcScalar
+            self.AddMatrix=self.AddMcmcMatrix
+            self.GetNewPoint=
+
+
 
     def AddMcmcScalar(self,name,block,PDG,minimum=None,maximum=None,pace='normal',step_width=None,value=None):
         block=block.upper()
