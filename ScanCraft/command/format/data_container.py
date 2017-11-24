@@ -9,7 +9,7 @@ class capsule():
 def merge(*capsules):
     new_cps=capsule()
     for cps in capsules:
-        for key,value in cps.__dict__items():
+        for key,value in cps.__dict__.items():
             setattr(new_cps,key,value)
     return new_cps
 

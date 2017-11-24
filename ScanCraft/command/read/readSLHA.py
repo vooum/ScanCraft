@@ -4,6 +4,7 @@ try:
     from ..data_type import data_list
     from .readline import commented_out,ReadLine
     from .special_blocks import special_blocks
+    from ..format.data_container import capsule
 except:
     if __name__=='__main__':
         pass
@@ -82,9 +83,8 @@ def PassLine(*args):
     return {}
 
 
-def ReadSLHAFile(file_name,sample=None,block_format=ReadBlock):#read information in file_name and store in sample.
-    if sample==None:
-        sample=data_list()
+def ReadSLHAFile(file_name,block_format=ReadBlock):#read information in file_name and store in sample.
+    sample=capsule()
     read=PassLine
     text=content(file_name)
     if not hasattr(sample,'DECAY'): setattr(sample,'DECAY',{})

@@ -2,8 +2,10 @@
 import numpy,copy,math
 from .data_type import scalar,matrix
 from .read.readline import ReadLine
-from .color_print import *
+from .color_print import Error,Caution
 from .read.readSLHA import ReadSLHAFile
+from .strategies.free_parameter import independent_scalar,follower
+from .format.parameter_type import scalar
 
 class Random():
     def normal(mean,minimum,maximum,step_factor=1.):
@@ -24,19 +26,65 @@ class scan():
         self.variable_list={}
         self.scalar_list={}
         self.matrix_list={}
-        self.follow_list={}
+        self.follower_list={}
         self.block_list={}
+        self.method=method.lower()
 
-        if method.lower()=='mcmc':
+        if self.method=='mcmc':
             self.Add=self.AddMcmcScalar
             self.AddMatrix=self.AddMcmcMatrix
             self.GetNewPoint=self.GetNewPoint_mcmc
-        elif method.lower()=='random':
-            self.Add=self.AddMcmcScalar
-            self.AddMatrix=self.AddMcmcMatrix
-            self.GetNewPoint=
 
+    def AddToList(self,par):
+        if par.name in self.variable_list.keys():
+            Caution("parameter '%s' overridden"%name)
+        self.variable_list.update({par.name:par})
 
+        if type(par) is independent_scalar:
+            self.scalar_list.update({par.name:par})
+        elif type(par) is follower:
+            self.follower_list.update({par.name:par})
+
+        if par.block not in self.block_list.keys():
+            self.block_list.update({par.block:{}})
+        block_i=self.block_list[par.block]
+        block_i.update({par.code:par})
+
+    def AddScalar(self,name,block,code
+                ,minimum=None,maximum=None,value=None
+                ,prior_distribution=None
+                ,**args
+                ):
+        if prior_distribution==None:
+            prior_distribution={#defult prior
+            'random':'uniform','mcmc':'normal'
+            }[self.method]
+
+        scl=independent_scalar(
+            name,block,code,minimum,maximum
+            ,strategy=self.method
+            ,prior_distribution=prior_distribution
+            ,**args)
+        self.AddToList(scl)
+
+    def AddFollower(self,name,block,code,target):
+        if type(target) is str:
+            try:
+                target=self.variable_list[target]
+            except KeyError:
+                Error('variable %s do not exist'%target)
+        while isinstance(target,(follower)):
+            target=target.target
+        flw=follower(name,block,code,target)
+        self.AddToList(flw)
+    
+
+    def Sample(self):
+        for p in self.scalar_list.values():
+            p.Generate()
+        for p in self.follower_list.values():
+            p.Generate()
+    #========================
 
     def AddMcmcScalar(self,name,block,PDG,minimum=None,maximum=None,pace='normal',step_width=None,value=None):
         block=block.upper()
@@ -52,7 +100,7 @@ class scan():
         scl.pace=pace[0].lower()
         if scl.pace=='follow':
             scl.follow=pace[1]
-            self.follow_list[name]=scl
+            self.follower_list[name]=scl
         else:
             scl.minimum=minimum
             scl.maximum=maximum
@@ -118,8 +166,8 @@ class scan():
             old=self.scalar_list[name]
             v=getattr(Random,old.pace)(old.value , old.minimum , old.maximum ,step_factor)
             new_point.scalar_list[name].value=v
-        for name in self.follow_list.keys():
-            par=new_point.follow_list[name]
+        for name in self.follower_list.keys():
+            par=new_point.follower_list[name]
             par.value=new_point.variable_list[par.follow].value
         for name in self.matrix_list.keys():
             old=self.matrix_list[name]
@@ -131,8 +179,8 @@ class scan():
     def Print(self):
         for name in self.scalar_list.keys():
             print('\t',name,self.scalar_list[name].value)
-        for name in self.follow_list.keys():
-            print('\t',name,self.follow_list[name].value)
+        for name in self.follower_list.keys():
+            print('\t',name,self.follower_list[name].value)
         for name in self.matrix_list.keys():
             print('\t',name,self.matrix_list[name].element_list)
             
@@ -144,8 +192,8 @@ class scan():
         for name in self.scalar_list.keys():
             par=self.scalar_list[name]
             par.value=getattr(target,par.block)[par.PDG]
-        for name in self.follow_list.keys():
-            par=self.follow_list[name]
+        for name in self.follower_list.keys():
+            par=self.follower_list[name]
             par.value=self.variable_list[par.follow].value
         for name in self.matrix_list.keys():
             par=self.matrix_list[name]

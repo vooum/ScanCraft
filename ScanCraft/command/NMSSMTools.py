@@ -8,6 +8,7 @@ try:
     from .read.readSLHA import ReadBlock,scalar_list
     from .read.readline import commented_out,ReadLine
     from .data_type import data_list
+    from .format.data_container import merge
 
     from .color_print import ColorPrint,UseStyle,Error
 except:
@@ -101,13 +102,14 @@ class new_ReadBlock(ReadBlock):
     ABUNDANCE=read_ABUNDANCE_in_omegas
     ReadBlock.block_types.update({'LHCCROSSSECTIONS':'Scalar'})
 def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
-    result=data_list()
-    ReadSLHAFile(spectr_dir,result,block_format=new_ReadBlock)
+    result=ReadSLHAFile(spectr_dir,block_format=new_ReadBlock)
     omega_dir=spectr_dir.replace('spectr','omega')
     try:
-        ReadSLHAFile(omega_dir,result)
+        omg=ReadSLHAFile(omega_dir,result)
     except:
         pass
+    else:
+        result=merge(result,omg)
     result.ERROR=bool(result.SPINFO[4])
     result.constraints=[]
     for constraint in result.SPINFO[3]:
@@ -132,7 +134,7 @@ class NMSSMTools():
             Error('directory --%s-- not found, please check its path'%package_dir)
 
         self.package_dir=package_dir
-        self.inp_model_lines=open(os.path.join(data_dir,in_model),'r').readlines()
+        self.inp_model_lines=open(in_model,'r').readlines()
         self.inp_file='inp.dat'#-----------
         self.inp_dir=os.path.join(package_dir,self.inp_file)
         self.output_file=output_file
@@ -176,7 +178,7 @@ class NMSSMTools():
                         if type(block_i) is dict:
                             code_lenth=1
                             for PDG,p_i in block_i.items():
-                                code_list[tuple([PDG])]=[p_i.PDG,p_i.value]
+                                code_list[tuple([PDG])]=[p_i.code,p_i.value]
                         elif type(block_i) is matrix:
                             code_lenth=2
                             for index,element in block_i.element_list.items():
@@ -208,9 +210,17 @@ class NMSSMTools():
         return result
         
     def Record(self,number):
-        shutil.copy(self.inp_dir,os.path.join(self.record_dir,self.inp_file+'.'+str(int(number))))
-        shutil.copy(self.output_dir,os.path.join(self.record_dir,self.output_file+'.'+str(int(number))))
+        destination={
+            'input'     :os.path.join(self.record_dir,self.inp_file+'.'+str(int(number))),
+            'spectrum'  :os.path.join(self.record_dir,self.output_file+'.'+str(int(number)))
+        }
+        shutil.copy(self.inp_dir,destination['input'])
+        shutil.copy(self.output_dir,destination['spectrum'])
         try:
-            shutil.copy(self.output_omega_dir,os.path.join(self.record_dir,self.output_omega_file+'.'+str(int(number))))
+            omg_dir=os.path.join(self.record_dir,self.output_omega_file+'.'+str(int(number)))
+            shutil.copy(self.output_omega_dir,omg_dir)
         except:
             pass
+        else:
+            destination.update({'omega':omg_dir})
+        return destination
