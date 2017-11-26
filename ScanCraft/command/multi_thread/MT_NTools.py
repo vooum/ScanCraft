@@ -2,11 +2,10 @@
 import threading,sys,os,shutil,queue,copy,time
 from ..NMSSMTools import NMSSMTools
 from ..color_print import Error
+from ..format.data_structure_functions import FlatToList
 
 ore_lock=threading.Lock()
 number_lock=threading.Lock()
-
-FlatList=lambda x: sum(map(FlatList,x),[]) if isinstance(x,(list,tuple)) else [x]
 
 class NTools_thread(threading.Thread):
     def __init__(self,ID,sequence
@@ -109,9 +108,9 @@ class MT_NTools():
         print('All points done. Use %f hours'%((end_time-start_time)/3600))
         # return NT
         number=-1
-        self.sample_list  =FlatList([N_i.sample_list for N_i in self.NT])
-        self.accepted_list=FlatList([N_i.accepted_list for N_i in self.NT])
-        self.excluded_list=FlatList([N_i.excluded_list for N_i in self.NT])
+        self.sample_list  =FlatToList([N_i.sample_list for N_i in self.NT])
+        self.accepted_list=FlatToList([N_i.accepted_list for N_i in self.NT])
+        self.excluded_list=FlatToList([N_i.excluded_list for N_i in self.NT])
         for sample in self.sample_list:
             number+=1
             destinations={

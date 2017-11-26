@@ -1,31 +1,16 @@
 #!/usr/bin/env python3
 import pandas
 from ..format.data_container import capsule
+from .defult_parameter_order import input_parameter_list
 from ..scan import scan
 from ..color_print import Error
 
 FlatList=lambda x: sum(map(FlatList,x),[]) if isinstance(x,(list,tuple)) else [x]
 
-input_parameter_list=[
-    'tanB',
-    'M1',
-    'M2',
-    'Atop',
-    'Atau',
-    'MQ3L',
-    'MtopR',
-    'Lambda',
-    'Kappa',
-    'A_Lambda',
-    'A_kappa',
-    'mu_eff',
-    ]
-
-
 def CapsuleToPandas(capsule):
     pass
 
-def PointToPandas(*point_list,order=None):
+def InputToPandas(*point_list,order=None):
     PL=FlatList(point_list)
     flags=[(type(point) is scan) for point in PL]
     if not all([type(point) is scan for point in PL]):

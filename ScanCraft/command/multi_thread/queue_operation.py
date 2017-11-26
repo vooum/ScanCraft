@@ -1,11 +1,19 @@
 #! /usr/bin/env python3
 import queue,copy
 
-def GenerateQueue(mold,total_number=1000):
-    q=queue.Queue(total_number)
-    while not q.full():
+def FillQueue(q,mold,total_number=1e6,points=1000):
+    while (not q.full()) and (q.qsize()<total_number) and (points>0):
+        # print(q.full())
         point=copy.deepcopy(mold)
         point.Sample()
         q.put(point)
-        # q.put(copy.deepcopy(mold).Sample())
+        points-=1
+        # print(q.qsize())
     return q
+
+
+def GenerateQueue(mold,lenth=1000):
+    q=queue.Queue(lenth)
+    FillQueue(q,mold)
+    return q
+
