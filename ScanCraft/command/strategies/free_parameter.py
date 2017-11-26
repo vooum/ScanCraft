@@ -21,12 +21,12 @@ class independent_scalar(scalar,generators):
         self.check(**args)
         self.Generate=getattr(self,prior_distribution)
 
-    # def check(self,**args):
-    #     if self.strategy=='random':
-    #         if any([ getattr(self,i) is None for i in ('minimum','maximum')]):
-    #             Error('unknown bounds of parameter %s '%self.name)
-    #     else:
-    #         Error('Unknown strategy: %s'%self.strategy)
+    def check(self,**args):
+        if self.strategy=='random':
+            if any([ getattr(self,i) is None for i in ('minimum','maximum')]):
+                Error('unknown bounds of parameter %s '%self.name)
+        else:
+            Error('Unknown strategy: %s'%self.strategy)
 
 class follower(scalar):
     def __init__(self,name,block,code,target):

@@ -8,7 +8,6 @@ try:
     from .read.readSLHA import ReadBlock,scalar_list
     from .read.readline import commented_out,ReadLine
     from .data_type import data_list
-    from .format.data_container import merge
 
     from .color_print import ColorPrint,UseStyle,Error
 except:
@@ -109,7 +108,7 @@ def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
     except:
         pass
     else:
-        result=merge(result,omg)
+        result.Merge(omg)
     result.ERROR=bool(result.SPINFO[4])
     result.constraints=[]
     for constraint in result.SPINFO[3]:
@@ -124,7 +123,7 @@ class NMSSMTools():
     def __init__(self,
                     package_dir=None,
                     data_dir='mcmc/',
-                    in_model='inp.dat',
+                    input_mold='inp.dat',
                     output_file='spectr.dat',
                     clean=None
                     ):
@@ -134,7 +133,7 @@ class NMSSMTools():
             Error('directory --%s-- not found, please check its path'%package_dir)
 
         self.package_dir=package_dir
-        self.inp_model_lines=open(in_model,'r').readlines()
+        self.inp_mold_lines=open(input_mold,'r').readlines()
         self.inp_file='inp.dat'#-----------
         self.inp_dir=os.path.join(package_dir,self.inp_file)
         self.output_file=output_file
@@ -154,20 +153,21 @@ class NMSSMTools():
             os.mkdir(self.record_dir)
         except FileExistsError:
             if clean==False:
+                exit('folder record/ is not deleted')
+            elif clean==None:
+                if not input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']:
+                    exit('folder record/ is not deleted')
+            elif clean=='force':
                 pass
             else:
-                if (clean==None and
-                    input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']
-                    ):
-                    shutil.rmtree(self.record_dir)
-                elif clean=='force':
-                    exit('folder record/ is not deleted')
-                os.mkdir(self.record_dir)
+                Error('Unknown clean mode')
+            shutil.rmtree(self.record_dir)
+            os.mkdir(self.record_dir)
             
     def Run(self,point,ignore=[]):
         # write input file for SPheno
         inp=open(self.inp_dir,'w')
-        for line in self.inp_model_lines:
+        for line in self.inp_mold_lines:
             if not commented_out(line):
                 semanteme=ReadLine(line)
                 if str(semanteme[0]).upper()=='BLOCK':
@@ -210,17 +210,17 @@ class NMSSMTools():
         return result
         
     def Record(self,number):
-        destination={
+        destinations={
             'input'     :os.path.join(self.record_dir,self.inp_file+'.'+str(int(number))),
             'spectrum'  :os.path.join(self.record_dir,self.output_file+'.'+str(int(number)))
         }
-        shutil.copy(self.inp_dir,destination['input'])
-        shutil.copy(self.output_dir,destination['spectrum'])
+        shutil.copy(self.inp_dir,destinations['input'])
+        shutil.copy(self.output_dir,destinations['spectrum'])
         try:
             omg_dir=os.path.join(self.record_dir,self.output_omega_file+'.'+str(int(number)))
             shutil.copy(self.output_omega_dir,omg_dir)
         except:
             pass
         else:
-            destination.update({'omega':omg_dir})
-        return destination
+            destinations.update({'omega':omg_dir})
+        return destinations
