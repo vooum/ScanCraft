@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-import threading
-importsys
-importos
-importshutil
-importqueue
-importcopy
-importtime
+import threading,sys,os,shutil,queue,copy,time
 from ..NMSSMTools import NMSSMTools
 from ..color_print import Error
 from ..format.data_structure_functions import FlatToList
@@ -126,4 +120,4 @@ class MT_NTools():
                 'omega'     :os.path.join(self.record_dir,'omega.dat.' + str(number))
             }
             sample.MoveTo(destinations)
-        print('%i sample recorded in %s' % (number,self.record_dir))
+        print('%i sample recorded in %s' % (number+1,self.record_dir))

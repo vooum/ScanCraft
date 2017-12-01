@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import pandas
+import numpy,pandas
 from ..format.data_container import capsule
 from .defult_parameter_order import input_parameter_list
 from ..scan import scan
@@ -10,7 +10,7 @@ FlatList=lambda x: sum(map(FlatList,x),[]) if isinstance(x,(list,tuple)) else [x
 def CapsuleToPandas(capsule):
     pass
 
-def InputToPandas(*point_list,order=None):
+def InputToPandas(*point_list,order=None,title='input'):
     PL=FlatList(point_list)
     flags=[(type(point) is scan) for point in PL]
     if not all([type(point) is scan for point in PL]):
@@ -31,7 +31,7 @@ def InputToPandas(*point_list,order=None):
         par_array.append(array_row)
 
     col=pandas.MultiIndex.from_tuples(
-        [tuple(['input',par.block,par.code,par.name])
+        [tuple([title,par.block,par.code,par.name])
             for par in [point.scalar_list[n] for n in order]
         ],
         names=['title','block','code','name']
