@@ -32,7 +32,7 @@ MTN.run(ore_q)
 
 if len(MTN.accepted_list)>0:
     acc=I2P(MTN.accepted_list,title='accepted')
-    acc[('accepted','points','are','calculated')]=1
+    acc[('accepted','points','are','calculable')]=1
     acc.to_csv('accepted.csv')
 if len(MTN.excluded_list)>0:
     exc=I2P(MTN.excluded_list,title='excluded')

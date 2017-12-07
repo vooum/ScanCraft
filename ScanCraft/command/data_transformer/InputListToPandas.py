@@ -7,10 +7,7 @@ from ..color_print import Error
 
 FlatList=lambda x: sum(map(FlatList,x),[]) if isinstance(x,(list,tuple)) else [x]
 
-def CapsuleToPandas(capsule):
-    pass
-
-def InputToPandas(*point_list,order=None,title='input'):
+def InputListToPandas(*point_list,order=None,title='input'):
     PL=FlatList(point_list)
     flags=[(type(point) is scan) for point in PL]
     if not all([type(point) is scan for point in PL]):
