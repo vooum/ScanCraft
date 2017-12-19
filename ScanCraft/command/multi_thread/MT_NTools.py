@@ -40,10 +40,10 @@ class NTools_thread(threading.Thread):
             sample = self.N.Run(ore)
             
             if len(sample.SPINFO[4]) == 0:
+                self.number+=1
                 sample.documents = self.N.Record(self.number)
                 self.sample_list.append(sample)
                 self.accepted_list.append(ore)
-                self.number+=1
                 # sys.stdout.write(' '.join([
                 #     repr(i) for i in
                 #     [self.ID,'done',sample.MINPAR,'at',time.ctime(),len(self.sample_list)]
@@ -91,7 +91,7 @@ class MT_NTools():
         self.work_space = work_space
         self.package_mold = package_mold
 
-    def run(self,point_queue):
+    def Run(self,point_queue):
         self.NT = []
         for ID in range(self.threads):
             self.NT.append(NTools_thread(ID,point_queue
