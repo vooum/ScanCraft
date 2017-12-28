@@ -1,15 +1,15 @@
 #! /usr/bin/env python3
 
-try:
-    from ..data_type import data_list
-    from .readline import commented_out,ReadLine
-    from .special_blocks import special_blocks
-    from ..format.data_container import capsule
-except:
-    if __name__=='__main__':
-        pass
-    else:
-        raise
+# try:
+from ..data_type import data_list
+from .readline import commented_out,ReadLine
+from .special_blocks import special_blocks
+from ..format.data_container import capsule
+# except:
+#     if __name__=='__main__':
+#         pass
+#     else:
+#         raise
 
 scalar_groups={
     'SUSY_input':   ['MINPAR','EXTPAR'],
@@ -63,7 +63,6 @@ class ReadBlock(special_blocks):
             except:
                 return {}
 
-
     # def HIGGSBOUNDSRESULTS(line):
     #     print(line)
     #     if not commented_out(line):
@@ -83,7 +82,9 @@ def PassLine(*args):
     return {}
 
 
-def ReadSLHAFile(file_name,block_format=ReadBlock):#read information in file_name and store in sample.
+def ReadSLHAFile(file_name,block_format=None):#read information in file_name and store in sample.
+    if block_format is None:
+        block_format=ReadBlock
     sample=capsule()
     read=PassLine
     text=content(file_name)

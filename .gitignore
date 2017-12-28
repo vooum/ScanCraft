@@ -10,3 +10,4 @@
 !/ScanCraft/laboratory
 /ScanCraft/laboratory/*
 !/ScanCraft/laboratory/*.ipynb
+!/ScanCraft/laboratory/*.py

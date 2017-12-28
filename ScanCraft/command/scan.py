@@ -186,15 +186,14 @@ class scan():
             
 
     def GetValue(self,file_name):
-        target=data_list()
-        ReadSLHAFile(file_name,target)
+        target=ReadSLHAFile(file_name)
         #print(target.LAMN);exit()
         for name in self.scalar_list.keys():
             par=self.scalar_list[name]
-            par.value=getattr(target,par.block)[par.PDG]
+            par.value=getattr(target,par.block)[par.code]
         for name in self.follower_list.keys():
             par=self.follower_list[name]
-            par.value=self.variable_list[par.follow].value
+            par.value=par.target.value
         for name in self.matrix_list.keys():
             par=self.matrix_list[name]
             for coords in par.element_list.keys():
