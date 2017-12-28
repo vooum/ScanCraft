@@ -50,13 +50,11 @@ class NTools_thread(threading.Thread):
                 #     ])+'\n')
             else:
                 self.excluded_list.append(ore)
+                
                 # sys.stdout.write(' '.join([
                 #     repr(i) for i in
                 #     [self.ID,'excluded',sample.MINPAR[3],'at',time.ctime(),sample.SPINFO]
                 #     ])+'\n')
-
-            # number_lock.acquire() # LOCK-----------
-            # number_lock.release()
     def Clean(self):
         shutil.rmtree(self.N.record_dir)
         os.mkdir(self.N.record_dir)
