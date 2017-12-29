@@ -34,3 +34,7 @@ class follower(scalar):
         self.target=target
     def Generate(self):
         self.value=self.target.value
+
+class independent_matrix(matrix,generators):
+    def __init__(self, name, block, shape = None, value = None):
+        super().__init__(name, block, shape, value)

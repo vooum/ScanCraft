@@ -64,6 +64,8 @@ class scan():
         flw=follower(name,block,code,target)
         self.AddToList(flw)
     
+    def AddMatrix(self,name,block):
+        pass
 
     def Sample(self):
         for p in self.scalar_list.values():
