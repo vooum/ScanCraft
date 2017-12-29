@@ -1,25 +1,11 @@
 #!/usr/bin/env python3
 import numpy,copy,math
-from .data_type import scalar,matrix
-from .read.readline import ReadLine
-from .color_print import Error,Caution
-from .read.readSLHA import ReadSLHAFile
-from .strategies.free_parameter import independent_scalar,follower
-from .format.parameter_type import scalar
-
-class Random():
-    def normal(mean,minimum,maximum,step_factor=1.):
-        deviation=(maximum-minimum)/100.*step_factor
-        v=numpy.random.normal(mean,deviation)
-        return max( minimum, min( maximum, v ) )
-    def lognormal(mean,minimum,maximum,step_factor=1.):
-        log_mean=math.log(mean)
-        log_deviation=math.log(maximum/minimum)/100.*step_factor
-        v=numpy.random.lognormal(log_mean,log_deviation)
-        return max( minimum, min( maximum, v ) )
-
-class data_list():
-    pass
+# from .data_type import scalar,matrix
+from ..read.readline import ReadLine
+from ..color_print import Error,Caution
+from ..read.readSLHA import ReadSLHAFile
+from .free_parameter import independent_scalar,follower
+from ..format.parameter_type import scalar
 
 class scan():
     def __init__(self,method='mcmc'):
@@ -30,10 +16,10 @@ class scan():
         self.block_list={}
         self.method=method.lower()
 
-        if self.method=='mcmc':
-            self.Add=self.AddMcmcScalar
-            self.AddMatrix=self.AddMcmcMatrix
-            self.GetNewPoint=self.GetNewPoint_mcmc
+        # if self.method=='mcmc':
+        #     self.Add=self.AddMcmcScalar
+        #     self.AddMatrix=self.AddMcmcMatrix
+        #     self.GetNewPoint=self.GetNewPoint_mcmc
 
     def AddToList(self,par):
         if par.name in self.variable_list.keys():
@@ -85,46 +71,6 @@ class scan():
         for p in self.follower_list.values():
             p.Generate()
     #========================
-
-    def AddMcmcScalar(self,name,block,PDG,minimum=None,maximum=None,pace='normal',step_width=None,value=None):
-        block=block.upper()
-
-        # set one scalar
-        scl=scalar(name,block,PDG,value)
-        
-        # set scan strategy
-        pace=pace.split()
-        if pace[0].lower() not in ('normal','lognormal','follow'):
-            Caution("'pace' should be 'normal', 'lognormal' or 'follow name_of_target'")
-            exit()
-        scl.pace=pace[0].lower()
-        if scl.pace=='follow':
-            scl.follow=pace[1]
-            self.follower_list[name]=scl
-        else:
-            scl.minimum=minimum
-            scl.maximum=maximum
-
-            if step_width:
-                scl.step_width=step_width
-            else:
-                try:
-                    scl.step_width=(scl.maximum-scl.minimum)/100.
-                except TypeError:
-                    Caution(
-                        "  Both maximum and minimum of '%s' should be given with pace='%s'"%(name,pace[0])
-                    +   " if step width is not specified. Later, step width will be 1% of its initial value")
-
-            # add scalar into lists
-            self.scalar_list[name]=scl
-
-        if name in self.variable_list.keys():
-            Caution("scalar '%s' overridden"%name)
-        self.variable_list[name]=scl
-        if block not in self.block_list.keys():
-            self.block_list[block]={}
-        block_i=self.block_list[block]
-        block_i[PDG]=scl
     
     def AddMcmcMatrix(self,name,block,shape,free_element={},minimum=None,maximum=None,pace='normal',step_width=None,element_list={}):
         block=block.upper()
