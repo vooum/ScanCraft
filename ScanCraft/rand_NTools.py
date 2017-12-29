@@ -28,7 +28,7 @@ mold.AddScalar('mu_eff','EXTPAR'  ,65,100.,1500.)
 
 MTN=MT_NTools(threads=6)
 ore_q=GenerateQueue(mold,lenth=10)
-MTN.run(ore_q)
+MTN.Run(ore_q)
 
 if len(MTN.accepted_list)>0:
     acc=I2P(MTN.accepted_list,title='accepted')
