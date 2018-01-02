@@ -23,3 +23,11 @@ class capsule():
             for key in keys:
                 shutil.move(self.documents[key],destinations[key])
             self.documents.update(destinations)
+    def CopyTo(self,destinations):
+        keys=destinations.keys()
+        for key in keys:
+            try:
+                shutil.copy(self.documents[key],destinations[key])
+            except FileNotFoundError TypeError:
+                del destinations[key]
+        self.documents.update(destinations)

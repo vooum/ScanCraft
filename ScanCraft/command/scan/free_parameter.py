@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 from ..format.parameter_type import scalar,matrix
 from .generator import generators
 from ..color_print import Error
@@ -20,6 +21,10 @@ class independent_scalar(scalar,generators):
 
         self.check(**args)
         self.Generate=getattr(self,prior_distribution)
+    def print(self,out=None):
+        if out is None:
+            out=sys.stdout
+        out.write('\t%s\t%f\n'%(self.name,self.value))
 
     def check(self,**args):
         if self.strategy=='random':

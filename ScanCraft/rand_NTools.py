@@ -2,11 +2,11 @@
 
 import sys,pandas
 sys.path.append('/home/heyangle/Desktop/ScanCraft/ScanCraft')
-from command.scan import scan
+from command.scan.scan import scan
 from command.NMSSMTools import NMSSMTools
 from command.multi_thread.queue_operation import GenerateQueue#,FillQueue
 from command.multi_thread.MT_NTools import MT_NTools
-from command.data_transformer.ToPandas import InputToPandas as I2P
+from command.data_transformer.InputListToPandas import InputListToPandas as I2P
 
 mold=scan(method='random')
 mold.AddScalar('tanB','MINPAR',3,1.,60.)

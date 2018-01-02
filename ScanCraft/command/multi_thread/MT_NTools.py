@@ -27,15 +27,15 @@ class NTools_thread(threading.Thread):
         self.number = -1
     def run(self):
         while not self.sequence.empty():
+            ore_lock.acquire() # LOCK-----------            
             ore = self.sequence.get()
             # sys.stdout.write(' '.join([
             #     repr(i) for i in
             #     [self.ID,'runing',ore.variable_list['tanB'].value,'at',time.ctime()]
             #     ])+'\n')
             if self.sequence.qsize() % 100 == 0:
-                ore_lock.acquire() # LOCK-----------
                 sys.stdout.write("  thread-%i\truning, %8i points left at %s\n" % (self.ID,self.sequence.qsize(),time.ctime()))
-                ore_lock.release()
+            ore_lock.release()
             
             sample = self.N.Run(ore)
             
@@ -89,7 +89,7 @@ class MT_NTools():
         self.work_space = work_space
         self.package_mold = package_mold
 
-    def Run(self,point_queue):
+    def Run(self,point_queue,timeout=None):
         self.NT = []
         for ID in range(self.threads):
             self.NT.append(NTools_thread(ID,point_queue
@@ -102,7 +102,7 @@ class MT_NTools():
         for N_i in self.NT:
             N_i.start()
         for N_i in self.NT:
-            N_i.join()
+            N_i.join(timeout=timeout)
         end_time = time.time()
         print('All points done. Use %f hours' % ((end_time - start_time) / 3600))
         # return NT
@@ -117,5 +117,5 @@ class MT_NTools():
                 'spectrum'  :os.path.join(self.record_dir,'spectr.dat.' + str(number)),
                 'omega'     :os.path.join(self.record_dir,'omega.dat.' + str(number))
             }
-            sample.MoveTo(destinations)
+            sample.CopyTo(destinations)
         print('%i sample recorded in %s' % (number+1,self.record_dir))

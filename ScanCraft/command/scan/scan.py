@@ -10,10 +10,14 @@ from ..format.parameter_type import scalar
 class scan():
     def __init__(self,method='mcmc'):
         self.variable_list={}
+
         self.scalar_list={}
-        self.matrix_list={}
         self.follower_list={}
+        self.matrix_list={}
+        self.free_parameter_list={}
+
         self.block_list={}
+
         self.method=method.lower()
 
         # if self.method=='mcmc':
@@ -28,7 +32,9 @@ class scan():
 
         if type(par) is independent_scalar:
             self.scalar_list.update({par.name:par})
+            self.free_parameter_list.update({par.name:par})
         elif type(par) is follower:
+            self.scalar_list.update({par.name:par})
             self.follower_list.update({par.name:par})
 
         if par.block not in self.block_list.keys():

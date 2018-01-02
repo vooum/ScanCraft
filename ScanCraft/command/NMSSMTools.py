@@ -219,8 +219,8 @@ class NMSSMTools():
         try:
             omg_dir=os.path.join(self.record_dir,self.output_omega_file+'.'+str(int(number)))
             shutil.copy(self.output_omega_dir,omg_dir)
-        except:
-            pass
+        except FileNotFoundError:
+            destinations.update({'omega':None})
         else:
             destinations.update({'omega':omg_dir})
         return destinations
