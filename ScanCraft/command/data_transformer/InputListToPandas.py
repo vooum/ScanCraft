@@ -2,7 +2,7 @@
 import numpy,pandas
 from ..format.data_container import capsule
 from .defult_parameter_order import input_parameter_list
-from ..scan import scan
+from ..scan.scan import scan
 from ..color_print import Error
 
 FlatList=lambda x: sum(map(FlatList,x),[]) if isinstance(x,(list,tuple)) else [x]
@@ -10,7 +10,7 @@ FlatList=lambda x: sum(map(FlatList,x),[]) if isinstance(x,(list,tuple)) else [x
 def InputListToPandas(*point_list,order=None,title='input'):
     PL=FlatList(point_list)
     flags=[(type(point) is scan) for point in PL]
-    if not all([type(point) is scan for point in PL]):
+    if not all(flags):
         print(flags)
         Error('wrong type when interpreting input data into Pandas')
     

@@ -64,6 +64,6 @@ for sample in samples:
 
 input_list=[point.input for point in samples]
 input_table=I2P(input_list,title='accepted')
-input_table[('accepted','points','are','calculable')]=1
+input_table[('flags','binary','1/0_is/not','calculable')]=1
 
 input_table.to_csv(os.path.join('accepted.csv'))
