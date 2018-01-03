@@ -26,38 +26,28 @@ class NTools_thread(threading.Thread):
         self.excluded_list = []
         self.number = -1
     def run(self):
-        while not self.sequence.empty():
-            ore_lock.acquire() # LOCK-----------            
-            ore = self.sequence.get()
-            # sys.stdout.write(' '.join([
-            #     repr(i) for i in
-            #     [self.ID,'runing',ore.variable_list['tanB'].value,'at',time.ctime()]
-            #     ])+'\n')
-            if self.sequence.qsize() % 100 == 0:
-                sys.stdout.write("  thread-%i\truning, %8i points left at %s\n" % (self.ID,self.sequence.qsize(),time.ctime()))
-            ore_lock.release()
-            
-            sample = self.N.Run(ore)
-            
-            if len(sample.SPINFO[4]) == 0:
-                self.number+=1
-                sample.documents = self.N.Record(self.number)
-                self.sample_list.append(sample)
-                self.accepted_list.append(ore)
-                # sys.stdout.write(' '.join([
-                #     repr(i) for i in
-                #     [self.ID,'done',sample.MINPAR,'at',time.ctime(),len(self.sample_list)]
-                #     ])+'\n')
+        while True:  #not self.sequence.empty():
+            ore_lock.acquire() # LOCK-----------
+            if self.sequence.empty():
+                ore_lock.release()
+                break
             else:
-                self.excluded_list.append(ore)
+                ore = self.sequence.get()
+                if self.sequence.qsize() % 100 == 0:
+                    sys.stdout.write("  thread-%i\truning, %8i points left at %s\n" % (self.ID,self.sequence.qsize(),time.ctime()))
+                ore_lock.release()
                 
-                # sys.stdout.write(' '.join([
-                #     repr(i) for i in
-                #     [self.ID,'excluded',sample.MINPAR[3],'at',time.ctime(),sample.SPINFO]
-                #     ])+'\n')
-    def Clean(self):
-        shutil.rmtree(self.N.record_dir)
-        os.mkdir(self.N.record_dir)
+                sample = self.N.Run(ore)
+                
+                if len(sample.SPINFO[4]) == 0:
+                    self.number+=1
+                    sample.documents = self.N.Record(self.number)
+                    self.sample_list.append(sample)
+                    self.accepted_list.append(ore)
+                else:
+                    self.excluded_list.append(ore)
+        print(self.ID,'stop')
+        return
 
 class MT_NTools():
     def __init__(self,threads=2

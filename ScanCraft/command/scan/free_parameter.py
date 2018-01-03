@@ -40,6 +40,12 @@ class follower(scalar):
     def Generate(self):
         self.value=self.target.value
 
+class independent_element(independent_scalar):
+    pass
+
+
 class independent_matrix(matrix,generators):
-    def __init__(self, name, block, shape = None, value = None):
+    def __init__(self, name, block, shape = None, value = None, free_element_list=None):
         super().__init__(name, block, shape, value)
+        # if free_element_list:
+        #     for 

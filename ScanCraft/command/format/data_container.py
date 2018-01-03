@@ -28,6 +28,9 @@ class capsule():
         for key in keys:
             try:
                 shutil.copy(self.documents[key],destinations[key])
-            except FileNotFoundError TypeError:
-                del destinations[key]
+            except TypeError:
+                if self.documents[key] is None:
+                    destinations[key]=None
+                else:
+                    raise                
         self.documents.update(destinations)
