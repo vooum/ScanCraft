@@ -16,22 +16,32 @@ def SpectrumToPandas(*spectrum_list,title=None):
 
     # get column
     column_list=[]
+    block_code_list=[]
     for b_name in sorted(SL[0].__dict__.keys()):
         #c_i=[title]
-        b_dict=getattr(spec,b_name)
+        b_dict=getattr(SL[0],b_name)
+        if type(b_dict) is not dict:continue
         for code in sorted(b_dict.keys()):
-            c_i=[title,b_name,code,'']
-            if hasattr(block_table,b_name):
-                c_i[3]=getattr(block_table,b_name)(code)
-            column_list.append(tuple(c_i))
+            # if isinstance(code,(tuple,list)):
+            #     c_i[2]=repr(code)
+            # if hasattr(block_table,b_name):
+            try:
+                c_i=[title,b_name,repr(code),getattr(block_table,b_name)(code)]
+            except KeyError:
+                continue
+            except AttributeError:
+                continue
+            else:
+                column_list.append(tuple(c_i))
+                block_code_list.append((b_name,code))
     column_Pd=pandas.MultiIndex.from_tuples(column_list
-                                            ,name=['title','block','code','name']
+                                            ,names=['title','block','code','name']
                                             )
     # get data as array
     value_list=[]
     for spec in SL:
         row=[]
-        for title,b_name,code,name in column_list:
+        for b_name,code in block_code_list:
             row.append(getattr(spec,b_name)[code])
         value_list.append(row)
     # generate dataframe
