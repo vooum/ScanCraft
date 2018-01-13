@@ -47,5 +47,5 @@ class independent_element(independent_scalar):
 class independent_matrix(matrix,generators):
     def __init__(self, name, block, shape = None, value = None, free_element_list=None):
         super().__init__(name, block, shape, value)
-        # if free_element_list:
-        #     for 
+        self.free_elements={}
+        self.follower_elements={}

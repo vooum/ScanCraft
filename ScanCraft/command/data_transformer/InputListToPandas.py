@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 import numpy,pandas
+from ..format.data_structure_functions import FlatToList
 from ..format.data_container import capsule
 from .defult_parameter_order import input_parameter_list
 from ..scan.scan import scan
 from ..color_print import Error
 
-FlatList=lambda x: sum(map(FlatList,x),[]) if isinstance(x,(list,tuple)) else [x]
-
-def InputListToPandas(*point_list,order=None,title='input'):
-    PL=FlatList(point_list)
+def InputListToPandas(*point_list,order=None,title=None):
+    if title is None: title='input'
+    PL=FlatToList(point_list)
     flags=[(type(point) is scan) for point in PL]
     if not all(flags):
         print(flags)

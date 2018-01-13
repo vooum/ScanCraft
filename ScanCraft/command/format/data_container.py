@@ -14,7 +14,7 @@ class capsule():
     thus data can be accessed by .__dict__
     '''
     def Merge(self,*others):
-        return MergeAttributes(self,*others)
+        self.__dict__= MergeAttributes(self,*others).__dict__
     def MoveTo(self,destinations):
         keys=destinations.keys()
         if self.documents.keys()!=keys:

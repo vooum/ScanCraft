@@ -104,8 +104,8 @@ def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
     result=ReadSLHAFile(spectr_dir,block_format=new_ReadBlock)
     omega_dir=spectr_dir.replace('spectr','omega')
     try:
-        omg=ReadSLHAFile(omega_dir,result)
-    except:
+        omg=ReadSLHAFile(omega_dir,block_format=new_ReadBlock)
+    except FileNotFoundError:
         pass
     else:
         result.Merge(omg)

@@ -7,7 +7,7 @@ def GetDirectories(argv=None,path='./',keyword=None,numbered=None):
     candidate={}
     total=0
     for document in os.listdir(path):
-        if keyword in document:
+        if (keyword in document) and os.path.isdir(os.path.join(path,document)):
             try:
                 number=int(re.findall(r'\d+',document)[-1])
             except IndexError:
