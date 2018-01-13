@@ -10,7 +10,7 @@ class list_block():
 class matrix_block():
     def __init__(self,name):
         self.name=name
-    def __call__(self,element):
+    def __call__(self,*element):
         return '_'.join(str(i) for i in FlatToList([self.name,element]))  #例如self.name=Hmix,element=(3,3) 它们组成列表[Hmix,3,3],
 
 SMINPUTS={1:'ALPHA_EM^-1(MZ)',2:'GF',3:'ALPHA_S(MZ)',
