@@ -36,12 +36,6 @@ MASS={5:'MB',6:'MTOP',15:'MTAU',23:'MZ',24:'MW',
       1000015:'~tau_L',2000015:'~tau_R',1000016:'snu_3',1000021:'~g',
       1000022:'N1',1000023:'N2',1000025:'N3',1000035:'N4',1000045:'N5',
       1000024:'ch1',1000037:'ch2',1000039:'gravitino'}
-LOWEN={1:'BR(b->s_gamma)',11:'BR(b->s_gamma+Theor_Err)',12:'BR(b->s_gamma-Theor_Err)',
-       2:'DeltaM_d_ps^-1',21:'DeltaM_d+Theor_Err',22:'DeltaM_d-Theor_Err',
-       3:'DetaM_s',31:'DeltaM_s+Theor_Err',32:'DeltaM_s-Theor_Err',
-       4:'BR(Bs->mu+mu-)',41:'BR(Bs->mu+mu-)+Theor_Err',42:'BR(Bs->mu+mu-)-Theor_Err',
-       5:'BR(B+->tau+nu_tau)',51:'BR(B+->tau+nu_tau)+Theor_Err',52:'BR(B+->tau+nu_tau)-Theor_Err',
-       6:'Del_a_mu',61:'Del_a_mu+Theor_Err',62:'Del_a_mu-Theor_Err'}
 HMIX={1:'MUEFF',2:'tanB',3:'VQ',4:'MA^2',5:'MP^2'}
 GAUGE={1:'g1',2:'g2',3:'g3'}
 MSOFT={1:'M1',2:'M2',3:'M3',21:'M_HD',22:'M_HU',31:'M_eL',32:'M_muL',33:'M_tauL',
