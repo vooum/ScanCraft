@@ -90,7 +90,6 @@ class SLHA():
     MINPAR=list_block(MINPAR)
     EXTPAR=list_block(EXTPAR)
     MASS=list_block(MASS)
-    LOWEN=list_block(LOWEN)
     HMIX=list_block(HMIX)
     GAUGE=list_block(GAUGE)
     NMSSMRUN=list_block(NMSSMRUN)
