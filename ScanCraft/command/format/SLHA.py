@@ -4,13 +4,13 @@ from .data_structure_functions import FlatToList
 class list_block():
     def __init__(self,PDG_name_dict):
         self.PDG_name_dict=PDG_name_dict
-    def __call__(self,number):
-        return self.PDG_name_dict[number]
+    def __call__(self,code,default=None):
+        return self.PDG_name_dict.get(code,default)
             
 class matrix_block():
     def __init__(self,name):
         self.name=name
-    def __call__(self,*element):
+    def __call__(self,*element,**key_value):
         return '_'.join(str(i) for i in FlatToList([self.name,element]))  #例如self.name=Hmix,element=(3,3) 它们组成列表[Hmix,3,3],
 
 SMINPUTS={1:'ALPHA_EM^-1(MZ)',2:'GF',3:'ALPHA_S(MZ)',

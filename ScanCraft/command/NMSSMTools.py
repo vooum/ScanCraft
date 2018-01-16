@@ -63,7 +63,8 @@ def Annihilation_in_omegas(text):
                 if str(number).upper()=='BLOCK':
                     break
                 elif int(number)==0:
-                    anni.update({(0,0):semanteme[1]})
+                    #anni.update({(0,0):semanteme[1]})
+                    anni['SigmaV']=semanteme[1]
                 else:
                     nf=int(semanteme[2])
                     tuple_f=tuple([int(i) for i in semanteme[3:3+nf]])

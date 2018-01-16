@@ -9,6 +9,19 @@ LOWEN={1:'BR(b->s_gamma)',11:'BR(b->s_gamma+Theor_Err)',12:'BR(b->s_gamma-Theor_
        5:'BR(B+->tau+nu_tau)',51:'BR(B+->tau+nu_tau)+Theor_Err',52:'BR(B+->tau+nu_tau)-Theor_Err',
        6:'Del_a_mu',61:'Del_a_mu+Theor_Err',62:'Del_a_mu-Theor_Err'}
 
+ABUNDANCE={}
+
+NDMCROSSSECT={
+    1:'csPsi',2:'csNsi',3:'csPsd',4:'csNsd'
+}
+
+ANNIHILATION={
+}
+
+
+
 class NMSSMTools_blocks():
     LOWEN=list_block(LOWEN)
-    
+    NDMCROSSSECT=list_block(NDMCROSSSECT)
+    ANNIHILATION=list_block(ANNIHILATION)
+    ABUNDANCE=list_block(ABUNDANCE)
