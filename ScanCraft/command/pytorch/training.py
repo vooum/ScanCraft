@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-
+import pandas,numpy
 from .classify import Classify
+from .calculate import Calculate
 from .normalize import GetRanges
 from ..format.data_container import capsule
 from ..scan.scan import scan
@@ -13,7 +14,10 @@ class Training():
             self.Classify=model
         if type(calculate_model) is str:
             self.Calculate=torch.load(calculate_model)
-        elif type(calculate_model) is 
+        elif type(calculate_model) is Calculate:
+            self.Calculate=calculate_model
         self.mold=mold
         self.data_range=GetRanges(mold.free_parameter_list)
-    def AddData(self,input_points,spectrums):
+        self.excluded=numpy.array([])
+        self.accepted=numpy.array([])
+    def AddData(self,accepted_points=None,spectrums=None,excluded_points=None):

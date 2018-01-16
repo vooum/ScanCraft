@@ -20,3 +20,4 @@ class Classify(nn.Module):
         x=torch.nn.functional.sigmoid(x)
         return x
 
+BCEloss=nn.BCEWithLogitsLoss()
