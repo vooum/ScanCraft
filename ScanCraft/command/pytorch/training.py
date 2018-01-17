@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Not Finished
 import pandas,numpy
 from .classify import Classify
 from .calculate import Calculate
@@ -20,4 +21,6 @@ class Training():
         self.data_range=GetRanges(mold.free_parameter_list)
         self.excluded=numpy.array([])
         self.accepted=numpy.array([])
-    def AddData(self,accepted_points=None,spectrums=None,excluded_points=None):
+    def SetData(self,accepted_points=None,spectrums=None,excluded_points=None):
+        if accepted_points is not None:
+            pass
