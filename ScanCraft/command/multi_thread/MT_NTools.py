@@ -33,7 +33,7 @@ class NTools_thread(threading.Thread):
                 break
             else:
                 ore = self.sequence.get()
-                if self.sequence.qsize() % 100 == 0:
+                if self.sequence.qsize() % 1000 == 0:
                     sys.stdout.write("  thread-%i\truning, %8i points left at %s\n" % (self.ID,self.sequence.qsize(),time.ctime()))
                 ore_lock.release()
                 
@@ -54,17 +54,20 @@ class MT_NTools():
             ,work_space='Pylon'
             ,input_mold='inpZ3,dat'
             ,package_mold='./Pylon/probe'
-            ,record_dir='./Pylon/record'): 
+            ,output_dir='./output'
+            #,record_dir=None
+            ):
 
         try:
-            os.mkdir(record_dir)
+            os.mkdir(output_dir)
         except FileExistsError:
-            if input('delete folder record? (y/n) \n').upper() in ['Y','YES','']:
-                shutil.rmtree(record_dir)
+            if input('delete folder %s? (y/n) \n'%output_dir).upper() in ['Y','YES','']:
+                shutil.rmtree(output_dir)
             else:
-                exit('folder record/ is not deleted')
-            os.mkdir(record_dir)
-        self.record_dir = record_dir  
+                exit('folder %s is remained.'%output_dir)
+            os.mkdir(output_dir)
+        self.output_dir=output_dir
+        # self.record_dir = record_dir
 
         if os.path.isfile(input_mold):
             self.input_mold = input_mold
@@ -95,11 +98,15 @@ class MT_NTools():
             N_i.join(timeout=timeout)
         end_time = time.time()
         print('All points done. Use %f hours' % ((end_time - start_time) / 3600))
-        # return NT
+
+        # collect from threads
         number = -1
         self.sample_list = FlatToList([N_i.sample_list for N_i in self.NT])
         self.accepted_list = FlatToList([N_i.accepted_list for N_i in self.NT])
         self.excluded_list = FlatToList([N_i.excluded_list for N_i in self.NT])
+
+        # record
+        self.NewRecordDir()
         for sample in self.sample_list:
             number+=1
             destinations = {
@@ -109,3 +116,15 @@ class MT_NTools():
             }
             sample.CopyTo(destinations)
         print('%i sample recorded in %s' % (number+1,self.record_dir))
+
+    def NewRecordDir(self,record_pattern=None):
+        self.record_time=time.strftime('%y%m%d_%H%M%S')
+        if record_pattern is None:
+            record_pattern='record'
+        self.record_dir=os.path.join(self.output_dir,record_pattern+'_'+self.record_time)
+        try:
+            os.mkdir(self.record_dir)
+        except  FileExistsError:
+            time.sleep(1)
+            self.NewRecordDir()
+        return

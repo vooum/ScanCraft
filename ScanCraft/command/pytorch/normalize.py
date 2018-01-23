@@ -14,7 +14,12 @@ def GetRanges(par_dict,order=None):
         ]
     )
     return ranges
-        
+
+def NormalizeArray(array,par_ranges):
+    return (array-par_ranges[0])/(par_ranges[1]-par_ranges[0])*2.-1.
+def DenormalizeArray(array,par_ranges):
+    return (array+1.)/2.*(par_ranges[1]-par_ranges[0])+par_ranges[0]
+
 def NormalizePointListToPandas(point_list,order=None,title=None):
     if order is None:
         order=defult_name_order(point_list[0].free_parameter_list)
@@ -22,12 +27,24 @@ def NormalizePointListToPandas(point_list,order=None,title=None):
         title='normalized'
     par_ranges=GetRanges(point_list[0].free_parameter_list,order=order)
     raw=InputListToPandas(point_list,order=order,title=title)
-    normalized=(raw-par_ranges[0])/(par_ranges[1]-par_ranges[0])
+    normalized=NormalizeArray(raw,par_ranges)
     return normalized
 
 def DenormalizeUniform(array,mold,order=None):
     if order is None:
         order=defult_name_order(mold.free_parameter_list)
     par_ranges=GetRanges(mold.free_parameter_list,order=order)
-    array=array*(par_ranges[1]-par_ranges[0])+par_ranges[0]
+    array=(array/2.+1.)*(par_ranges[1]-par_ranges[0])+par_ranges[0]
     return array
+
+class normalize():
+    def __init__(self,mold,order=None):
+        if order is None:
+            order=defult_name_order(mold.free_parameter_list)
+        self.par_ranges=GetRanges(mold.free_parameter_list)
+    def __call__(self,array):
+        # if type(array) is numpy.array:
+            return NormalizeArray(array,self.par_ranges)
+    def D(self,array):
+        # if type(array) is numpy.array:
+            return DenormalizeArray(array,self.par_ranges)

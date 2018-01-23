@@ -7,7 +7,7 @@ from torch.nn import functional as F
 
 class Estimate(nn.Module):
     def __init__(self,D_in,d1,d2):
-        super(nn_mh,self).__init__()
+        super(Estimate,self).__init__()
         self.l1=torch.nn.Linear(D_in, d1)
         self.l2=torch.nn.Linear(d1,d2)
         self.l3=torch.nn.Linear(d2,3)

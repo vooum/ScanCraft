@@ -20,4 +20,3 @@ def GenerateQueue(mold,lenth=None):
     q=queue.Queue(lenth)
     FillQueue(q,mold,points=lenth)
     return q
-

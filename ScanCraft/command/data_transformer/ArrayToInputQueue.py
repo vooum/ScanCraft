@@ -9,7 +9,7 @@ def ArrayToInputQueue(array,mold,order=None,q=None):
         name_list=[pname for pname in input_parameter_list if pname in mold.scalar_list.keys()]
         # print(name_list)
     if q==None:
-        q=queue.Queue(1000)
+        q=queue.Queue(100000)
     for row in array:
         point=copy.deepcopy(mold)
         for name,value in zip(name_list,row):
@@ -17,5 +17,5 @@ def ArrayToInputQueue(array,mold,order=None,q=None):
         for fix in point.follower_list.values():
             fix.Generate()
             # print(name,value)
-        q.put(fix)
+        q.put(point)
     return q
