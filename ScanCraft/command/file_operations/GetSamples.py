@@ -11,7 +11,10 @@ def GetSamples(argv=None,patterns=None,path=None):
         if not isinstance(patterns,(tuple,list)):patterns=[patterns]
     sample_dict={}
     for document in os.listdir(path):
-        name,suffix=document.rsplit('.',1)
+        try:# document not numbered
+            name,suffix=document.rsplit('.',1)
+        except ValueError:
+            continue
 
         try:# suffix must be a integer
             suffix=int(suffix)

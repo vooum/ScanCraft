@@ -46,7 +46,7 @@ class NTools_thread(threading.Thread):
                     self.accepted_list.append(ore)
                 else:
                     self.excluded_list.append(ore)
-        print(self.ID,'stop')
+        # print(self.ID,'stop')
         return
 
 class MT_NTools():
@@ -118,10 +118,10 @@ class MT_NTools():
         print('%i sample recorded in %s' % (number+1,self.record_dir))
 
     def NewRecordDir(self,record_pattern=None):
-        self.record_time=time.strftime('%y%m%d_%H%M%S')
+        self.record_time=time.strftime('_%y%m%d_%H%M%S')
         if record_pattern is None:
             record_pattern='record'
-        self.record_dir=os.path.join(self.output_dir,record_pattern+'_'+self.record_time)
+        self.record_dir=os.path.join(self.output_dir,record_pattern+self.record_time)
         try:
             os.mkdir(self.record_dir)
         except  FileExistsError:

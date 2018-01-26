@@ -34,7 +34,7 @@ def SpectrumToPandas(*spectrum_list,title=None):
             row.append(getattr(spec,b_name,{}).get(code,numpy.nan))
         value_list.append(row)
     widths=set([len(row) for row in value_list])
-    print('width=',widths)
+    # print('width=',widths)
     # generate dataframe
     DF=pandas.DataFrame(numpy.array(value_list),columns=column_Pd)
     return DF

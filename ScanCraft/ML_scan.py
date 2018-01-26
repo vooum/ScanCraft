@@ -4,6 +4,8 @@ import sys,pandas,numpy
 import torch
 from torch import nn
 from torch.nn import functional
+from torch.cuda import DoubleTensor as Tensor
+from torch.autograd import Variable
 sys.path.append('/home/heyangle/Desktop/ScanCraft/ScanCraft')
 from command.scan.scan import scan
 from command.pytorch.normalize import GetRanges
@@ -33,9 +35,13 @@ mold.AddScalar('mu_eff','EXTPAR'  ,65,100.,1500.)
 data_range=GetRanges(mold.free_parameter_list)
 print('Input mode been set')
 
-IsCalculable=Classify(7,1000,500).cuda()
+Norm=normalize(mold)
+
+# IsCalculable=Classify(7,1000,500).cuda()
+# EstimateMh=Estimate(7,500,300).cuda()
+EstimateMh=torch.load('laboratory/EstimateMh') #read model
+IsCalculable=torch.load('laboratory/IsCalculable')
 c_opt=torch.optim.Adam(IsCalculable.parameters(),lr=0.01)
-EstimateMh=Estimate(7,500,300).cuda()
 e_opt=torch.optim.Adam(EstimateMh.parameters(),lr=0.001)
 print('NNs been set')
 
@@ -44,27 +50,16 @@ acc_train =pandas.read_csv('laboratory/Pylon/accepted_train.csv',header=[0,1,2,3
 exc_train =pandas.read_csv('laboratory/Pylon/excluded_train.csv',header=[0,1,2,3],index_col=0)
 mh_train  =pandas.read_csv('laboratory/Pylon/mass_train.csv',    header=[0,1,],   index_col=0)
 
-
-Norm=normalize(mold)
 # calculable
-c_data_train  =numpy.vstack((acc_train.values,exc_train.values[:13718]))
-c_inp_train   =Norm(c_data_train[:,:7])
-c_target_train=c_data_train[:,-1].reshape((len(c_data_train),1))
-in_CV=CudaVariableFromArray(c_inp_train)
-target_CV=CudaVariableFromArray(c_target_train,requires_grad=False)
+c_data=numpy.vstack(( acc_train.values, exc_train.values[:len(acc_train)] ))
+c_in=Tensor( Norm(c_data[:,:7]) )
+c_target=Tensor( c_data[:,-1].reshape((len(c_data),1)) )
+# estimate higgs mass
+e_data=numpy.hstack(( acc_train.values[:,:-1], numpy.log10(mh_train.values) ))
+e_in=Tensor(Norm( e_data[:,:7] ))
+e_target=Tensor( e_data[:,-3:])
 
-# acc_test  =pandas.read_csv('laboratory/Pylon/accepted_test.csv' ,header=[0,1,2,3],index_col=0)
-# exc_test  =pandas.read_csv('laboratory/Pylon/excluded_test.csv' ,header=[0,1,2,3],index_col=0)
-# mh_test   =pandas.read_csv('laboratory/Pylon/mass_test.csv'     ,header=[0,1,],   index_col=0)
-# c_data_test   =numpy.vstack((acc_test.values,exc_test.values[:6632]))
-# c_inp_test    =Norm(c_data_test[:,:7])
-# c_target_test =c_data_test[:,-1].reshape((len(c_data_test),1))
 
-# estimate Higgs mass
-in_EV    =CudaVariableFromArray(Norm(acc_train.values[:,:-1]))
-target_EV=CudaVariableFromArray(numpy.log10(mh_train.values))
-
-print('Training with raw data:')
 
 # # calculable
 # for i in range(1000):

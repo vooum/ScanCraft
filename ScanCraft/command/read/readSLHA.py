@@ -39,7 +39,7 @@ class ReadBlock(special_blocks):
     matrix_block=dict.fromkeys(matrix_list,'Matrix')
     block_types=dict(list(scalar_block.items())+list(matrix_block.items()))
     def Scalar(line):
-        if not commented_out(line):
+        # if not commented_out(line):
             semanteme=ReadLine(line)
             try:
                 return {int(semanteme[0]):semanteme[1]}
