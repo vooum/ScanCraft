@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import numpy,pandas
 from ..format.data_structure_functions import FlatToList
-from ..format.data_container import capsule
+# from ..format.data_container import capsule
 from .defult_parameter_order import input_parameter_list
 from ..scan.scan import scan
 from ..color_print import Error
