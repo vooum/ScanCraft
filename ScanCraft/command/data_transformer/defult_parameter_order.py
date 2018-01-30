@@ -19,6 +19,10 @@ input_parameter_list=[
     ]
 
 def defult_name_order(par_dict):
+    '''
+    return a list of names. All names of the parameters in par_dict are stored in this list.
+    First scalar names, then matrix name and elements' number, e.g. Yu_3_3.
+    '''
     disorder_scalars =[ name for name in par_dict.keys() if type(par_dict[name]) is independent_scalar ]
     disorder_elements=[ name for name in par_dict.keys() if type(par_dict[name]) is independent_element]
     ordered=[]

@@ -6,7 +6,7 @@ from .defult_parameter_order import input_parameter_list
 from ..scan.scan import scan
 from ..color_print import Error
 
-def InputListToPandas(*point_list,order=None,title=None):
+def InputToPandas(*point_list,order=None,title=None):
     if title is None: title='input'
     PL=FlatToList(point_list)
     flags=[(type(point) is scan) for point in PL]
