@@ -7,8 +7,8 @@ def GetSamples(argv=None,patterns=None,path=None):
     if path is None: path='./'
     if patterns is None:
         Error('pattern of files empty')
-    else:
-        if not isinstance(patterns,(tuple,list)):patterns=[patterns]
+    elif not isinstance(patterns,(tuple,list)):
+        patterns=[patterns]
     sample_dict={}
     for document in os.listdir(path):
         try:# document not numbered
@@ -32,6 +32,3 @@ def GetSamples(argv=None,patterns=None,path=None):
                     sample_dict[suffix].documents.update( {p:os.path.abspath(os.path.join(path,document))} )
 
     return [sample_dict[i] for i in sorted(sample_dict.keys())]
-
-
-

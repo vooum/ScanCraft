@@ -2,7 +2,7 @@
 
 import numpy
 from ..data_transformer.defult_parameter_order import defult_name_order
-from ..data_transformer.InputListToPandas import InputListToPandas
+from ..data_transformer.InputToPandas import InputToPandas
 def GetRanges(par_dict,order=None):
     '''generate an array contains minimums and maximums of the input parameter dictionary with given order'''
     if order is None:
@@ -26,7 +26,7 @@ def NormalizePointListToPandas(point_list,order=None,title=None):
     if title is None:
         title='normalized'
     par_ranges=GetRanges(point_list[0].free_parameter_list,order=order)
-    raw=InputListToPandas(point_list,order=order,title=title)
+    raw=InputToPandas(point_list,order=order,title=title)
     normalized=NormalizeArray(raw,par_ranges)
     return normalized
 
