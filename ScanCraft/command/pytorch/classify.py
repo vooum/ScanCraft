@@ -13,12 +13,12 @@ class Classify(nn.Module):
         self.l3=torch.nn.Linear(d2,1).double()
         self.init()
     def init(self):
-        U(self.l1.weight,a=-0.8,b=0.8)
-        U(self.l2.weight,a=-0.8,b=0.8)
-        U(self.l3.weight,a=-0.8,b=0.8)
+        U(self.l1.weight,a=-0.5,b=0.5)
+        U(self.l2.weight,a=-0.5,b=0.5)
+        U(self.l3.weight,a=-0.5,b=0.5)
     def forward(self,x):
         x=self.l1(x)
-        # x=nn.functional.relu(x)
+        x=nn.functional.leaky_relu(x)
         # x=torch.sqrt(x)
         x=self.l2(x)
         x=nn.functional.leaky_relu(x)
@@ -26,4 +26,5 @@ class Classify(nn.Module):
         x=torch.nn.functional.sigmoid(x)
         return x
 
-BCEloss=nn.BCEWithLogitsLoss()
+# BCEloss=nn.BCEWithLogitsLoss()
+BCEloss=nn.BCELoss(size_average=False)

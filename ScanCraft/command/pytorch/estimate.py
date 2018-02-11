@@ -19,9 +19,10 @@ class Estimate(nn.Module):
         U(self.l3.weight,a=-1.,b=1.)
     def forward(self,x):
         x=self.l1(x)
+        x=F.leaky_relu(x)
         x=self.l2(x)
         x=F.leaky_relu(x)
         x=self.l3(x)
         return x
 
-MSELoss=nn.MSELoss()
+MSELoss=nn.MSELoss(size_average=False)
