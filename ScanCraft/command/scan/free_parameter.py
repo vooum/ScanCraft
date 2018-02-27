@@ -10,6 +10,7 @@ class independent_scalar(scalar,generators):
                 ,minimum=None,maximum=None,value=None
                 ,strategy='random'
                 ,prior_distribution='uniform'
+                ,step_width=None
                 ,**args
                 ):
         super().__init__(name,block,code,value)
@@ -18,6 +19,7 @@ class independent_scalar(scalar,generators):
         self.value=value
         self.strategy=strategy
         self.prior_distribution=prior_distribution
+        self.step_width=step_width
 
         self.check(**args)
         self.Generate=getattr(self,prior_distribution)
@@ -30,6 +32,15 @@ class independent_scalar(scalar,generators):
         if self.strategy=='random':
             if any([ getattr(self,i) is None for i in ('minimum','maximum')]):
                 Error('unknown bounds of parameter %s '%self.name)
+        elif self.strategy=='mcmc':
+            if not self.step_width:
+                if any([ getattr(self,i) is None for i in ('minimum','maximum')]):
+                    Error('unknown bounds of parameter %s '%self.name)
+                else:
+                    if self.prior_distribution=='normal':
+                        self.step_width=(self.maximum-self.minimum)/100.
+                    elif self.prior_distribution=='lognormal':
+                        self.step_width=(numpy.log(self.maximum)-numpy.log(self.minimum))/100.
         else:
             Error('Unknown strategy: %s'%self.strategy)
 
@@ -37,7 +48,7 @@ class follower(scalar):
     def __init__(self,name,block,code,target):
         super().__init__(name,block,code)
         self.target=target
-    def Generate(self):
+    def Generate(self,**keys):
         self.value=self.target.value
 
 class independent_element(independent_scalar):

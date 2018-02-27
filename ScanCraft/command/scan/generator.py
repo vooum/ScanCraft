@@ -12,3 +12,16 @@ class generators():
             if self.minimum<new_value<self.maximum:
                 break
         self.value = new_value
+    def normal(self,step_factor=1.):
+        new_value=numpy.nan
+        while not all([new_value>self.minimum, new_value<self.maximum]):
+            new_value=numpy.random.normal(loc=self.value
+                ,scale=self.step_width*step_factor
+                )
+        self.value=new_value
+    def lognormal(self,step_factor=1.):
+        new_value=numpy.nan
+        while not all([new_value>self.minimum, new_value<self.maximum]):
+            new_value=numpy.random.lognormal(mean=numpy.log(self.value)
+                ,sigma=self.step_width*step_factor
+            )

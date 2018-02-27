@@ -41,10 +41,12 @@ class scan():
             self.block_list.update({par.block:{}})
         block_i=self.block_list[par.block]
         block_i.update({par.code:par})
+        # self.block_list[par.block][par.code]=par
 
     def AddScalar(self,name,block,code
                 ,minimum=None,maximum=None,value=None
                 ,prior_distribution=None
+                ,step_width=None
                 ,**args
                 ):
         if prior_distribution==None:
@@ -73,11 +75,12 @@ class scan():
     def AddMatrix(self,name,block):
         pass
 
-    def Sample(self):
+    def Sample(self,**keys):
         for p in self.scalar_list.values():
-            p.Generate()
+            p.Generate(**keys)
         for p in self.follower_list.values():
-            p.Generate()
+            p.Generate(**keys)
+        return self
     #========================
     
     def AddMcmcMatrix(self,name,block,shape,free_element={},minimum=None,maximum=None,pace='normal',step_width=None,element_list={}):
