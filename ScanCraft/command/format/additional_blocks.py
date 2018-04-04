@@ -18,6 +18,9 @@ NDMCROSSSECT={
 ANNIHILATION={
 }
 
+REDCOUP={
+}
+
 
 
 class NMSSMTools_blocks():
@@ -25,3 +28,4 @@ class NMSSMTools_blocks():
     NDMCROSSSECT=list_block(NDMCROSSSECT)
     ANNIHILATION=list_block(ANNIHILATION)
     ABUNDANCE=list_block(ABUNDANCE)
+    REDCOUP=matrix_block(REDCOUP)

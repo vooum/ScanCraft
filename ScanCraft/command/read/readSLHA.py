@@ -22,11 +22,11 @@ scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]# for Sphe
 
 matrix_groups={
     'Mass'      :   ['MSD2','MSE2','MSL2','MSQ2','MSU2'],
+    'Mix'       :   ['NMHMIX','NMAMIX','STOPMIX','NMNMIX'],
     'Triliner'  :   ['TD','TE','TU'],
     'SeeSaw'    :   ['LAMN',],
     'output'    :   ['YE','YU','YD',
-                     'HiggsLHC13','HiggsLHC14',
-                     'NMNMIX']
+                     'HiggsLHC13','HiggsLHC14','REDCOUP']
 }
 matrix_groups['input']=[ i+'IN' for j in ['Mass','Triliner','SeeSaw'] for i in matrix_groups[j] ]# for Spheno
 
