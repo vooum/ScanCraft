@@ -5,6 +5,10 @@
 !/ScanCraft/
 /ScanCraft/*
 !/ScanCraft/command/
+!/ScanCraft/Scan/
 !/ScanCraft/Script/
 !/ScanCraft/*.py
-
+!/ScanCraft/laboratory
+/ScanCraft/laboratory/*
+!/ScanCraft/laboratory/*.ipynb
+!/ScanCraft/laboratory/*.py

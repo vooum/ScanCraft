@@ -1,19 +1,20 @@
 #! /usr/bin/env python3
 
-try:
-    from ..data_type import data_list
-    from .readline import commented_out,ReadLine
-    from .special_blocks import special_blocks
-except:
-    if __name__=='__main__':
-        pass
-    else:
-        raise
+# try:
+from ..data_type import data_list
+from .readline import commented_out,ReadLine
+from .special_blocks import special_blocks
+from ..format.data_container import capsule
+# except:
+#     if __name__=='__main__':
+#         pass
+#     else:
+#         raise
 
 scalar_groups={
     'SUSY_input':   ['MINPAR','EXTPAR'],
     'additional':   ['NMSSMRUN','MSOFT'],
-    'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LOWEN','LHCFIT'],
+    'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LOWEN','LHCFIT','FINETUNING'],
     'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT','INDIRECT_CHISQUARES']
 }
 scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]# for Spheno
@@ -21,11 +22,11 @@ scalar_groups['input']=[ i+'IN' for i in scalar_groups['additional'] ]# for Sphe
 
 matrix_groups={
     'Mass'      :   ['MSD2','MSE2','MSL2','MSQ2','MSU2'],
+    'Mix'       :   ['NMHMIX','NMAMIX','STOPMIX','NMNMIX'],
     'Triliner'  :   ['TD','TE','TU'],
     'SeeSaw'    :   ['LAMN',],
     'output'    :   ['YE','YU','YD',
-                     'HiggsLHC13','HiggsLHC14',
-                     'NMNMIX']
+                     'HiggsLHC13','HiggsLHC14','REDCOUP']
 }
 matrix_groups['input']=[ i+'IN' for j in ['Mass','Triliner','SeeSaw'] for i in matrix_groups[j] ]# for Spheno
 
@@ -62,7 +63,6 @@ class ReadBlock(special_blocks):
             except:
                 return {}
 
-
     # def HIGGSBOUNDSRESULTS(line):
     #     print(line)
     #     if not commented_out(line):
@@ -82,9 +82,10 @@ def PassLine(*args):
     return {}
 
 
-def ReadSLHAFile(file_name,sample=None,block_format=ReadBlock):#read information in file_name and store in sample.
-    if sample==None:
-        sample=data_list()
+def ReadSLHAFile(file_name,block_format=None):#read information in file_name and store in sample.
+    if block_format is None:
+        block_format=ReadBlock
+    sample=capsule()
     read=PassLine
     text=content(file_name)
     if not hasattr(sample,'DECAY'): setattr(sample,'DECAY',{})

@@ -123,7 +123,7 @@ class special_blocks():
                 if str(No).upper()=='BLOCK':
                     break
 
-                if No==0:
+                if No==0.:
                     anni['SigmaV']=semanteme[1]
                 else:
                     anni[' '.join(semanteme[2:])]=semanteme[1]

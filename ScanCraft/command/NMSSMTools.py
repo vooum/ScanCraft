@@ -63,7 +63,8 @@ def Annihilation_in_omegas(text):
                 if str(number).upper()=='BLOCK':
                     break
                 elif int(number)==0:
-                    anni.update({(0,0):semanteme[1]})
+                    #anni.update({(0,0):semanteme[1]})
+                    anni['SigmaV']=semanteme[1]
                 else:
                     nf=int(semanteme[2])
                     tuple_f=tuple([int(i) for i in semanteme[3:3+nf]])
@@ -101,13 +102,14 @@ class new_ReadBlock(ReadBlock):
     ABUNDANCE=read_ABUNDANCE_in_omegas
     ReadBlock.block_types.update({'LHCCROSSSECTIONS':'Scalar'})
 def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
-    result=data_list()
-    ReadSLHAFile(spectr_dir,result,block_format=new_ReadBlock)
+    result=ReadSLHAFile(spectr_dir,block_format=new_ReadBlock)
     omega_dir=spectr_dir.replace('spectr','omega')
     try:
-        ReadSLHAFile(omega_dir,result)
-    except:
+        omg=ReadSLHAFile(omega_dir,block_format=new_ReadBlock)
+    except FileNotFoundError:
         pass
+    else:
+        result.Merge(omg)
     result.ERROR=bool(result.SPINFO[4])
     result.constraints=[]
     for constraint in result.SPINFO[3]:
@@ -122,15 +124,17 @@ class NMSSMTools():
     def __init__(self,
                     package_dir=None,
                     data_dir='mcmc/',
-                    in_model='inp.dat',
-                    output_file='spectr.dat'):
+                    input_mold='inp.dat',
+                    output_file='spectr.dat',
+                    clean=None
+                    ):
         if package_dir==None:
             package_dir=GetDir('NMSSMTools')
         elif not os.path.exists(package_dir):
             Error('directory --%s-- not found, please check its path'%package_dir)
 
         self.package_dir=package_dir
-        self.inp_model_lines=open(os.path.join(data_dir,in_model),'r').readlines()
+        self.inp_mold_lines=open(input_mold,'r').readlines()
         self.inp_file='inp.dat'#-----------
         self.inp_dir=os.path.join(package_dir,self.inp_file)
         self.output_file=output_file
@@ -141,17 +145,30 @@ class NMSSMTools():
         main_routine='./run'
         self.command=' '.join([main_routine,self.inp_file])
 
-        if os.path.exists(self.record_dir):
-            if input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']:
-                shutil.rmtree(self.record_dir)
-            else:
+        # if os.path.exists(self.record_dir):
+        #     if input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']:
+        #         shutil.rmtree(self.record_dir)
+        #     else:
+        #         exit('folder record/ is not deleted')
+        try:
+            os.mkdir(self.record_dir)
+        except FileExistsError:
+            if clean==False:
                 exit('folder record/ is not deleted')
-        os.mkdir(self.record_dir)
-    
+            elif clean==None:
+                if not input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']:
+                    exit('folder record/ is not deleted')
+            elif clean=='force':
+                pass
+            else:
+                Error('Unknown clean mode')
+            shutil.rmtree(self.record_dir)
+            os.mkdir(self.record_dir)
+            
     def Run(self,point,ignore=[]):
         # write input file for SPheno
         inp=open(self.inp_dir,'w')
-        for line in self.inp_model_lines:
+        for line in self.inp_mold_lines:
             if not commented_out(line):
                 semanteme=ReadLine(line)
                 if str(semanteme[0]).upper()=='BLOCK':
@@ -162,7 +179,7 @@ class NMSSMTools():
                         if type(block_i) is dict:
                             code_lenth=1
                             for PDG,p_i in block_i.items():
-                                code_list[tuple([PDG])]=[p_i.PDG,p_i.value]
+                                code_list[tuple([PDG])]=[p_i.code,p_i.value]
                         elif type(block_i) is matrix:
                             code_lenth=2
                             for index,element in block_i.element_list.items():
@@ -194,9 +211,17 @@ class NMSSMTools():
         return result
         
     def Record(self,number):
-        shutil.copy(self.inp_dir,os.path.join(self.record_dir,self.inp_file+'.'+str(int(number))))
-        shutil.copy(self.output_dir,os.path.join(self.record_dir,self.output_file+'.'+str(int(number))))
+        destinations={
+            'input'     :os.path.join(self.record_dir,self.inp_file+'.'+str(int(number))),
+            'spectrum'  :os.path.join(self.record_dir,self.output_file+'.'+str(int(number)))
+        }
+        shutil.copy(self.inp_dir,destinations['input'])
+        shutil.copy(self.output_dir,destinations['spectrum'])
         try:
-            shutil.copy(self.output_omega_dir,os.path.join(self.record_dir,self.output_omega_file+'.'+str(int(number))))
-        except:
-            pass
+            omg_dir=os.path.join(self.record_dir,self.output_omega_file+'.'+str(int(number)))
+            shutil.copy(self.output_omega_dir,omg_dir)
+        except FileNotFoundError:
+            destinations.update({'omega':None})
+        else:
+            destinations.update({'omega':omg_dir})
+        return destinations

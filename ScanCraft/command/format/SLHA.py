@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-
-flat_to_str=lambda L: sum(map(flat_to_str,L),[]) if isinstance(L,(list,tuple)) else [str(L)] #sum([[3],[3]],[])可得[3,3]
+from .data_structure_functions import FlatToList
 
 class list_block():
     def __init__(self,PDG_name_dict):
         self.PDG_name_dict=PDG_name_dict
-    def __call__(self,number):
-        return self.PDG_name_dict[number]
+    def __call__(self,code,default=None):
+        return self.PDG_name_dict.get(code,default)
             
 class matrix_block():
     def __init__(self,name):
         self.name=name
-    def __call__(self,element):
-        return '_'.join(flat_to_str([self.name,element]))  #例如self.name=Hmix,element=(3,3) 它们组成列表[Hmix,3,3],
+    def __call__(self,*element,**key_value):
+        return '_'.join(str(i) for i in FlatToList([self.name,element]))  #例如self.name=Hmix,element=(3,3) 它们组成列表[Hmix,3,3],
 
 SMINPUTS={1:'ALPHA_EM^-1(MZ)',2:'GF',3:'ALPHA_S(MZ)',
           4:'MZ',5:'MB',6:'MTOP',7:'MTAU'}        
@@ -37,12 +36,6 @@ MASS={5:'MB',6:'MTOP',15:'MTAU',23:'MZ',24:'MW',
       1000015:'~tau_L',2000015:'~tau_R',1000016:'snu_3',1000021:'~g',
       1000022:'N1',1000023:'N2',1000025:'N3',1000035:'N4',1000045:'N5',
       1000024:'ch1',1000037:'ch2',1000039:'gravitino'}
-LOWEN={1:'BR(b->s_gamma)',11:'BR(b->s_gamma+Theor_Err)',12:'BR(b->s_gamma-Theor_Err)',
-       2:'DeltaM_d_ps^-1',21:'DeltaM_d+Theor_Err',22:'DeltaM_d-Theor_Err',
-       3:'DetaM_s',31:'DeltaM_s+Theor_Err',32:'DeltaM_s-Theor_Err',
-       4:'BR(Bs->mu+mu-)',41:'BR(Bs->mu+mu-)+Theor_Err',42:'BR(Bs->mu+mu-)-Theor_Err',
-       5:'BR(B+->tau+nu_tau)',51:'BR(B+->tau+nu_tau)+Theor_Err',52:'BR(B+->tau+nu_tau)-Theor_Err',
-       6:'Del_a_mu',61:'Del_a_mu+Theor_Err',62:'Del_a_mu-Theor_Err'}
 HMIX={1:'MUEFF',2:'tanB',3:'VQ',4:'MA^2',5:'MP^2'}
 GAUGE={1:'g1',2:'g2',3:'g3'}
 MSOFT={1:'M1',2:'M2',3:'M3',21:'M_HD',22:'M_HU',31:'M_eL',32:'M_muL',33:'M_tauL',
@@ -97,7 +90,6 @@ class SLHA():
     MINPAR=list_block(MINPAR)
     EXTPAR=list_block(EXTPAR)
     MASS=list_block(MASS)
-    LOWEN=list_block(LOWEN)
     HMIX=list_block(HMIX)
     GAUGE=list_block(GAUGE)
     NMSSMRUN=list_block(NMSSMRUN)

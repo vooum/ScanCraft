@@ -2,7 +2,7 @@
 import sys,os,re,copy,shutil,subprocess,random,math
 sys.path.append('/home/heyangle/Desktop/ScanCraft/ScanCraft')
 
-from command.scan import scan
+from command.scan.scan import scan
 from command.NMSSMTools import NMSSMTools
 from command.operations.getpoint import GetPoint
 from command.Experiments.directdetection import DirectDetection
@@ -17,7 +17,7 @@ from command.outputfile import *
 # settings
 ism='all'
 target_number=1000
-step_factor=.1 # sigma = n% of (maximum - minimum) of the free parameters
+step_factor=step_factor=.1 # sigma = n% of (maximum - minimum) of the free parameters
 slop_factor=1. # difficulty of accepting a new point with higher chisq
 ignore=[ 'Landau Pole'#27
         ,'relic density'#30
@@ -33,29 +33,14 @@ ignore=[ 'Landau Pole'#27
 #print(mcmc.Scan)
 
 free=scan()
-free.Add('tanB','MINPAR',3,1.,60.)
-free.Add('M1','EXTPAR',1  ,20.    ,1000.)
-free.Add('M2'	,'EXTPAR'   ,2  ,100.    ,2000.)
-free.Add('Atop'	,'EXTPAR'   ,11  ,  -6e3    ,6e3)
-free.Add('Abottom','EXTPAR'   ,12,-6e3,6e3,pace='follow Atop')
-free.Add('Atau'	,'EXTPAR'   ,13  ,  100.      ,2000.)
-free.Add('MtauL','EXTPAR'   ,33,	100.,	2.e3,pace='follow Atau')
-free.Add('MtauR','EXTPAR'   ,36,	100.,	2.e3,pace='follow Atau')
-free.Add('MQ3L'	,'EXTPAR'   ,43,	100.,	2.e3)
-free.Add('MtopR'	,'EXTPAR'   ,46,	100.,	2.e3)
-free.Add('MbottomR','EXTPAR'  ,49,	100.,	2.e3 ,pace='follow MtopR')
-free.Add('Lambda','EXTPAR'  ,61  ,1e-3    ,1. ,pace='lognormal')
-free.Add('Kappa','EXTPAR'   ,62 ,1.e-3    ,1. ,pace='lognormal')
-free.Add('A_kappa','EXTPAR' ,64,-3.e3,3.e3)
-free.Add('mu_eff','EXTPAR'  ,65,100.,1500.)
-free.Add('MA','EXTPAR',124,	0.,	2.e3)
+free.AddScalar('tanB','MINPAR',3,1.,60.)
 
-N=NMSSMTools()
+
+N=NMSSMTools(input_mold='./mcmc/inp.dat')
 free.GetValue('./mcmc/inp.dat')
 print('Start point is:')
 newpoint=copy.deepcopy(free)
 newpoint.Print()
-
 Data=DataFile(Dir='mcmc')
 
 record_number=-1
@@ -71,7 +56,7 @@ while record_number < target_number:
     spectr=N.Run(newpoint,ignore=ignore)
 
     if spectr.ERROR:
-        newpoint=free.GetNewPoint(step_factor)
+        newpoint=copy.deepcopy(free).Sample(step_factor=step_factor)
         print(spectr.SPINFO)
         continue
     
@@ -119,6 +104,6 @@ while record_number < target_number:
                 Data.In(file_name).record(getattr(spectr,file_name))
     else:
         print(chisq,chisq_list,'discarded')
-    newpoint=free.GetNewPoint(step_factor)
+    newpoint=copy.deepcopy(free).Sample(step_factor=step_factor)
 
     
