@@ -5,6 +5,7 @@ from ..data_type import data_list
 from .readline import commented_out,ReadLine
 from .special_blocks import special_blocks
 from ..format.data_container import capsule
+from .SLHA_string import SLHA_string
 # except:
 #     if __name__=='__main__':
 #         pass
@@ -71,8 +72,9 @@ class ReadBlock(special_blocks):
 class content():
     def __init__(self,file_name):
         document=open(file_name,'r')
-        self.lines=document.readlines()
+        lines=document.readlines()
         document.close()
+        self.lines=[SLHA_string(i) for i in lines]
         self.i=-1
     def NextLine(self):
         self.i+=1
