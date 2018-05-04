@@ -3,7 +3,6 @@
 import torch
 # from torch.autograd import Variable
 from torch import nn
-from torch.nn import functional as F
 from torch.nn.init import uniform as U
 
 class Estimate(nn.Module):
@@ -19,9 +18,11 @@ class Estimate(nn.Module):
         U(self.l3.weight,a=-1.,b=1.)
     def forward(self,x):
         x=self.l1(x)
-        x=F.leaky_relu(x)
+        x=nn.functional.dropout(x,p=0.5)
+        x=nn.functional.leaky_relu(x)
         x=self.l2(x)
-        x=F.leaky_relu(x)
+        x=nn.functional.dropout(x,p=0.5)
+        x=nn.functional.leaky_relu(x)
         x=self.l3(x)
         return x
 
