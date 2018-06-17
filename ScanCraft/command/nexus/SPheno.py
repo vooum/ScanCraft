@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-import os,subprocess,shutil
+import os,subprocess,shutil,sys
 from ..color_print import ColorPrint,UseStyle,Error
 from .GetPackageDir import GetPackageDir
 from ..read.readSLHA import ReadSLHAFile
@@ -102,8 +102,21 @@ class SPheno():
         result=ReadSPhenoSpectr(self.output_dir)
         return result
 
+    def Record(self,number : int,digit_width:int=8):
+        suffix=f'.{number:0>{digit_width}}'
+        documents={
+            'input' :os.path.join( self.record_dir, self.input_file + suffix ),
+            'output':os.path.join( self.record_dir, self.output_file+ suffix )
+        }
+        shutil.copy( self.input_dir , documents['input'] )
+        shutil.copy( self.output_dir, documents['output'])
+        return documents
+
+
     def ReMake(self):
             subprocess.run('make clean',cwd=self.package_dir,shell=True,check=True)
-            print('clean')
-            subprocess.run('make Model=NMSSM_sarah',cwd=self.package_dir,shell=True,check=True)
-            print('done')
+            # print('clean')
+            subprocess.run('make Model=NMSSM_sarah',cwd=self.package_dir,shell=True
+                ,check=True
+                )
+            # print('done')
