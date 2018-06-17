@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 import os,shutil,subprocess,copy
 try:
-    from .operations.GetDir import GetDir
+    from .nexus.GetPackageDir import GetPackageDir as GetDir
     from .data_type import scalar,matrix
     from .read.readSLHA import ReadSLHAFile
 

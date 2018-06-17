@@ -4,7 +4,7 @@ try:
     from ..color_print import Error
 except:
     pass
-def GetDir(name):
+def GetPackageDir(name):
     candidate=[]
     package_path=os.path.join(
         os.path.dirname(# Scancommando/

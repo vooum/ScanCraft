@@ -83,6 +83,10 @@ class content():
 def PassLine(*args):
     return {}
 
+def SetDecay(obj): # be the default value of getattr, to set an attribute to obj
+    setattr(obj,'DECAY',{})
+    return getattr(obj,'DECAY')
+
 
 def ReadSLHAFile(file_name,block_format=None):#read information in file_name and store in sample.
     if block_format is None:
@@ -90,7 +94,6 @@ def ReadSLHAFile(file_name,block_format=None):#read information in file_name and
     sample=capsule()
     read=PassLine
     text=content(file_name)
-    if not hasattr(sample,'DECAY'): setattr(sample,'DECAY',{})
 
     while True:
         try:
@@ -115,8 +118,9 @@ def ReadSLHAFile(file_name,block_format=None):#read information in file_name and
                     read=PassLine
             elif str(semanteme[0]).upper()=='DECAY':
                 di=int(semanteme[1])
-                sample.DECAY[di]={}
-                data_dict=sample.DECAY[di]
+                DECAY=getattr(sample,'DECAY',SetDecay(sample))
+                DECAY[di]={}
+                data_dict=DECAY[di]
                 data_dict['width']=float(semanteme[2])
                 read=block_format.ReadDecay
             else:

@@ -7,6 +7,12 @@ from ..read.readSLHA import ReadSLHAFile
 from .free_parameter import independent_scalar,follower
 from ..format.parameter_type import scalar
 
+default_pdf={
+    'random':'uniform',
+    'mcmc'  :'normal'
+    }
+
+
 class scan():
     def __init__(self,method='mcmc'):
         self.variable_list={}
@@ -27,7 +33,10 @@ class scan():
 
     def AddToList(self,par):
         if par.name in self.variable_list.keys():
-            Caution("parameter '%s' overridden"%name)
+            Caution("parameter '%s' will be overridden"%name)
+            goon=input('contineu? (y/n[y])')
+            if goon in ['n','N']:
+                exit()
         self.variable_list.update({par.name:par})
 
         if type(par) is independent_scalar:
@@ -60,6 +69,14 @@ class scan():
             ,prior_distribution=prior_distribution
             ,**args)
         self.AddToList(scl)
+
+    # maybe no needed    
+    # def AddElement(self,name,block,code
+    #             ,minimum=None,maximum=None,value=None
+    #             ,prior_distribution=None
+    #             ,step_width=None
+    #             ,**args
+    #     )
 
     def AddFollower(self,name,block,code,target):
         if type(target) is str:
