@@ -73,7 +73,7 @@ class SPheno():
                 else:
                     code=tuple(map(int,semanteme[:code_lenth]))
                 par=par_dict.get(code,None)
-                if code_lenth==1:print(code,par)
+                # if code_lenth==1:print(code,par)
                 if par:
                     inp.write('\t'+'\t'.join(
                         list(map(str,FlatToList([code],[par.value])))

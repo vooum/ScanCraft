@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 # try:
-from ..data_type import data_list
+# from ..data_type import data_list
 from .readline import commented_out,ReadLine
 from .special_blocks import special_blocks
 from ..format.data_container import capsule
@@ -132,12 +132,12 @@ def ReadSLHAFile(file_name,block_format=None):#read information in file_name and
             pass
     return sample
 
-def ReadFiles(*files,sample=None):# read information in multiple files and return a data_list object which store information.
-    if sample==None:
-        sample=data_list()
-    for file_i in files:
-        ReadSLHAFile(file_i,sample)
-    return sample
+# def ReadFiles(*files,sample=None):# read information in multiple files and return a data_list object which store information.
+#     if sample==None:
+#         sample=data_list()
+#     for file_i in files:
+#         ReadSLHAFile(file_i,sample)
+#     return sample
 
 if __name__=='__main__':
     #print(ReadBlock.block_types)
