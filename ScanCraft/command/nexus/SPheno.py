@@ -1,11 +1,16 @@
 #! /usr/bin/env python3
 
-import os,subprocess,shutil,sys
+import os,subprocess,shutil,sys,time
 from ..color_print import ColorPrint,UseStyle,Error
 from .GetPackageDir import GetPackageDir
 from ..read.readSLHA import ReadSLHAFile
 from ..read.SLHA_string import SLHA_string
-from ..format.data_structure_functions import FlatToList
+from ..operators.iterable import FlatToList
+
+block_mapping=dict(
+    [ (i,i+'IN') for i in ['MSOFT','MSQ2','MSU2','MSD2','MSL2','MSE2','TU','TD','TE'] ]
+)
+inverse_mapping=dict([(v,k) for k,v in block_mapping.items()])
 
 def ReadSPhenoSpectr(spectr_dir):
     result=ReadSLHAFile(spectr_dir,)
@@ -13,6 +18,9 @@ def ReadSPhenoSpectr(spectr_dir):
     return result
 
 class SPheno():
+    block_mapping=block_mapping
+    inverse_mapping=inverse_mapping
+
     def __init__(self,
             package_dir=None,
             input_mold='LesHouches.in.NMSSM_low',
@@ -51,13 +59,31 @@ class SPheno():
             os.mkdir(self.record_dir)
     
     def Run(self,point):
-        # write input file
+        self.SetInputFile(point)
+        # ------ run
+        try:
+            os.remove(self.output_dir)
+        except FileNotFoundError:
+            pass
+
+        run=subprocess.Popen(self.command,cwd=self.run_dir,shell=True,
+            stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True
+        )
+        while run.poll() is None:
+            self.out,self.err=run.communicate()
+            # time.sleep(0.01)
+        result=self.Read(self.output_dir)
+        return result
+
+    def SetInputFile(self,point):
         inp=open(self.input_dir,'w')
         for line in self.input_mold_lines:
             semanteme=line.string.split()
             if semanteme[0].upper()=='BLOCK':
                 block=semanteme[1].upper()
-                par_dict=point.block_list.get(block,{})
+                par_dict=point.block_list.get( block,   # block > inverse[block] > {}
+                    point.block_list.get(self.inverse_mapping.get(block),{})
+                )
                 try:# get type of parameter code
                     any_code=list(par_dict.keys())[0]
                 except IndexError:
@@ -75,32 +101,22 @@ class SPheno():
                 par=par_dict.get(code,None)
                 # if code_lenth==1:print(code,par)
                 if par:
-                    inp.write('\t'+'\t'.join(
-                        list(map(str,FlatToList([code],[par.value])))
+                    inp.write(' '+' '.join(
+                        list(map(str,FlatToList([code,par.value])))
                         ))
-                if line.annotation:
-                    inp.write('\t#\t'+line.annotation)
-                if '\n' in line:
-                    inp.write('\n')
-                continue
+                    if line.annotation:
+                        inp.write('\t# '+line.annotation)
+                    if '\n' in line:
+                        inp.write('\n')
+                    continue
             inp.write(line)
         inp.close()
-        # ------ run
-        try:
-            os.remove(self.output_dir)
-        except FileNotFoundError:
-            pass
+        return
 
-        run=subprocess.Popen(self.command,cwd=self.run_dir,shell=True,
-            stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True
-        )
-        run.wait()
-        if (run.returncode):# run error
-            ColorPrint(0,33,'',run.communicate()[0])
-            Error(run.communicate()[1])
-        
-        result=ReadSPhenoSpectr(self.output_dir)
-        return result
+    def Read(self,spectr_dir=None):
+        if spectr_dir is None:
+            spectr_dir=self.output_dir
+        return ReadSPhenoSpectr(spectr_dir)
 
     def Record(self,number : int,digit_width:int=8):
         suffix=f'.{number:0>{digit_width}}'
@@ -113,10 +129,10 @@ class SPheno():
         return documents
 
 
-    def ReMake(self):
+    def ReMake(self,Model):
             subprocess.run('make clean',cwd=self.package_dir,shell=True,check=True)
             # print('clean')
-            subprocess.run('make Model=NMSSM_sarah',cwd=self.package_dir,shell=True
+            subprocess.run(f'make Model={Model}',cwd=self.package_dir,shell=True
                 ,check=True
                 )
             # print('done')
