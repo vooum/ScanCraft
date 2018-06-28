@@ -3,7 +3,7 @@ import os
 from ..format.data_container import capsule
 from ..color_print import Error
 
-def GetSamples(argv=None,patterns=None,path=None):
+def GetSamples(path=None,patterns=None):
     if path is None: path='./'
     if patterns is None:
         Error('pattern of files empty')

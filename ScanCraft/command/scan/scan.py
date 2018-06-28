@@ -115,8 +115,6 @@ class scan():
     def Sample(self,**keys):
         for p in self.free_parameter_list.values():
             p.Generate(**keys)
-        # for p in self.follower_list.values():
-        #     p.Generate(**keys)
         return copy.deepcopy(self)
     #========================
     
