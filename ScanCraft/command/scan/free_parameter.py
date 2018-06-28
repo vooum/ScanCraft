@@ -44,9 +44,12 @@ class independent_scalar(scalar,generators):
         else:
             Error('Unknown strategy: %s'%self.strategy)
 
-class follower(scalar):
+class follower():#(scalar):
     def __init__(self,name,block,code,target):
-        super().__init__(name,block,code)
+        # super().__init__(name,block,code)
+        self.name   =   name
+        self.block  =   block
+        self.code   =   code
         self.target=target
     @property
     def value(self):

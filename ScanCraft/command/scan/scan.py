@@ -115,9 +115,9 @@ class scan():
     def Sample(self,**keys):
         for p in self.free_parameter_list.values():
             p.Generate(**keys)
-        for p in self.follower_list.values():
-            p.Generate(**keys)
-        return self
+        # for p in self.follower_list.values():
+        #     p.Generate(**keys)
+        return copy.deepcopy(self)
     #========================
     
     def AddMcmcMatrix(self,name,block,shape,free_element={},minimum=None,maximum=None,pace='normal',step_width=None,element_list={}):
@@ -199,5 +199,5 @@ class scan():
                 ,getattr(target,mapping.get(par.block,par.block))
             )
             par.value=block.get(par.code)
-        for par in self.follower_list.values():
-            par.value=par.target.value
+        # for par in self.follower_list.values():
+        #     par.value=par.target.value
