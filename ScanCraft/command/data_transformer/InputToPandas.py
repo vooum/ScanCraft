@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import numpy,pandas
-from ..format.data_structure_functions import FlatToList
+from ..operators.iterable import FlatToList
 # from ..format.data_container import capsule
 from .defult_parameter_order import input_parameter_list
 from ..scan.scan import scan
@@ -24,12 +24,12 @@ def InputToPandas(*point_list,order=None,title=None):
     for point in PL:
         array_row=[]
         for name in order:
-            array_row.append(point.scalar_list[name]())
+            array_row.append(point.variable_list[name]())
         par_array.append(array_row)
 
     col=pandas.MultiIndex.from_tuples(
-        [tuple([title,par.block,par.code,par.name])
-            for par in [point.scalar_list[n] for n in order]
+        [tuple([title,par.block,str(par.code),par.name])
+            for par in [point.variable_list[n] for n in order]
         ],
         names=['title','block','code','name']
     )

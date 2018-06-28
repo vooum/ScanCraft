@@ -48,8 +48,12 @@ class follower(scalar):
     def __init__(self,name,block,code,target):
         super().__init__(name,block,code)
         self.target=target
+    @property
+    def value(self):
+        return self.target.value
     def Generate(self,**keys):
-        self.value=self.target.value
+        pass
+        # self.value=self.target.value
 
 class independent_element(independent_scalar):
     pass

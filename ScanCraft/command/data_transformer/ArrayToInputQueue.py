@@ -13,9 +13,9 @@ def ArrayToInputQueue(array,mold,order=None,q=None):
     for row in array:
         point=copy.deepcopy(mold)
         for name,value in zip(order,row):
-            point.scalar_list[name].value=value
-        for fix in point.follower_list.values():
-            fix.Generate()
+            point.free_parameter_list[name].value=value
+        for follower in point.follower_list.values():
+            follower.Generate()
             # print(name,value)
         q.put(point)
     return q

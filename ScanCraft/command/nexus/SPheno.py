@@ -3,6 +3,7 @@
 import os,subprocess,shutil,sys,time
 from ..color_print import ColorPrint,UseStyle,Error
 from .GetPackageDir import GetPackageDir
+from ..format.data_container import capsule
 from ..read.readSLHA import ReadSLHAFile
 from ..read.SLHA_string import SLHA_string
 from ..operators.iterable import FlatToList
@@ -13,8 +14,12 @@ block_mapping=dict(
 inverse_mapping=dict([(v,k) for k,v in block_mapping.items()])
 
 def ReadSPhenoSpectr(spectr_dir):
-    result=ReadSLHAFile(spectr_dir,)
-    result.error=not bool(result.__dict__) # get no value of any parameter
+    try:
+        result=ReadSLHAFile(spectr_dir,)
+    except FileNotFoundError:
+        result=capsule()
+    finally:
+        result.error=not bool(result.__dict__) # get no value of any parameter
     return result
 
 class SPheno():
@@ -24,7 +29,7 @@ class SPheno():
     def __init__(self,
             package_dir=None,
             input_mold='LesHouches.in.NMSSM_low',
-            output_file='SPheno.out',
+            output_file='SPheno.spc.NMSSM',
             main_routine='SPhenoNMSSM',
             CleanRecord=None
         ):
@@ -72,6 +77,7 @@ class SPheno():
         while run.poll() is None:
             self.out,self.err=run.communicate()
             # time.sleep(0.01)
+            
         result=self.Read(self.output_dir)
         return result
 

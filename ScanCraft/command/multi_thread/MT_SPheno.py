@@ -8,7 +8,7 @@ from ..nexus.SPheno import SPheno
 from ..color_print import Error
 from ..operators.iterable import FlatToList
 
-from _thread import start_new_thread, allocate_lock
+from ..data_transformer.InputToPandas import InputToPandas
 
 ore_lock=threading.Lock()
 
@@ -50,7 +50,11 @@ class SPheno_probe(threading.Thread):
                     sys.stdout.write("  thread-%i\truning, %8i points left at %s\n" % (self.ID,self.sequence.qsize(),time.ctime()))
                 ore_lock.release()
                 
-                sample = self.SP.Run(ore)
+                try:
+                    sample = self.SP.Run(ore)
+                except FileNotFoundError:
+                    self.excluded_list.append(ore)
+                    continue
                 
                 if sample.error:
                     self.excluded_list.append(ore)
@@ -58,6 +62,11 @@ class SPheno_probe(threading.Thread):
                     self.number+=1
                     # sample.documents=self.SP.Record(number)
                     sample.documents = self.SP.Record(self.number)
+
+                    N_sample=len(self.sample_list)
+                    if N_sample % 100 ==0:
+                        sys.stdout.write(f'Thread-{self.ID} got {N_sample} samples\n')
+
                     self.sample_list.append(sample)
                     self.accepted_list.append(ore)
         return
@@ -124,9 +133,9 @@ class MT_SPheno():
     def Run(self,points:Queue,report_interval=1000,timeout=None,ReMake=None):
         if ReMake is None:
             ReMake=self.Renew
-        self.SP=[]
+        self.SP_threads=[]
         for ID,probe in enumerate(self.probes):
-            self.SP.append(
+            self.SP_threads.append(
                 SPheno_probe(ID,points
                     ,self.input_mold
                     ,probe
@@ -137,28 +146,35 @@ class MT_SPheno():
         start_time = time.time()
         print('Calculations begin at %s\n  threads:\t%i\n  points:\t%i' % (time.ctime(),self.threads,points.qsize()))
 
-        for S_i in self.SP:
+        for S_i in self.SP_threads:
             S_i.start()
-        for S_i in self.SP:
+        for S_i in self.SP_threads:
             S_i.join()
+
+
         end_time = time.time()
         print('All points done. Use %f hours' % ((end_time - start_time) / 3600))
 
         # collect from threads
         number=-1
-        self.sample_list = FlatToList([S_i.sample_list for S_i in self.SP])
-        self.accepted_list = FlatToList([S_i.accepted_list for S_i in self.SP])
-        self.excluded_list = FlatToList([S_i.excluded_list for S_i in self.SP])
+        self.sample_list = FlatToList([S_i.sample_list for S_i in self.SP_threads])
+        self.accepted_list = FlatToList([S_i.accepted_list for S_i in self.SP_threads])
+        self.excluded_list = FlatToList([S_i.excluded_list for S_i in self.SP_threads])
         #  record
         self.NewRecordDir()
         for sample in self.sample_list:
             number+=1
             destinations = {
                 'input'     :os.path.join(self.record_dir,'SPheno.in.' + str(number)),
-                'spectrum'  :os.path.join(self.record_dir,'SPheno.out.' + str(number)),
+                'output'  :os.path.join(self.record_dir,'SPheno.out.' + str(number)),
             }
             sample.CopyTo(destinations)
         print('%i sample recorded in %s' % (number+1,self.record_dir))
+        excluded_pdx=InputToPandas(self.excluded_list,title='excluded')
+        try:
+            excluded_pdx.tocsv(os.path.join(self.harvest_dir,f'excluded_{self.record_time}.csv'))
+        except:
+            pass
     
     def NewRecordDir(self,record_pattern=None):
         self.record_time=time.strftime('_%y%m%d_%H%M%S')

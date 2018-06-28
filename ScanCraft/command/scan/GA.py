@@ -4,6 +4,9 @@ import random
 import numpy as np
 # from hola import matscat
 
+
+
+
 Ctrl=[100,   #0  npop
 	  50,	 #1  ngen
 	  2,	 #2  nd
@@ -35,24 +38,31 @@ class ga():
 		self.irep=ctrl[10]
 		self.index={}
 		self.index_x2={}
+		
 
 
 		self.storage_0=[]
 		self.storage_N=[]
 		self.PopulationN=[]
 		self.newph=np.random.rand(self.npop,self.nd)
+		self.Judge_InheritElite=True
 
 
 
 	def Generation_new(self,storageN):
 		self.storage_0=self.storage_N
+		# print('new_storage_0:',self.storage_0)
 		self.storage_N=storageN
 		self.PopulationN=self.storage_N[:,:self.nd]
+		self.Judge_InheritElite=True
+		
 		
 
 	def Generation_Next(self):
 		i=0
 		rk=self.rankpop(self.storage_N)
+		# print('Next_storage_0,storage_N:',self.storage_0,'\n',self.storage_N)
+		# print('Next_index:',self.index_x2)
 		self.adjmut(self.index_x2)
 		while i < self.npop/2:
 			male=self.select()
@@ -73,7 +83,9 @@ class ga():
 			pa=np.array([male,female],dtype=np.float)
 			self.genrep(i,pa)
 			i+=1
-		self.newpop()
+		if self.Judge_InheritElite:
+			self.newpop()
+		self.Judge_InheritElite=False
 
 		print('New population:',self.newph)
 		return self.newph
@@ -101,6 +113,7 @@ class ga():
 		#roulette wheel~rt
 		rtfit=0
 		i=0
+		# print('select_PopulationN:',self.PopulationN.shape)
 		while i < self.npop:
 			rtfit=rtfit+self.npop1+self.fdif*(self.npop1-2*self.rankpop(self.storage_N)[i])
 			# print(rtfit)
@@ -163,17 +176,27 @@ class ga():
 		for i in range(self.nd):
 			self.newph[ip1,i]=parent[0,i]
 			self.newph[ip2,i]=parent[1,i]
-		return 
+		 
 
 	def newpop(self):
 		newchisq=self.index_x2
+		newx2_min=newchisq[0]
 		if self.storage_0==[]:
-			self.storage_0=self.storage_N
-		self.rankpop(self.storage_0)
-		oldchisq=self.index_x2
-		if self.ielite==1 and newchisq[0] > oldchisq[self.index[1]]:
-			for i in range(self.nd):
-				self.newph[0,i]=self.PopulationN[self.index[1],i]
+			pass
+		else:
+			# x2_old=self.storage_0[:,self.nd]
+			# n=0
+			# for x in x2_old:
+			# 	oldchisq[n] = x
+			# 	n+=1
+			self.rankpop(self.storage_0)
+			oldchisq=self.index_x2
+			# print('newpop_storage_0:',self.storage_0)
+			# print('newchisq,oldchisq:',newchisq,'\n',oldchisq,'\n',self.index[1])
+			print('newx2_first,oldx2_min:',newx2_min,oldchisq[self.index[1]])
+			if self.ielite==1 and newx2_min > oldchisq[self.index[1]]:
+				for i in range(self.nd):
+					self.newph[0,i]=self.storage_0[self.index[1],i]
 		
 
 	def adjmut(self,chisq,rdiflow=0.05,rdifhi=0.25,delta=1.5):
