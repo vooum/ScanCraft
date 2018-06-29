@@ -54,8 +54,10 @@ class follower():#(scalar):
     @property
     def value(self):
         return self.target.value
-    def Generate(self,**keys):
-        pass
+    def __call__(self):
+        return self.value
+    # def Generate(self,**keys):
+    #     pass
         # self.value=self.target.value
 
 class independent_element(independent_scalar):

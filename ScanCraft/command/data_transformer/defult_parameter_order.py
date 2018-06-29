@@ -74,7 +74,7 @@ class ID(namedtuple('identity_tuple',['block','code','name'])):
             return b1<b2
         else:
             # print(self.code,other.code,self.name,other.name)
-            self.code<other.code
+            return self.code<other.code
 
 def defult_name_order(par_dict):
     ID_list=[ID(par.block,par.code,par.name)for par in par_dict.values()]
