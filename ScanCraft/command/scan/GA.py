@@ -87,7 +87,7 @@ class ga():
 			self.newpop()
 		self.Judge_InheritElite=False
 
-		print('New population:',self.newph)
+		# print('New population:',self.newph)
 		return self.newph
 
 

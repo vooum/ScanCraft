@@ -70,10 +70,10 @@ class ID(namedtuple('identity_tuple',['block','code','name'])):
         except ValueError:
             pass
         if b1!=b2:
-            print(b1,b2,self.name,other.name)
+            # print(b1,b2,self.name,other.name)
             return b1<b2
         else:
-            print(self.code,other.code,self.name,other.name)
+            # print(self.code,other.code,self.name,other.name)
             self.code<other.code
 
 def defult_name_order(par_dict):
