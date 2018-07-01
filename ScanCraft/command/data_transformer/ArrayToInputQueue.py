@@ -9,13 +9,13 @@ def ArrayToInputQueue(array,mold,order=None,q=None):
         order=defult_name_order(mold.free_parameter_list)
         # print(order)
     if q==None:
-        q=queue.Queue(100000)
+        q=queue.Queue()
     for row in array:
         point=copy.deepcopy(mold)
         for name,value in zip(order,row):
             point.free_parameter_list[name].value=value
-        for follower in point.follower_list.values():
-            follower.Generate()
+        # for follower in point.follower_list.values():
+        #     follower.Generate()
             # print(name,value)
         q.put(point)
     return q

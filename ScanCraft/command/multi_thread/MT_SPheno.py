@@ -151,7 +151,6 @@ class MT_SPheno():
         for S_i in self.SP_threads:
             S_i.join()
 
-
         end_time = time.time()
         print('All points done. Use %f hours' % ((end_time - start_time) / 3600))
 
@@ -170,11 +169,9 @@ class MT_SPheno():
             }
             sample.CopyTo(destinations)
         print('%i sample recorded in %s' % (number+1,self.record_dir))
-        excluded_pdx=InputToPandas(self.excluded_list,title='excluded')
-        try:
-            excluded_pdx.tocsv(os.path.join(self.harvest_dir,f'excluded_{self.record_time}.csv'))
-        except:
-            pass
+        if self.excluded_list:
+            excluded_pdx=InputToPandas(self.excluded_list,title='excluded')
+            excluded_pdx.to_csv(os.path.join(self.harvest_dir,f'excluded_{self.record_time}.csv'))
     
     def NewRecordDir(self,record_pattern=None):
         self.record_time=time.strftime('_%y%m%d_%H%M%S')

@@ -136,7 +136,7 @@ class SPheno():
 
 
     def ReMake(self,Model):
-            subprocess.run('make clean',cwd=self.package_dir,shell=True,check=True)
+            subprocess.run('make cleanall',cwd=self.package_dir,shell=True,check=True)
             # print('clean')
             subprocess.run(f'make Model={Model}',cwd=self.package_dir,shell=True
                 ,check=True

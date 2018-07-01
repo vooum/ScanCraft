@@ -9,7 +9,7 @@ import numpy as np
 
 Ctrl=[100,   #0  npop
 	  50,	 #1  ngen
-	  2,	 #2  nd
+	  14,	 #2  nd
 	  5,	 #3  nl
 	  0.85,  #4  pcross
 	  2,	 #5  imut
