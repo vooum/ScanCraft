@@ -106,6 +106,3 @@ for generation in range(1,51):
     input_array=InputToPandas(accepted_list[generation],order=order,title=f'generation_{generation}')
     X2s=numpy.array(list(map(Chisqure,sample_list[generation]))).reshape(-1,1)
     X2s_list.append(X2s)
-
-
-
