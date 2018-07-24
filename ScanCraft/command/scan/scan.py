@@ -5,7 +5,7 @@ from collections import ChainMap
 from ..read.readline import ReadLine
 from ..color_print import Error,Caution
 from ..read.readSLHA import ReadSLHAFile
-from .free_parameter import independent_scalar,independent_element,follower
+from .free_parameter import independent_scalar,independent_element,follower,dependent_scalar
 from ..format.parameter_type import scalar
 
 default_pdf={
@@ -21,11 +21,12 @@ class scan():
         self.scalar_list={}
         self.element_list={}
         self.follower_list={}
+        self.dependent_list={}
         # self.matrix_list={}
         # self.free_parameter_list={}
 
         self.variable_list=ChainMap(
-            self.scalar_list,self.element_list,self.follower_list
+            self.scalar_list,self.element_list,self.follower_list,self.dependent_list
         )
         self.free_parameter_list=ChainMap(
             self.scalar_list,self.element_list
@@ -56,6 +57,8 @@ class scan():
             self.element_list.update({par.name:par})
         elif type(par) is follower:
             self.follower_list.update({par.name:par})
+        elif type(par) is dependent_scalar:
+            self.dependent_list.update({par.name:par})
 
         if par.block not in self.block_list.keys():
             self.block_list.update({par.block:{}})
@@ -74,7 +77,7 @@ class scan():
             }[self.method]
 
         scl=independent_scalar(
-            name,block,code,minimum,maximum
+            name,block,code,minimum,maximum,value=value
             ,strategy=self.method
             ,prior_distribution=prior_distribution
             ,**args)
@@ -98,6 +101,19 @@ class scan():
             ,**args)
         self.AddToList(elm)
 
+    def AddDependent(self,name,block,code,func=None,variables=None,value=None):
+        variable_list=[]
+        try:# replace parameter names in variables with parameter objects,
+            # then collect them into variable_list
+            for var in variables:
+                if type(var) is str:
+                    var=self.variable_list[var]
+                variable_list.append(var)
+        except KeyError:
+            Error('variable %s do not exist'%var)
+        dpd=dependent_scalar(name,block,code,func,variable_list,value)
+        self.AddToList(dpd)
+
     def AddFollower(self,name,block,code,target):
         if type(target) is str:
             try:
@@ -109,6 +125,7 @@ class scan():
         flw=follower(name,block,code,target)
         self.AddToList(flw)
     
+
     def AddMatrix(self,name,block):
         pass
 

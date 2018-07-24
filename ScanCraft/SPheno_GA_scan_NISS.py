@@ -27,16 +27,16 @@ mold.AddScalar('A_Lambda','EXTPAR' ,63,-3.e3,3.e3)
 mold.AddScalar('A_kappa','EXTPAR' ,64,-3.e3,3.e3)
 mold.AddScalar('mu_eff','EXTPAR'  ,65,100.,1500.)
 # Squark mass
-mold.AddElement( 'Mq32','MSQ2',(3,3),1e4,4e6)
-mold.AddElement( 'Mu32','MSU2',(3,3),1e4,4e6)
-mold.AddFollower('Md32','MSD2',(3,3),'Mu32')
+mold.AddElement( 'Mq3^2','MSQ2',(3,3),1e4,4e6)
+mold.AddElement( 'Mu3^2','MSU2',(3,3),1e4,4e6)
+mold.AddFollower('Md3^2','MSD2',(3,3),'Mu32')
 # Slepton mass
-mold.AddElement( 'Ml32','MSL2',(3,3),1e4,4e6)
-mold.AddFollower('Ml22','MSL2',(2,2),'Ml32')
-mold.AddFollower('Ml12','MSL2',(1,1),'Ml32')
-mold.AddFollower('Me32','MSE2',(3,3),'Ml32')
-mold.AddFollower('Me22','MSE2',(2,2),'Ml32')
-mold.AddFollower('Me12','MSE2',(1,1),'Ml32')
+mold.AddElement( 'Ml3^2','MSL2',(3,3),1e4,4e6)
+mold.AddFollower('Ml2^2','MSL2',(2,2),'Ml32')
+mold.AddFollower('Ml1^2','MSL2',(1,1),'Ml32')
+mold.AddFollower('Me3^2','MSE2',(3,3),'Ml32')
+mold.AddFollower('Me2^2','MSE2',(2,2),'Ml32')
+mold.AddFollower('Me1^2','MSE2',(1,1),'Ml32')
 # Yukawa
 mold.AddElement( 'Tt' ,'TU'  ,(3,3),-2000,2000)
 mold.AddElement( 'Tb' ,'TD'  ,(3,3),-2000,2000)
@@ -50,10 +50,15 @@ dimention=len(order)
 
 Norm=normalize(mold,order=order) # set operation scale=(a,b) to scale parameters to (a,b) range
 
-MTS=MT_SPheno(threads=6,Renew=False) # Set multi-thread SPheno
-ReMake=False#'NMSSM_sarah'
-# MTS.Run(queue.Queue(0),ReMake='NMSSM_sarah') # make all files
-
+# Set multi-thread SPheno ==========
+MTS=MT_SPheno(threads=6,Renew='NInvSeesaw',main_routine='SPhenoNInvSeesaw',
+            input_mold='LesHouches.in.NInvSeesaw_low')
+    # threads: number of threads of multi-thread-SPheno, number larger than CPU-thread is worthless.
+    # if bool(Renew) is True, old copies of SPheno packages will be replaced by new copies.
+ReMake=None
+    # If None, default value of ReMake will be same as Renew.
+    # Each copy of SPheno will be 'make clean' then 'make = {ReMake}',
+    # set this to False once SPheno copies are re-made
 Gene=ga() # Gene Algorithm
 
 def Chisqure(sample):
@@ -65,26 +70,26 @@ accepted_list=[[]]# list of calculable input points
 sample_list=[[]]  # list of spectrum of points in accepted_list
 input_array_list=[]
 X2s_list=[]
-generation=0
-# --- first generation: Random or read from files ---
-# random_g1=True
-# samples=GetSamples(path='./output/record_180626_171635/',patterns=['in','out'])
-# spectr_list=[]
-# point_list=[]
-# for sample in samples:
-#     if len(sample.documents)==2:
-#         sample.Merge(SPheno.Read(None,sample.documents['out']))
-#         spectr_list.append(sample)
-#         inp=deepcopy(mold)
-#         inp.GetValue(sample.documents['in'],mapping=block_mapping)
-#         point_list.append(inp)
 
-while len(accepted_list[generation])<100:
-    sample_queue=GenerateQueue(mold,lenth=100)
-    MTS.Run(sample_queue,report_interval=100,ReMake=ReMake)
-    ReMake=False
-    accepted_list[0].extend(MTS.accepted_list)
-    sample_list[0].extend(MTS.sample_list)
+generation=0
+# +++++ 0_generation: Random or read from files ++++++
+if True:# Read 0_generation from files ===============
+    path='./output/record_180626_171635/'
+    samples=GetSamples(path=path,patterns=['in','out'])
+    for sample in samples:
+        if len(sample.documents)==2:
+            inp=deepcopy(mold)
+            inp.GetValue(sample.documents['in'],mapping=block_mapping)
+            accepted_list[0].append(inp)
+            sample.Merge(SPheno.Read(None,sample.documents['out']))
+            sample_list[0].append(sample)
+else:   # Random 0_generation ============
+    while len(accepted_list[generation])<100:
+        sample_queue=GenerateQueue(mold,lenth=100)
+        MTS.Run(sample_queue,report_interval=100,ReMake=ReMake)
+        ReMake=False
+        accepted_list[0].extend(MTS.accepted_list)
+        sample_list[0].extend(MTS.sample_list)
 input_array=InputToPandas(accepted_list[generation],order=order,title=f'generation_{generation}')
 X2s=numpy.array(list(map(Chisqure,sample_list[generation]))).reshape(-1,1)
 
