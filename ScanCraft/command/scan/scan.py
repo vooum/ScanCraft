@@ -111,6 +111,8 @@ class scan():
                 variable_list.append(var)
         except KeyError:
             Error('variable %s do not exist'%var)
+        except TypeError:
+            pass
         dpd=dependent_scalar(name,block,code,func,variable_list,value)
         self.AddToList(dpd)
 
@@ -208,6 +210,8 @@ class scan():
             Read=ReadSLHAFile
         target=Read(file_name)
         # print(mapping)
+        if mapping is None:
+            mapping={}
         for par in self.free_parameter_list.values():
             # print(par.block,mapping.get(par.block))
             block=getattr(target,par.block

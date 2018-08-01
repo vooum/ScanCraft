@@ -5,6 +5,7 @@ from queue import Queue
 
 from ..nexus.GetPackageDir import GetPackageDir
 from ..nexus.SPheno import SPheno
+from ..nexus.Higgs_Bounds_and_Signals import HiggsBounds
 from ..color_print import Error
 from ..operators.iterable import FlatToList
 
@@ -14,8 +15,11 @@ ore_lock=threading.Lock()
 
 class SPheno_probe(threading.Thread):
     def __init__(self,ID,sequence
-            ,input_mold
             ,probe_dir
+            ,input_mold='LesHouches.in.NMSSM_low'
+            ,input_file='LesHouches.in.NMSSM_low'
+            ,output_file='SPheno.spc.NMSSM'
+            ,main_routine='SPhenoNMSSM'
             ,ReMake=None
             ,report_interval=1000
         ):
@@ -24,7 +28,13 @@ class SPheno_probe(threading.Thread):
         self.probe_dir=probe_dir
         self.ReMake=ReMake
         self.report_interval=report_interval
-        self.SP=SPheno(package_dir=self.probe_dir,input_mold=input_mold,CleanRecord='force')
+        self.SP=SPheno(package_dir=probe_dir
+                ,input_mold=input_mold
+                ,input_file=input_file
+                ,output_file=output_file
+                ,main_routine=main_routine
+                ,CleanRecord='force')
+        self.HB=HiggsBounds(target_dir=self.SP.run_dir,mode='SARAH',silent=True)
         self.sequence=sequence
 
         self.sample_list = []
@@ -60,8 +70,12 @@ class SPheno_probe(threading.Thread):
                     self.excluded_list.append(ore)
                 else:
                     self.number+=1
-                    # sample.documents=self.SP.Record(number)
+                    # run HiggsBounds
+                    HB=self.HB.RunSARAH()
+                    sample.HBresult={'HBresult':HB.HBresult,'obsratio':HB.obsratio}
+                    
                     sample.documents = self.SP.Record(self.number)
+                    sample.documents.update(self.HB.Record(self.number,record_dir=self.SP.record_dir))
 
                     N_sample=len(self.sample_list)
                     if N_sample % 100 ==0:
@@ -78,6 +92,8 @@ class MT_SPheno():
     def __init__(self,threads=2
             ,package_mold=None
             ,input_mold='LesHouches.in.NMSSM_low'
+            ,input_file='LesHouches.in.NMSSM_low'
+            ,output_file='SPheno.spc.NMSSM'
             ,main_routine='SPhenoNMSSM'
             ,workspace='Pylon'
             ,harvest_dir='./output'
@@ -93,6 +109,9 @@ class MT_SPheno():
         # self.package_mold=package_mold
 
         self.input_mold = input_mold
+        self.input_file = input_file
+        self.output_file= output_file
+        self.main_routine=main_routine
 
         self.workspace=workspace
         try:
@@ -137,8 +156,11 @@ class MT_SPheno():
         for ID,probe in enumerate(self.probes):
             self.SP_threads.append(
                 SPheno_probe(ID,points
-                    ,self.input_mold
-                    ,probe
+                    ,probe_dir=probe
+                    ,input_mold=self.input_mold
+                    ,input_file=self.input_file
+                    ,output_file=self.output_file
+                    ,main_routine=self.main_routine
                     ,ReMake=ReMake
                     ,report_interval=report_interval
                 )
@@ -161,6 +183,9 @@ class MT_SPheno():
         self.excluded_list = FlatToList([S_i.excluded_list for S_i in self.SP_threads])
         #  record
         self.NewRecordDir()
+        if len(self.sample_list)==0:
+            os.rmdir(self.record_dir)
+            return
         for sample in self.sample_list:
             number+=1
             destinations = {
@@ -169,6 +194,7 @@ class MT_SPheno():
             }
             sample.CopyTo(destinations)
         print('%i sample recorded in %s' % (number+1,self.record_dir))
+        return
         if self.excluded_list:
             excluded_pdx=InputToPandas(self.excluded_list,title='excluded')
             excluded_pdx.to_csv(os.path.join(self.harvest_dir,f'excluded_{self.record_time}.csv'))

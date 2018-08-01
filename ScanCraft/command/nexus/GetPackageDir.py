@@ -4,7 +4,7 @@ try:
     from ..color_print import Error
 except:
     pass
-def GetPackageDir(name):
+def GetPackageDir(name,silent=False):
     candidate=[]
     package_path=os.path.join(
         os.path.dirname(# Scancommando/
@@ -15,7 +15,8 @@ def GetPackageDir(name):
         if name in i:
             package=os.path.join(package_path,i)
             if os.path.isdir(package):
-                print('%s file:\n->%s'%(name,package))
+                if not silent:
+                    print('%s file:\n->%s'%(name,package))
                 candidate.append(package)
     if len(candidate)==0:
         Error('%s package not found in %s'%(name,package_path))

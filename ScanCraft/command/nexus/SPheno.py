@@ -29,6 +29,7 @@ class SPheno():
     def __init__(self,
             package_dir=None,
             input_mold='LesHouches.in.NMSSM_low',
+            input_file='LesHouches.in.NMSSM_low',
             output_file='SPheno.spc.NMSSM',
             main_routine='SPhenoNMSSM',
             CleanRecord=None
@@ -41,7 +42,7 @@ class SPheno():
         self.package_dir=package_dir
         self.run_dir=os.path.join(package_dir,'bin')
         self.input_mold_lines=[SLHA_string(line) for line in open(input_mold).readlines()]
-        self.input_file='SPheno.in'
+        self.input_file=input_file
         self.input_dir =os.path.join(self.run_dir,self.input_file)
         self.output_file=output_file
         self.output_dir=os.path.join(self.run_dir,output_file)

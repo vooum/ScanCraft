@@ -1,10 +1,10 @@
 #! /usr/bin/env python3
 import os,shutil,subprocess
 try:
-    from .operations.GetDir import GetDir
+    from .GetPackageDir import GetPackageDir
     from .color_print import ColorPrint,UseStyle,Error
     from .read.readline import ReadLine
-    from .data_type import data_list
+    from ..format.data_container import capsule
 except:
     pass
 
@@ -13,9 +13,11 @@ class HiggsBounds():
                     target_dir,
                     package_dir=None,
                     model='NMSSM',
-                    mode=''):
+                    mode='',
+                    silent=False
+                ):
         if package_dir==None:
-            package_dir=GetDir('HiggsBounds')
+            package_dir=GetPackageDir('HiggsBounds',silent=silent)
         elif not os.path.exists(package_dir):
             Error('directory --%s-- not found, please check its path'%package_dir)
         
@@ -29,31 +31,39 @@ class HiggsBounds():
         if mode in ['SARAH']:
             self.package_dir=package_dir
             self.target_dir=target_dir
-            main_routine='./HiggsBounds'
-            if os.path.exists(os.path.join(package_dir,main_routine)):
-                print('HiggsBounds\' main routine specified:\n->',os.path.join(package_dir,main_routine))
+            main_routine=os.path.join(package_dir,'./HiggsBounds')
+            if os.path.exists(main_routine):
+                if not silent:print('HiggsBounds\' main routine specified:\n->',os.path.join(package_dir,main_routine))
             else:
                 Error('HiggsSingals\' main routine --%s-- not found, please check its path'%main_routine)
 
-            self.command=' '.join([main_routine,'LandH effC',str(n_neutral),str(n_charged),target_dir])
+            self.command=' '.join([main_routine,'LandH effC',str(n_neutral),str(n_charged),'./'])
             self.output_dir=os.path.join(target_dir,'HiggsBounds_results.dat')
         else:
             Error('mode not recognised, contact He Yangle.')
 
     def RunSARAH(self):
-        run=subprocess.Popen(self.command,cwd=self.package_dir,shell=True,
+        run=subprocess.Popen(self.command,cwd=self.target_dir,shell=True,
                 stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
         run.wait()
         if (run.returncode):
             ColorPrint(0,33,'',run.communicate()[0])
             Error(run.communicate()[1])
-        result=data_list()
-        result.output_line=open(self.output_dir).readlines()[-1]
+        result=capsule()
+        result.HBresult_string=open(self.output_dir).readlines()[-1]
         semanteme=ReadLine(result.output_line)        
         result.HBresult=semanteme[7]
         result.obsratio=semanteme[9]
         result.channel=semanteme[8]
         return result
+    
+    def Record(self,number:int,record_dir=None,digit_width:int=8):
+        if record_dir==None:
+            record_dir=os.path.join(self.target_dir,'record')
+        suffix=f'.{number:0>{digit_width}}'
+        documents={'HBresult':os.path.join(record_dir,'HBresults.dat'+suffix)}
+        shutil.copy(self.output_dir,documents['HBresult'])
+        return documents
 
         
 class HiggsSignals():
@@ -63,7 +73,7 @@ class HiggsSignals():
                     model='NMSSM',
                     mode=''):
         if package_dir==None:
-            package_dir=GetDir('HiggsSignals')
+            package_dir=GetPackageDir('HiggsSignals')
         elif not os.path.exists(package_dir):
             Error('directory --%s-- not found, please check its path'%package_dir)
         
