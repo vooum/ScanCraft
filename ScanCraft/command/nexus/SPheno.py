@@ -9,7 +9,10 @@ from ..read.SLHA_string import SLHA_string
 from ..operators.iterable import FlatToList
 
 block_mapping=dict(
-    [ (i,i+'IN') for i in ['MSOFT','MSQ2','MSU2','MSD2','MSL2','MSE2','TU','TD','TE'] ]
+    [ (i,i+'IN') 
+        for i in ['MSOFT'
+            ,'MSQ2','MSU2','MSD2','MSL2','MSE2','TU','TD','TE'
+            ,'MUX','MV2','MX2','YV','LAMN','BMUX','TV','TLAMN'] ]
 )
 inverse_mapping=dict([(v,k) for k,v in block_mapping.items()])
 
@@ -67,10 +70,10 @@ class SPheno():
     def Run(self,point):
         self.SetInputFile(point)
         # ------ run
-        try:
-            os.remove(self.output_dir)
-        except FileNotFoundError:
-            pass
+        # try: # hhh
+        #     os.remove(self.output_dir)
+        # except FileNotFoundError:
+        #     pass
 
         run=subprocess.Popen(self.command,cwd=self.run_dir,shell=True,
             stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True

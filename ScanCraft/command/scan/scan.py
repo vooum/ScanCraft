@@ -188,7 +188,7 @@ class scan():
         return new_point
     
     def Print(self):
-        for name,par in self.variable_list.items():
+        for name,par in sorted(self.variable_list.items()):
             print(f'{name:>10}: {par.value}')
         #   print('\t',name,self.scalar_list[name].value)
         # for name in self.follower_list.keys():

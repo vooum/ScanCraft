@@ -58,9 +58,9 @@ mold.AddElement( 'Lambda_v2',  'LAMN', (2,2), 0,  0.5)
 mold.AddElement( 'T_Lambda_v3','TLAMN',(3,3), -500,500)
 mold.AddElement( 'T_Lambda_v2','TLAMN',(2,2), -500,500)
 # muX
-for i in range(1,3):
-    for j in range(1,3):
-        mold.AddDependent(f'muX_{i}{j}','MU',tuple((i,j)))
+for i in range(1,4):
+    for j in range(1,4):
+        mold.AddDependent(f'muX_{i}{j}','MUX',tuple((i,j)))
 # function to get each muX elements
 from command.ISS_mu_x import GetMuX as muX
 def GetMuX(sample):
@@ -75,8 +75,8 @@ def GetMuX(sample):
         sample.variable_list['tanB'](),
         sample.variable_list['tanB']()/sample.variable_list['Lambda']()
     )
-    for i in range(1,3):
-        for j in range(1,3):
+    for i in range(1,4):
+        for j in range(1,4):
             sample.variable_list[f'muX_{i}{j}'].value=M[i-1,j-1]
 
 order=defult_name_order(mold.free_parameter_list) # parameter name list
@@ -85,7 +85,7 @@ dimention=len(order)
 Norm=normalize(mold,order=order) # set operation scale=(a,b) to scale parameters to (a,b) range
 
 # Set multi-thread SPheno ==========
-MTS=MT_SPheno(threads=6,Renew=False#'NInvSeesaw'
+MTS=MT_SPheno(threads=7,Renew=False#'NInvSeesaw'
             ,input_mold='LesHouches.in.NInvSeesaw_low'
             ,input_file='LesHouches.in.NInvSeesaw_low'
             ,output_file='SPheno.spc.NInvSeesaw'

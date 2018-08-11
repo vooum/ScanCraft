@@ -25,7 +25,7 @@ matrix_groups={
     'Mass'      :   ['MSD2','MSE2','MSL2','MSQ2','MSU2'],
     'Mix'       :   ['NMHMIX','NMAMIX','STOPMIX','NMNMIX'],
     'Triliner'  :   ['TD','TE','TU'],
-    'SeeSaw'    :   ['LAMN',],
+    'SeeSaw'    :   ['MUX','MV2','MX2','YV','TV','BMUX','LAMN','TLAMN'],
     'output'    :   ['YE','YU','YD',
                      'HiggsLHC13','HiggsLHC14','REDCOUP']
 }
