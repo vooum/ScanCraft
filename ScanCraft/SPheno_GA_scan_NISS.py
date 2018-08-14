@@ -22,11 +22,15 @@ mold=scan(method='random')
 # MinPar -------
 mold.AddScalar('tanB','MINPAR',3,1.,60.)
 # Extpar -------
-mold.AddScalar('Lambda','EXTPAR', 61, 1e-3, 0.7, prior_distribution='exponential')
-mold.AddScalar('Kappa', 'EXTPAR', 62, 1e-3, 0.7, prior_distribution='exponential')
 # mold.AddScalar('A_Lambda','EXTPAR' ,63,-3.e3,3.e3)
-mold.AddScalar('A_kappa','EXTPAR',64, -5.e2, 5.e2)
-mold.AddScalar('mu_eff', 'EXTPAR',65,100., 300.)
+# mold.AddScalar('A_kappa','EXTPAR',64, -5.e2, 5.e2)
+# mold.AddScalar('mu_eff', 'EXTPAR',65,100., 300.)
+# NMSSMRUNIN ------
+mold.AddScalar('Lambda','NMSSMRUN', 1, 1e-3, 0.7, prior_distribution='exponential')
+mold.AddScalar('Kappa', 'NMSSMRUN', 2, 1e-3, 0.7, prior_distribution='exponential')
+mold.AddScalar('T_Lambda','NMSSMRUN',3,2   , 1.4E3)
+mold.AddScalar('T_Kappa ','NMSSMRUN',4,-3.5E2,3.5E2)
+mold.AddScalar('Vs','NMSSMRUN',     5, 200.,7E5)
 # MSoft --------
 # mold.AddScalar('M1','MSOFT',1,50,2000)
 # mold.AddScalar('M2','MSOFT',2,100,2000)
