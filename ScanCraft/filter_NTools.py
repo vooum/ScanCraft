@@ -39,6 +39,16 @@ for sample in samples:
     sample.spectr=ReadNMSSMToolsSpectr(sample.documents['spectr'])
     # break
 
+# collect good samples into good_list
+good_list=[]
+for sample in samples:
+    spectr=sample.spectr
+    if (
+        122<spectr.MASS[25]<128
+        or spectr.ABUNDANCE[4]<0.1187*1.1
+        ):
+    good_list.append(sample)
+
 # save data in dest
 dest='./good_points/'
 mass=open(os.path.join(dest,'MASS'),'w')
@@ -46,10 +56,10 @@ mass.write('h1\th2\n')
 # and copy samples in good_list to dest_r;
 dest_r=os.path.join(dest,'record/')
 
-for number,sample in enumerate(good_list):
-    # save
+for number,sample in enumerate(samples):
     spectr=sample.spectr
-    mass.write(f'{spectr.MASS[25]}\t{spectr.MASS[35]}\n')
+    # save
+    mass.write(f'{number}\t{spectr.MASS[25]}\t{spectr.MASS[35]}\n')
     # copy
     destinations = {
                 'input'     :os.path.join(dest,'inp.dat.' + str(number)),
