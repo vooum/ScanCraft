@@ -39,13 +39,21 @@ for sample in samples:
     sample.spectr=ReadNMSSMToolsSpectr(sample.documents['spectr'])
     # break
 
+# save data in dest
+dest='./good_points/'
+mass=open(os.path.join(dest,'MASS'),'w')
+mass.write('h1\th2\n')
+# and copy samples in good_list to dest_r;
+dest_r=os.path.join(dest,'record/')
 
-# # copy samples in good_list to dest
-# dest='./good_points/record/'
-# for number,sample in enumerate(good_list):
-#     destinations = {
-#                 'input'     :os.path.join(dest,'inp.dat.' + str(number)),
-#                 'spectrum'  :os.path.join(dest,'spectr.dat.' + str(number)),
-#                 'omega'     :os.path.join(dest,'omega.dat.' + str(number))
-#             }
-#     sample.CopyTo(destinations)
+for number,sample in enumerate(good_list):
+    # save
+    spectr=sample.spectr
+    mass.write(f'{spectr.MASS[25]}\t{spectr.MASS[35]}\n')
+    # copy
+    destinations = {
+                'input'     :os.path.join(dest,'inp.dat.' + str(number)),
+                'spectrum'  :os.path.join(dest,'spectr.dat.' + str(number)),
+                'omega'     :os.path.join(dest,'omega.dat.' + str(number))
+            }
+    sample.CopyTo(destinations)

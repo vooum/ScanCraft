@@ -1,5 +1,14 @@
 #! /usr/bin/env python3
 
+# This module is only designed for SPheno package generated with SARAH.
+# For different theory, name of input file, output file, and main routine are different.
+
+# Designed by He Yangle @ htu 
+#             tel:      18567561914
+#             Email:    vooum@qq.com
+#                       heyangle90@gmail.com
+#                       heyangle@htu.edu.cn
+
 import os,subprocess,shutil,sys,time
 from ..color_print import ColorPrint,UseStyle,Error
 from .GetPackageDir import GetPackageDir
@@ -14,6 +23,7 @@ block_mapping=dict(
             ,'MSQ2','MSU2','MSD2','MSL2','MSE2','TU','TD','TE'
             ,'MUX','MV2','MX2','YV','LAMN','BMUX','TV','TLAMN'] ]
 )
+# Name of these blocks in input file of SPheno are suffixed with "IN".
 inverse_mapping=dict([(v,k) for k,v in block_mapping.items()])
 
 def ReadSPhenoSpectr(spectr_dir):

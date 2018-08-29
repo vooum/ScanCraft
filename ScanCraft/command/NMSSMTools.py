@@ -2,12 +2,12 @@
 import os,shutil,subprocess,copy
 try:
     from .nexus.GetPackageDir import GetPackageDir as GetDir
-    from .data_type import scalar,matrix
+    from .format.parameter_type import scalar,matrix
     from .read.readSLHA import ReadSLHAFile
 
     from .read.readSLHA import ReadBlock,scalar_list
     from .read.readline import commented_out,ReadLine
-    from .data_type import data_list
+    from .format.parameter_type import data_list
 
     from .color_print import ColorPrint,UseStyle,Error
 except:
