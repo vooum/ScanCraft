@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # import sys
+import numpy
 from ..format.parameter_type import scalar,matrix
 from .generator import generators
 from ..color_print import Error
