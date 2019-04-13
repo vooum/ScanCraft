@@ -18,13 +18,14 @@ class Classify(nn.Module):
         U(self.l3.weight,a=-0.5,b=0.5)
     def forward(self,x):
         x=self.l1(x)
+        x=nn.functional.dropout(x,p=0.5)
         x=nn.functional.leaky_relu(x)
-        # x=torch.sqrt(x)
         x=self.l2(x)
+        x=nn.functional.dropout(x,p=0.5)
         x=nn.functional.leaky_relu(x)
         x=self.l3(x)
-        x=torch.nn.functional.sigmoid(x)
+        #x=functional.sigmoid(x)
         return x
 
-# BCEloss=nn.BCEWithLogitsLoss()
-BCEloss=nn.BCELoss(size_average=False)
+#BCEloss=nn.BCELoss(size_average=False)
+BCEloss=nn.BCEWithLogitsLoss(size_average=False)

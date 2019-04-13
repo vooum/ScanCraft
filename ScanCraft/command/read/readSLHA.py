@@ -1,10 +1,11 @@
 #! /usr/bin/env python3
 
 # try:
-from ..data_type import data_list
+# from ..data_type import data_list
 from .readline import commented_out,ReadLine
 from .special_blocks import special_blocks
 from ..format.data_container import capsule
+from .SLHA_string import SLHA_string
 # except:
 #     if __name__=='__main__':
 #         pass
@@ -24,7 +25,7 @@ matrix_groups={
     'Mass'      :   ['MSD2','MSE2','MSL2','MSQ2','MSU2'],
     'Mix'       :   ['NMHMIX','NMAMIX','STOPMIX','NMNMIX'],
     'Triliner'  :   ['TD','TE','TU'],
-    'SeeSaw'    :   ['LAMN',],
+    'SeeSaw'    :   ['MUX','MV2','MX2','YV','TV','BMUX','LAMN','TLAMN'],
     'output'    :   ['YE','YU','YD',
                      'HiggsLHC13','HiggsLHC14','REDCOUP']
 }
@@ -71,8 +72,9 @@ class ReadBlock(special_blocks):
 class content():
     def __init__(self,file_name):
         document=open(file_name,'r')
-        self.lines=document.readlines()
+        lines=document.readlines()
         document.close()
+        self.lines=[SLHA_string(i) for i in lines]
         self.i=-1
     def NextLine(self):
         self.i+=1
@@ -81,6 +83,10 @@ class content():
 def PassLine(*args):
     return {}
 
+def SetDecay(obj): # be the default value of getattr, to set an attribute to obj
+    setattr(obj,'DECAY',{})
+    return getattr(obj,'DECAY')
+
 
 def ReadSLHAFile(file_name,block_format=None):#read information in file_name and store in sample.
     if block_format is None:
@@ -88,7 +94,6 @@ def ReadSLHAFile(file_name,block_format=None):#read information in file_name and
     sample=capsule()
     read=PassLine
     text=content(file_name)
-    if not hasattr(sample,'DECAY'): setattr(sample,'DECAY',{})
 
     while True:
         try:
@@ -113,8 +118,9 @@ def ReadSLHAFile(file_name,block_format=None):#read information in file_name and
                     read=PassLine
             elif str(semanteme[0]).upper()=='DECAY':
                 di=int(semanteme[1])
-                sample.DECAY[di]={}
-                data_dict=sample.DECAY[di]
+                DECAY=getattr(sample,'DECAY',SetDecay(sample))
+                DECAY[di]={}
+                data_dict=DECAY[di]
                 data_dict['width']=float(semanteme[2])
                 read=block_format.ReadDecay
             else:
@@ -126,12 +132,12 @@ def ReadSLHAFile(file_name,block_format=None):#read information in file_name and
             pass
     return sample
 
-def ReadFiles(*files,sample=None):# read information in multiple files and return a data_list object which store information.
-    if sample==None:
-        sample=data_list()
-    for file_i in files:
-        ReadSLHAFile(file_i,sample)
-    return sample
+# def ReadFiles(*files,sample=None):# read information in multiple files and return a data_list object which store information.
+#     if sample==None:
+#         sample=data_list()
+#     for file_i in files:
+#         ReadSLHAFile(file_i,sample)
+#     return sample
 
 if __name__=='__main__':
     #print(ReadBlock.block_types)

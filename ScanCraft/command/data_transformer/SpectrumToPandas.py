@@ -4,7 +4,7 @@ import numpy,pandas
 from ..format.data_container import capsule
 from ..color_print import Error
 from ..format.block_table import block_table
-from ..format.data_structure_functions import FlatToList,SortMixList
+from ..operators.iterable import FlatToList,SortMixList
 def SpectrumToPandas(*spectrum_list,title=None):
     if title is None: title='spectrum'
     SL=FlatToList(spectrum_list)

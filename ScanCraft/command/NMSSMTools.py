@@ -1,13 +1,13 @@
 #! /usr/bin/env python3
 import os,shutil,subprocess,copy
 try:
-    from .operations.GetDir import GetDir
-    from .data_type import scalar,matrix
+    from .nexus.GetPackageDir import GetPackageDir as GetDir
+    from .format.parameter_type import scalar,matrix
     from .read.readSLHA import ReadSLHAFile
 
     from .read.readSLHA import ReadBlock,scalar_list
     from .read.readline import commented_out,ReadLine
-    from .data_type import data_list
+    from .format.parameter_type import data_list
 
     from .color_print import ColorPrint,UseStyle,Error
 except:
@@ -15,7 +15,7 @@ except:
     pass
 
 # scalar_list.append('LHCCROSSSECTIONS')
-# print(scalar_list)
+# print(scalar_list)    
 
 def output_information_of_NMSSMTools(text):
     semanteme=ReadLine(text.lines[text.i])
@@ -100,7 +100,7 @@ class new_ReadBlock(ReadBlock):
     SPINFO=output_information_of_NMSSMTools
     ANNIHILATION=Annihilation_in_omegas
     ABUNDANCE=read_ABUNDANCE_in_omegas
-    ReadBlock.block_types.update({'LHCCROSSSECTIONS':'Scalar'})
+    ReadBlock.block_types.update({'LHCCROSSSECTIONS':'Scalar','DELTAMH':'Scalar'})
 def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
     result=ReadSLHAFile(spectr_dir,block_format=new_ReadBlock)
     omega_dir=spectr_dir.replace('spectr','omega')
@@ -123,9 +123,12 @@ def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
 class NMSSMTools():
     def __init__(self,
                     package_dir=None,
+                    run_subdir='main',
                     data_dir='mcmc/',
                     input_mold='inp.dat',
+                    inp_file='inp.dat',
                     output_file='spectr.dat',
+                    main_routine='run',
                     clean=None
                     ):
         if package_dir==None:
@@ -134,16 +137,17 @@ class NMSSMTools():
             Error('directory --%s-- not found, please check its path'%package_dir)
 
         self.package_dir=package_dir
+        self.run_dir=os.path.join(package_dir,run_subdir)
         self.inp_mold_lines=open(input_mold,'r').readlines()
-        self.inp_file='inp.dat'#-----------
-        self.inp_dir=os.path.join(package_dir,self.inp_file)
+        self.inp_file=inp_file#-----------
+        self.inp_dir=os.path.join(self.run_dir,self.inp_file)
         self.output_file=output_file
         self.output_dir=os.path.join(package_dir,self.output_file)
         self.output_omega_file=self.output_file.replace('spectr','omega')
         self.output_omega_dir=self.output_dir.replace('spectr','omega')
         self.record_dir=os.path.join(data_dir,'./record/')
-        main_routine='./run'
-        self.command=' '.join([main_routine,self.inp_file])
+        self.main_routine=main_routine
+        self.command=' '.join(['./'+main_routine,self.inp_file])
 
         # if os.path.exists(self.record_dir):
         #     if input(UseStyle('delete folder record? (y/n) \n',mode=1,fore=34)).upper() in ['Y','YES','']:
@@ -199,7 +203,7 @@ class NMSSMTools():
         except:
             pass
 
-        run=subprocess.Popen(self.command,cwd=self.package_dir,shell=True,
+        run=subprocess.Popen(self.command,cwd=self.run_dir,shell=True,
                 stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
         run.wait()
         if (run.returncode):

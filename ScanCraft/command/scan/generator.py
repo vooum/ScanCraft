@@ -25,3 +25,4 @@ class generators():
             new_value=numpy.random.lognormal(mean=numpy.log(self.value)
                 ,sigma=self.step_width*step_factor
             )
+        self.value=new_value

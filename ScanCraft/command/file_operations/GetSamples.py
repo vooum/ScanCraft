@@ -3,7 +3,7 @@ import os
 from ..format.data_container import capsule
 from ..color_print import Error
 
-def GetSamples(argv=None,patterns=None,path=None):
+def GetSamples(path=None,patterns=None,number_position=-1):
     if path is None: path='./'
     if patterns is None:
         Error('pattern of files empty')
@@ -12,7 +12,7 @@ def GetSamples(argv=None,patterns=None,path=None):
     sample_dict={}
     for document in os.listdir(path):
         try:# document not numbered
-            name,suffix=document.rsplit('.',1)
+            name,suffix=document.rsplit('.',-number_position)[:2]
         except ValueError:
             continue
 

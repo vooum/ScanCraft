@@ -4,11 +4,11 @@ sys.path.append('/home/heyangle/Desktop/ScanCraft/ScanCraft')
 
 from command.scan.scan import scan
 from command.NMSSMTools import NMSSMTools
-from command.operations.getpoint import GetPoint
+# from command.operations.getpoint import GetPoint
 from command.Experiments.directdetection import DirectDetection
 from command.chisqure import *
 mh=[125.09, 3., 3.]
-from command.data_type import *
+from command.format.parameter_type import *
 # from command.MicrOMEGAs import MicrOMEGAs
 from command.outputfile import *
 #print([ i for i in globals().keys() if '__' not in i])
@@ -17,7 +17,7 @@ from command.outputfile import *
 # settings
 ism='all'
 target_number=1000
-step_factor=step_factor=.1 # sigma = n% of (maximum - minimum) of the free parameters
+step_factor=.1 # sigma = n% of (maximum - minimum) of the free parameters
 slop_factor=1. # difficulty of accepting a new point with higher chisq
 ignore=[ 'Landau Pole'#27
         ,'relic density'#30

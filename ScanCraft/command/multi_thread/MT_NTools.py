@@ -51,7 +51,7 @@ class NTools_thread(threading.Thread):
 
 class MT_NTools():
     def __init__(self,threads=2
-            ,work_space='Pylon'
+            ,workspace='Pylon'
             ,input_mold='inpZ3,dat'
             ,package_mold='./Pylon/probe'
             ,output_dir='./output'
@@ -69,24 +69,24 @@ class MT_NTools():
         self.output_dir=output_dir
         # self.record_dir = record_dir
 
-        if os.path.isfile(input_mold):
+        if os.path.isfile(input_mold):#find input file mold
             self.input_mold = input_mold
         else:
-            inp2 = os.path.join(work_space,input_mold)
+            inp2 = os.path.join(workspace,input_mold)
             if not os.path.isfile(inp2):
                 self.input_mold = inp2
             else:
                 Error('%s not found in ./ or %s' % (input_mold,inp2))
 
         self.threads = threads
-        self.work_space = work_space
+        self.workspace = workspace
         self.package_mold = package_mold
 
     def Run(self,point_queue,timeout=None):
         self.NT = []
         for ID in range(self.threads):
             self.NT.append(NTools_thread(ID,point_queue
-                            ,pylon=self.work_space
+                            ,pylon=self.workspace
                             ,input_mold=self.input_mold
                             ,probe_mold=self.package_mold))
         start_time = time.time()

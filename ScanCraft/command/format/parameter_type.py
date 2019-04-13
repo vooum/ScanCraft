@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
 
 import numpy
+# from collections import namedtuple
 from ..color_print import Error
+
 class scalar():
     def __init__(self,name,block,code,value=None):
         self.name   =   name
@@ -44,3 +46,6 @@ class matrix():
             self.shape=self.value.shape
     def __call__(self,coords):
         return self.value((coords[0]-1,coords[1]-1))
+
+class data_list():
+    pass

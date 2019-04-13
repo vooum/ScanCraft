@@ -9,3 +9,4 @@ def GetPoint(point,inp):
         Pari=getattr(point,name)
         Pari.value=getattr(S,Pari.block)[Pari.PDG]
     return
+    

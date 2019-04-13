@@ -2,8 +2,6 @@
 import queue,copy
 
 def FillQueue(q,mold,total_number=1e10,points=None):
-    if points is None:
-        points=1000
     while (not q.full()) and (q.qsize()<total_number) and (points>0):
         # print(q.full())
         point=copy.deepcopy(mold)
@@ -14,9 +12,9 @@ def FillQueue(q,mold,total_number=1e10,points=None):
     return q
 
 
-def GenerateQueue(mold,lenth=None):
+def GenerateQueue(mold,lenth=None,maxsize=0):
     if lenth==None:
         lenth=1000
-    q=queue.Queue(lenth)
+    q=queue.Queue(maxsize=maxsize)
     FillQueue(q,mold,points=lenth)
     return q

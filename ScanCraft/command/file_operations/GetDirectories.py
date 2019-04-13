@@ -1,6 +1,6 @@
 import os,re
 
-def GetDirectories(argv=None,path='./',keyword=None,numbered=None):
+def GetDirectories(path='./',keyword=None,numbered=None):
     if keyword is None: keyword='mcmc'
     if numbered is None: numbered=False
     file_list=[]
