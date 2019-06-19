@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 import os,shutil,subprocess
-from .operations.GetDir import GetDir
+from .nexus.GetPackageDir import GetPackageDir
 from .color_print import ColorPrint,UseStyle,Error
 from .read.readSLHA import ReadBlock
 from .read.readSLHA import ReadSLHAFile
