@@ -34,3 +34,14 @@ class capsule():
                 else:
                     raise                
         self.documents.update(destinations)
+    def EqualTo(self,other,block_list=None):
+        if block_list is None:
+            block_list=list(self.__dict__.keys())
+            #print(block_list)
+        eq=all([
+            getattr(self,block)==getattr(other,block,list())
+            for block in block_list
+        ])
+        return eq
+    def __eq__(self,other):
+        return self.EqualTo(other)
