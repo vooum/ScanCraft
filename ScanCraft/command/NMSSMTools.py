@@ -132,7 +132,7 @@ class NMSSMTools():
                     clean=None
                     ):
         if package_dir==None:
-            package_dir=GetDir('NMSSMTools')
+            package_dir=GetDir('NMSSMTools_5.4')
         elif not os.path.exists(package_dir):
             Error('directory --%s-- not found, please check its path'%package_dir)
 
