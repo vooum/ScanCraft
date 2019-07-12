@@ -123,7 +123,7 @@ def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
 class NMSSMTools():
     def __init__(self,
                     package_dir=None,
-                    run_subdir='main',
+                    run_subdir='./',
                     data_dir='mcmc/',
                     input_mold='inp.dat',
                     inp_file='inp.dat',

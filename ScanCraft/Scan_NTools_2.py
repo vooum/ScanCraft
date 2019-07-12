@@ -62,7 +62,7 @@ L_Psi=DirectDetection('LUX201608_Psi.txt')
 
 # Setup NTools
 N=NMSSMTools(input_mold='./inp', #输入文件模板
-    package_dir='./NTools_Dh_h2',
+    package_dir='./NTools_Dh_h2', 
     inp_file='inp.dat',
     output_file='spectr.1.txt',
     main_routine='rerun'
