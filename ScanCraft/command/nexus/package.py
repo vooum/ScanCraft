@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
+import os
+from .GetPackageDir import GetPackageDir
+
 class package(object):
     def __init__(self
-                ,package_name
-                ,package_dir
-                ,run_path
-                ,main_routine
+                ,package_name:str # Name of the package, directory name of this package should contain this string
+                ,package_dir=None # Path of the package. If not given, serch the package in ./*/ScanCraft/packages/
+                ,run_subdir='./' # Relative(to package_dir) path where to run the package
+                ,command #　String sequence to run in shell
                 ):
-        self.package_dir=package_dir
-        self.run_dir
-        
+        self.package_name=package_name
+        if package_dir is None:
+            self.package_dir=GetPackageDir(package_name)
+        self.run_subdir=run_subdir
+        self.run_dir=os.path.join(self.package_dir,run_subdir)
+        self.command=command

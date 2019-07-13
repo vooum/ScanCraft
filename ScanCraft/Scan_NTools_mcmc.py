@@ -29,6 +29,7 @@ ignore=[ 'Landau Pole'#27
 
 # setup parameter point
 free=scan()
+# Lambda,Kappa,A_Lambda,A_Kappa,mu,tanBeta,A_t
 free.AddScalar('tanB','MINPAR',3,1.,60.)
 
 # setup NMSSMTools controller
