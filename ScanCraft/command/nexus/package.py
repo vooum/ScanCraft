@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
-import os
+import os,subprocess
 from .GetPackageDir import GetPackageDir
+from ..operators.iterable import FlatToList
 
 class package(object):
     def __init__(self
                 ,package_name:str # Name of the package, directory name of this package should contain this string
                 ,package_dir=None # Path of the package. If not given, serch the package in ./*/ScanCraft/packages/
                 ,run_subdir='./' # Relative(to package_dir) path where to run the package
-                ,command # String sequence to run in shell
+                ,command='' # String sequence to run in shell
                 ,output_file=None # Relative(to package_dir) path(or path list) of output file(s)
                 ):
         self.package_name=package_name
@@ -18,6 +19,20 @@ class package(object):
         self.run_dir=os.path.join(self.package_dir,run_subdir)
         self.command=command
         self.output_file=output_file
+        if type(output_file) is str:
+            self.output_dir=os.path.join(self.package_dir,output_file)
+        elif type(output_file) is list:
+            self.output_dir=[os.path.join(self.package_dir,f) for f in output_file]
+        elif type(output_file) is dict:
+            self.output_dir=dict(
+                [(key,os.path.join(self.package_dir,f)) for key,f in output_file.items()]
+                )
+
     def _Run(self):
+        for f in self.output_file:
+            try: # clean old output file(s)
+                os.remove()
+            except FileNotFoundError:
+                pass
         run=subprocess.Popen(self.command,cwd=self.run_dir,shell=True,
                 stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
