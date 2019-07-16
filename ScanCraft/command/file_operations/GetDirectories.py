@@ -1,6 +1,7 @@
 import os,re
 
 def GetDirectories(path='./',keyword=None,numbered=None):
+    '''collect all folders containing keyword(s) at given path'''
     if keyword is None: keyword='mcmc'
     if numbered is None: numbered=False
     file_list=[]
