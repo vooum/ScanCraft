@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys,os,re,copy,shutil,subprocess,random,math,pandas
-sys.path.append('/home/heyangle/Desktop/ScanCraft/ScanCraft')
 
 from command.scan.scan import scan
 from command.NMSSMTools import NMSSMTools
@@ -65,13 +64,15 @@ N.output_omega_dir=N.output_dir.replace('spectr','omega')
 N.output_decay_dir=N.output_dir.replace('spectr','decay')
 
 # collect samples
-samples=GetSamples(path='./good_samples',
+samples=GetSamples(path='./diluted_good_samples',
     patterns=['inp','spectr','omega'],
 )
 
 # calculate left/right near point on every directions for each samples
-for sample in samples:
+for sample in samples[:200]:#636
     number_str=sample.documents['inp'].rsplit('.')[-1]
+    print(number_str)
+
     mold.GetValue(sample.documents['inp'],mapping={'auxiliary':'EXTPAR'})
     del(mold.variable_list['Kappa'].value)
     mold.variable_list['minusK'].value=-mold.variable_list['minusK'].value
@@ -87,11 +88,12 @@ for sample in samples:
         spectr_plus=N.Run(plus)
         destinations={
             'inp'     :os.path.join(N.record_dir,'inp.dat.'+number_str+'.'+par+'_plus'),
-            'spectr'  :os.path.join(N.record_dir,'spectr.dat.'+number_str+'.'+par+'_plus')
+            'spectr'  :os.path.join(N.record_dir,'spectr.dat.'+number_str+'.'+par+'_plus'),
             'omega'   :os.path.join(N.record_dir,'omega.dat.'+number_str+'.'+par+'_plus')
         }
         shutil.copy(N.inp_dir,destinations['inp'])
-        shutil.copy(N.output_dir,destinations['spectr'])        
+        shutil.copy(N.output_dir,destinations['spectr'])
+        shutil.copy(N.output_omega_dir,destinations['omega'])
         diff_points[par+'+']=spectr_plus
 
         # left limit
@@ -100,26 +102,59 @@ for sample in samples:
         spectr_minus=N.Run(minus)
         destinations={
             'inp'     :os.path.join(N.record_dir,'inp.dat.'+number_str+'.'+par+'_minus'),
-            'spectr'  :os.path.join(N.record_dir,'spectr.dat.'+number_str+'.'+par+'_minus')
+            'spectr'  :os.path.join(N.record_dir,'spectr.dat.'+number_str+'.'+par+'_minus'),
             'omega'   :os.path.join(N.record_dir,'omega.dat.'+number_str+'.'+par+'_minus')
         }
+        shutil.copy(N.inp_dir,destinations['inp'])
+        shutil.copy(N.output_dir,destinations['spectr'])
+        shutil.copy(N.output_omega_dir,destinations['omega'])
         diff_points[par+'-']=spectr_minus
     sample.diff_points=copy.deepcopy(diff_points)
 
 # analyse all fine-tunings
-def Delta_line(sample):
-    line=[sample.documents['inp'].rsplit('.')[-1]]
+def output_line(sample):
     diff_points=sample.diff_points
-    central=diff_points['central'].ABUNDANCE[4]
-    for par in par_name_list
-        plus=diff_points[par+'+'].ABUNDANCE[4]
-        minus=diff_points[par+'-'].ABUNDANCE[4]
-        line.extend([plus-central,central-minus])
+    central=diff_points['central']
+    omega_0=central.ABUNDANCE[4]
+    line=[
+        sample.documents['inp'].rsplit('.')[-1],# number
+        omega_0
+    ]
+    for par in par_name_list:
+        block=mold.variable_list[par].block
+        code=mold.variable_list[par].code
+        plus=diff_points[par+'+']
+        minus=diff_points[par+'-']
+
+        pi_0=getattr(central,block)[code]
+        # right limit
+        omega_r=plus.ABUNDANCE[4]
+        pi_r=getattr(plus,block)[code]
+        Delta_r=pi_0/omega_0*abs(omega_r-omega_0)/abs(pi_0-pi_r)
+        # left limit
+        omega_l=minus.ABUNDANCE[4]
+        pi_l=getattr(minus,block)[code]
+        Delta_l=pi_0/omega_0*abs(omega_l-omega_0)/abs(pi_0-pi_l)
+
+        line.extend([
+            pi_0,omega_r,pi_r,Delta_r,omega_l,pi_l,Delta_l
+        ])
+    return line
+column_names=['No','omega_0'].extend(
+    FlatToList([
+        [
+            f'{par}_0',
+            f'omega_{par}+',f'{par}+',f'Delta_{par}+',
+            f'omega_{par}-',f'{par}-',f'Delta_{par}-'
+        ]
+        for par in par_name_list
+    ])
+)
 
 all_ft=[
-    Delta_line(sample)
+    output_line(sample)
     for sample in samples
 ]
 
-column_names=FlatToList([[par+'+',par+'-'] for par in par_name_list ])
 Ft_pds=pandas.DataFrame(all_ft,columns=column_names)
+Ft_pds.to_csv('./OmegaFineTunings')

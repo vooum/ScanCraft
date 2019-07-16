@@ -123,7 +123,7 @@ def ReadNMSSMToolsSpectr(spectr_dir,ignore=[]):
 class NMSSMTools():
     def __init__(self,
                     package_dir=None,
-                    run_subdir='main',
+                    run_subdir='./',
                     data_dir='mcmc/',
                     input_mold='inp.dat',
                     inp_file='inp.dat',
@@ -132,7 +132,7 @@ class NMSSMTools():
                     clean=None
                     ):
         if package_dir==None:
-            package_dir=GetDir('NMSSMTools')
+            package_dir=GetDir('NMSSMTools_5.4')
         elif not os.path.exists(package_dir):
             Error('directory --%s-- not found, please check its path'%package_dir)
 

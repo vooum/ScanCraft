@@ -1,11 +1,10 @@
 #! /usr/bin/env python3
 
 import os,shutil,subprocess
-from .operations.GetDir import GetDir
+from .nexus.GetPackageDir import GetPackageDir
 from .color_print import ColorPrint,UseStyle,Error
 from .read.readSLHA import ReadBlock
 from .read.readSLHA import ReadSLHAFile
-from .data_type import data_list
 from .Experiments.dSphs.IDD import X2_dSphs
 from .Experiments.GCE.testCovar import X2_GCE
 
