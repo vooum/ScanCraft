@@ -20,4 +20,7 @@ class SLHA_document:
         self.blocks={}
         block_name='head' # to store messages before first block
         for line in self.text:
-            if 
+            if　'BLOCK' in line[:5].upper():
+                block_name=line[5:]
+            elif 'DECAY' in start:
+                pass
