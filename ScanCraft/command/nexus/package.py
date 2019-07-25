@@ -11,6 +11,7 @@ class package(object):
                 ,run_subdir='./' # Relative(to package_dir) path where to run the package
                 ,command='' # String sequence to run in shell
                 ,output_file=None # Relative(to package_dir) path(or path list) of output file(s)
+                ,data_format='SLHA'
                 ):
         self.package_name=package_name
         if package_dir is None:
@@ -28,7 +29,7 @@ class package(object):
                 [(key,os.path.join(self.package_dir,f)) for key,f in output_file.items()]
                 )
 
-    def _Run(self):
+    def Run(self,input=None,timeout=None):
         for f in self.output_file:
             try: # clean old output file(s)
                 os.remove()
@@ -36,3 +37,4 @@ class package(object):
                 pass
         run=subprocess.Popen(self.command,cwd=self.run_dir,shell=True,
                 stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
+        self.out,self.err=run.communicate(input=input,timeout=timeout)
