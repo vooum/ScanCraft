@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from collections import OrderedDict#,ChainMap
-from .ReadLine import GetBlockName,GetDecayCode
+from .SLHA_line import GetBlockName,GetDecayCode
 from ...operators.iterable import FlatToList
 from ...operators.object import lazyprogerty
 from .SLHA_block import SLHA_block
@@ -49,13 +49,12 @@ class SLHA_text:
     @lazyprogerty
     def BLOCK(self):
         return SLHA_block(self.block_text)
-    def __getattr__(self,block,*code_list):
-        try:
-            print('get')
-            return self.BLOCK
-        except KeyError:
-            raise
-        code=iter(code_list)
+    # def __getattr__(self,block_name,*code_list):
+    #     try:
+    #         # print('get',block_name)
+    #         return getattr(self.BLOCK,block_name)
+    #     except KeyError:
+    #         raise
 
 class SLHA_document(SLHA_text):
     def __init__(self,SLHA_document):
