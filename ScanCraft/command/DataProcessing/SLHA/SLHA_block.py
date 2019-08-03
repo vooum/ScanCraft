@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-# from ...operators.object import lazyprogerty
-from .SLHA_line import ReadLine,commented_out
 from functools import wraps
+from ...operators.string import Dfloat
+from .SLHA_line import ReadLine,LoopLines
 
 scalar_groups={
     'SUSY_input':   ['MINPAR','EXTPAR'],
     'additional':   ['NMSSMRUN','MSOFT'],
-    'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LOWEN','LHCFIT','FINETUNING'],
+    'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LHCFIT','FINETUNING'],
     'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT','INDIRECT_CHISQUARES']
 }
 matrix_groups={
@@ -21,46 +21,24 @@ matrix_groups={
 scalar_list=[ i.upper() for j in scalar_groups.values()  for i in j ]
 matrix_list=[ i.upper() for j in matrix_groups.values()  for i in j ]
 
-def LoopLines(func):
-    '''
-    Read SLHA informations line by line with wrapped functions.
-    Return a dictionary
-    '''
-    @wraps(func)
-    def wrapper(lines,*args,**kwargs):
-        data=dict()
-        for line in lines:
-                data.update(func(line))
-        return data
-    return wrapper
 
-def Dfloat(string):
-    try:
-        return float(string)
-    except ValueError:
-        return float(string.upper().replace('D','E',1))
 
 @LoopLines
 def ReadScalar(line):
     s=line.split()
-    try:
-        code=int(s[0])
-        value=Dfloat(s[1])
-    except ValueError: return {}
-    except IndexError: return {}
-    else: return {code:value}
+    code=int(s[0])
+    value=Dfloat(s[1])
+    return {code:value}
 
 @LoopLines
 def ReadMatrix(line):
     s=line.split()
-    try:
-        code=(int(s[0]),int(s[1]))
-        value=Dfloat(s[2])
-    except ValueError: return {}
-    except IndexError: return {}
-    else: return {code:value}
+    code=(int(s[0]),int(s[1]))
+    value=Dfloat(s[2])
+    return {code:value}
 
-class ReadBlock(): # Container of methods to read SLHA data
+from .special_blocks import special_blocks
+class ReadBlock(special_blocks): # Container of methods to read SLHA data
     pass
 
 for name in scalar_list:
@@ -75,9 +53,13 @@ class SLHA_block:
         self.block_format=block_format
     def __getattr__(self,block_name):
         # print(f'find {block_name}')
-        text=self.text_dict[block_name]
-        data=getattr(self.block_format,block_name)(text)
+        try: text=self.text_dict[block_name]
+        except KeyError: 
+            print(f'{block_name} not found in text')
+            raise
+        try: data=getattr(self.block_format,block_name)(text)
+        except AttributeError:
+            print(f'Load method for {block_name} not found in block_format')
+            raise
         setattr(self,block_name,data)
         return data
-    def __setattr__(self,block_name,data):
-        pass
