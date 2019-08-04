@@ -19,9 +19,9 @@ class SplitText(lazyprogerty):
             target=instance.block_text.setdefault('head',[])
             for line in instance.text:
                 start=line[:5].upper()
-                if 'BLOCK' in start:
+                if 'BLOCK' == start:
                     target=instance.block_text.setdefault(GetBlockName(line),[])
-                elif 'DECAY' in start:
+                elif 'DECAY' == start:
                     target=instance.decay_text.setdefault(GetDecayCode(line),[])
                 target.append(line)
             return getattr(instance,self.func.__name__)

@@ -2,7 +2,7 @@
 
 from functools import wraps
 from ...operators.string import Dfloat
-from .SLHA_line import ReadLine,LoopLines
+from .SLHA_line import LoopLines
 
 scalar_groups={
     'SUSY_input':   ['MINPAR','EXTPAR'],
@@ -12,7 +12,7 @@ scalar_groups={
 }
 matrix_groups={
     'Mass'      :   ['MSD2','MSE2','MSL2','MSQ2','MSU2'],
-    'Mix'       :   ['NMHMIX','NMAMIX','STOPMIX','NMNMIX'],
+    'Mix'       :   ['NMHMIX','NMAMIX','STOPMIX','NMNMIX','UMIX','VMIX'],
     'Triliner'  :   ['TD','TE','TU'],
     'SeeSaw'    :   ['MUX','MV2','MX2','YV','TV','BMUX','LAMN','TLAMN'],
     'output'    :   ['YE','YU','YD',
@@ -22,14 +22,14 @@ scalar_list=[ i.upper() for j in scalar_groups.values()  for i in j ]
 matrix_list=[ i.upper() for j in matrix_groups.values()  for i in j ]
 
 
-
+@staticmethod
 @LoopLines
 def ReadScalar(line):
     s=line.split()
     code=int(s[0])
     value=Dfloat(s[1])
     return {code:value}
-
+@staticmethod
 @LoopLines
 def ReadMatrix(line):
     s=line.split()
