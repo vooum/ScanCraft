@@ -18,6 +18,7 @@ class package(object):
         if package_dir is None:
             self.package_dir=GetPackageDir(package_name)
         SetDir=partial(os.path.join,self.package_dir)
+        self.SetDir=SetDir
         self.run_subdir=run_subdir
         self.run_dir=SetDir(run_subdir)
         self.command=command
@@ -35,11 +36,9 @@ class package(object):
             self.Read=None
 
     def Run(self,input=None,timeout=None):
-        for f in self.output_file:
-            try: # clean old output file(s)
-                os.remove()
-            except FileNotFoundError:
-                pass
+        for document in self.output_dir.values():
+            try: os.remove(document)
+            except FileNotFoundError: pass
         run=subprocess.Popen(self.command,cwd=self.run_dir,shell=True,
                 stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
         self.stdout,self.error=run.communicate(input=input,timeout=timeout)

@@ -2,5 +2,8 @@
 
 from .SLHA.SLHA_document import SLHA_document,SLHA_text
 from .SLHA.SLHA_block import ReadBlock,ReadScalar,ReadMatrix
+from .SLHA.GenerateInputFile import GenerateInputFile
 
-__all__=['SLHA_document','SLHA_text','ReadBlock','ReadScalar','ReadMatrix']
+__all__=['SLHA_document','SLHA_text','ReadBlock','ReadScalar','ReadMatrix'
+    ,'GenerateInputFile'
+]

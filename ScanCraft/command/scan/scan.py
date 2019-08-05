@@ -16,7 +16,6 @@ default_pdf={
 
 class scan():
     def __init__(self,method='mcmc'):
-        # self.variable_list={}
 
         self.scalar_list={}
         self.element_list={}
@@ -25,7 +24,7 @@ class scan():
         # self.matrix_list={}
         # self.free_parameter_list={}
 
-        self.variable_list=ChainMap(
+        self.variable_dict=ChainMap(
             self.scalar_list,self.element_list,self.follower_list,self.dependent_list
         )
         self.free_parameter_list=ChainMap(
@@ -42,7 +41,7 @@ class scan():
         #     self.GetNewPoint=self.GetNewPoint_mcmc
 
     def AddToList(self,par):
-        if par.name in self.variable_list.keys():# check duplicates
+        if par.name in self.variable_dict.keys():# check duplicates
             Caution("parameter '%s' will be overridden"%name)
             goon=input('contineu? (y/n[n])')
             if not goon in ['y','Y']:
@@ -107,7 +106,7 @@ class scan():
             # then collect them into variable_list
             for var in variables:
                 if type(var) is str:
-                    var=self.variable_list[var]
+                    var=self.variable_dict[var]
                 variable_list.append(var)
         except KeyError:
             Error('variable %s do not exist'%var)
@@ -119,7 +118,7 @@ class scan():
     def AddFollower(self,name,block,code,target):
         if type(target) is str:
             try:
-                target=self.variable_list[target]
+                target=self.variable_dict[target]
             except KeyError:
                 Error('variable %s do not exist'%target)
         while isinstance(target,(follower)):
@@ -162,9 +161,9 @@ class scan():
                 +   " if step width is not specified. Later, step width will be 1% of its initial value")
 
         # add matrix into lists
-        if name in self.variable_list.keys():
+        if name in self.variable_dict.keys():
             Caution("parameter '%s' overridden"%name)
-        self.variable_list[name]=mtx
+        self.variable_dict[name]=mtx
         self.matrix_list[name]=mtx
 
         if block in self.block_list.keys():
@@ -188,7 +187,7 @@ class scan():
         return new_point
     
     def Print(self):
-        for name,par in sorted(self.variable_list.items()):
+        for name,par in sorted(self.variable_dict.items()):
             print(f'{name:>10}: {par.value}')
         #   print('\t',name,self.scalar_list[name].value)
         # for name in self.follower_list.keys():
