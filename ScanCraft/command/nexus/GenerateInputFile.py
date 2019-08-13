@@ -1,14 +1,14 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python3
 
 import copy
 from collections import defaultdict
-from .SLHA_line import GetBlockName
+from ..DataProcessing.SLHA_line import GetBlockName
 
-def GetValues(point):
-    data=defaultdict(dict)
+def GetSLHAValues(point):
+    point_dict=defaultdict(dict)
     for par in point.variable_dict.values():
-        data[par.block][par.code]=par.value
-    return data
+        point_dict[par.block][par.code]=par.value
+    return point_dict
 
 def int_code(line):
     c,_,*s=line.split(None,2)
@@ -42,12 +42,11 @@ class unchange_line():
         return self.line
 
 class GenerateInputFile():
-    def __init__(self,text_mold,point_mold,path):
+    def __init__(self,text_mold,point_dict,path):
         self.text_mold=text_mold
         self.path=path
         #Get all parameters
-        data=GetValues(point_mold)
-        for block in data.values():
+        for block in point_dict.values():
             code_type=type(list(block.keys())[0])
             if code_type is int:
                 block['code']=int_code
@@ -62,7 +61,7 @@ class GenerateInputFile():
                 start=line[:5].upper()
                 if 'BLOCK' == start:
                     block=GetBlockName(line)
-                    target=data.get(block)
+                    target=point_dict.get(block)
                 elif target: # lines to change in this block
                     try:
                         code,end=target['code'](line)
