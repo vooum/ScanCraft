@@ -2,7 +2,8 @@
 
 import os
 from .package import package
-from ..DataProcessing import SLHA_document,ReadBlock,ReadScalar,GenerateInputFile
+from .GenerateInputFile import GenerateInputWithScan
+from ..DataProcessing import SLHA_text,ReadBlock,ReadScalar
 from ..operators.object import lazyprogerty
 
 # Read spectial blocks of NMSSMTools
@@ -37,10 +38,17 @@ class NMSSMTools(package):
             self.input_mold_lines=mold.readlines()
     @lazyprogerty
     def SetInput(self):
-        return GenerateInputFile(self.input_mold_lines,self.point,self.input_dir)
+        return GenerateInputWithScan(self.input_mold_lines,self.point,self.input_dir)
     def Run(self,point,ignore=[]):
         self.point=point
         self.SetInput(point)
         super().Run()
-        spectr=SLHA_document(self.output_dir['spectr'])
+        output_text=[]
+        with open(self.output_dir['spectr','r']) as spectr:
+            for line in spectr:
+                if line=='# BLOCK FINETUNING\n':
+                    output_text.append(line[2:])
+                else:
+                    output_text.append(line)
+        spectr=SLHA_text(output_text)
         return spectr

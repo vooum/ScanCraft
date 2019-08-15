@@ -2,13 +2,8 @@
 
 import copy
 from collections import defaultdict
-from ..DataProcessing.SLHA_line import GetBlockName
+from ..DataProcessing.SLHA.SLHA_line import GetBlockName
 
-def GetSLHAValues(point):
-    point_dict=defaultdict(dict)
-    for par in point.variable_dict.values():
-        point_dict[par.block][par.code]=par.value
-    return point_dict
 
 def int_code(line):
     c,_,*s=line.split(None,2)
@@ -22,18 +17,13 @@ class GenerateLine():
         self.block=block
         self.code=code
         if type(code) is int:
-            sequence=[str(code)]
-            self.value_index=1
+            self.code_str=str(code)
         elif type(code) is tuple:
-            sequence=[str(i) for i in code]
-            self.value_index=2
-        annotation=[i.rstrip('\n') for i in end]
-        sequence.extend(annotation)
-        self.sequence=sequence
-    def __call__(self,point):
-        value_str=str(point.block_list[self.block][self.code].value)
-        self.sequence.insert(self.value_index,value_str)
-        return '\t'+'\t'.join(self.sequence)
+            self.code_str=' '.join(str(i) for i in code)
+        self.end=''.join(['\t'+i.rstrip('\n') for i in end])
+    def __call__(self,point_dict):
+        value=point_dict[self.block][self.code]
+        return f'\t{self.code_str}\t{value}{self.end}'
 
 class unchange_line():
     def __init__(self,line):
@@ -54,28 +44,42 @@ class GenerateInputFile():
                 block['code']=tuple_code
         # set input_file generators
         generators=[]
-        target=None
+        target_block=None
         for i,line in enumerate(text_mold):
             if line[0]=='#':pass # annotation
             else:
                 start=line[:5].upper()
                 if 'BLOCK' == start:
                     block=GetBlockName(line)
-                    target=point_dict.get(block)
-                elif target: # lines to change in this block
+                    target_block=point_dict.get(block)
+                elif target_block: # lines to change in this block
                     try:
-                        code,end=target['code'](line)
+                        code,end=target_block['code'](line)
                     except ValueError: # maybe ampty line
                         pass
                     else:
-                        if code in target: # find parameter in point_mold
+                        if code in target_block: # find parameter in point_mold
                             generator=GenerateLine(block,code,end)
                             generators.append(generator)
                             continue
             generators.append( unchange_line(line) )
         self.generators=generators
-    def __call__(self,point):
-        lines=[f(point)+'\n' for f in self.generators]
+    def __call__(self,point_dict):
+        lines=[f(point_dict)+'\n' for f in self.generators]
         lines[-1].rstrip('\n')
         with open(self.path,'w') as inp:
             inp.writelines(lines)
+
+def GetSLHAValues(point):
+    point_dict=defaultdict(dict)
+    for par in point.variable_dict.values():
+        point_dict[par.block][par.code]=par.value
+    return point_dict
+
+class GenerateInputWithScan(GenerateInputFile):
+    def __init__(self, text_mold, point, path):
+        point_dict=GetSLHAValues(point)
+        super().__init__(text_mold, point_dict, path)
+    def __call__(self, point):
+        point_dict=GetSLHAValues(point)
+        super().__call__(point_dict)
