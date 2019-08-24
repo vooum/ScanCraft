@@ -25,7 +25,7 @@ class GenerateLine():
         value=point_dict[self.block][self.code]
         return f'\t{self.code_str}\t{value}{self.end}'
 
-class unchange_line():
+class unchanged_line():
     def __init__(self,line):
         self.line=line.rstrip('\n')
     def __call__(self,point):
@@ -62,7 +62,7 @@ class GenerateInputFile():
                             generator=GenerateLine(block,code,end)
                             generators.append(generator)
                             continue
-            generators.append( unchange_line(line) )
+            generators.append( unchanged_line(line) )
         self.generators=generators
     def __call__(self,point_dict):
         lines=[f(point_dict)+'\n' for f in self.generators]

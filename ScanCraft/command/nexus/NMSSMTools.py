@@ -10,6 +10,7 @@ from ..operators.object import lazyprogerty
 class ReadNToolsSpectr(ReadBlock):
     LHCCROSSSECTIONS=ReadScalar
     DELTAMH=ReadScalar
+    
     @staticmethod
     def SPINFO(lines):
         data={}
@@ -50,5 +51,7 @@ class NMSSMTools(package):
                     output_text.append(line[2:])
                 else:
                     output_text.append(line)
+        with open(self.output_dir['omega','r']) as omega:
+            output_text.append(omega.readlines())
         spectr=SLHA_text(output_text)
         return spectr
