@@ -30,7 +30,7 @@ class SLHA_text:
     '''extracted messages from SLHA file'''
     def __init__(self,text,block_format=ReadBlock):
         self.text=text
-        self.block_format=ReadBlock
+        self.block_format=block_format
     @SplitText
     def block_text(self): pass
     @SplitText

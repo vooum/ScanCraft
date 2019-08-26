@@ -60,6 +60,7 @@ class SLHA_block:
         try: data=getattr(self.block_format,block_name)(text)
         except AttributeError:
             print(f'Load method for {block_name} not found in block_format')
+            print(*self.text_dict[block_name])
             raise
         setattr(self,block_name,data)
         return data
