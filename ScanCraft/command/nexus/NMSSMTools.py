@@ -37,13 +37,17 @@ def ReadNToolsOutput(spectr_dir,*omega_dir,ignore=[]):
     except IndexError:
         pass
     result=SLHA_text(output_text,block_format=NTools_block_format)
-    result.constraints=[]
-    for constraint in result.BLOCK.SPINFO[3]:
-        for const in ignore:
-            if const in constraint:
-                break
-        else:
-            result.constraints.append(constraint)
+    if 4 in result.BLOCK.SPINFO.keys():
+        result.error=True
+    else:
+        result.error=False
+        result.constraints=[]
+        for constraint in result.BLOCK.SPINFO[3]:
+            for const in ignore:
+                if const in constraint:
+                    break
+            else:
+                result.constraints.append(constraint)
     return result
 
 class NMSSMTools(package):
