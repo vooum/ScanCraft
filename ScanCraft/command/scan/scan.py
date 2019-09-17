@@ -4,7 +4,7 @@ import numpy,copy,math
 from collections import ChainMap
 from ..read.readline import ReadLine
 from ..color_print import Error,Caution
-from ..read.readSLHA import ReadSLHAFile
+from ..DataProcessing.SLHA.SLHA_document import SLHA_document
 from .free_parameter import independent_scalar,independent_element,follower,dependent_scalar
 from ..format.parameter_type import scalar
 
@@ -136,56 +136,6 @@ class scan():
         return copy.deepcopy(self)
     #========================
     
-    def AddMcmcMatrix(self,name,block,shape,free_element={},minimum=None,maximum=None,pace='normal',step_width=None,element_list={}):
-        block=block.upper()
-        # set one matrix
-        mtx=matrix(name,block,shape,element_list={})
-        
-        if type(free_element) is dict:
-            mtx.element_list.update(free_element)
-        elif type(free_element) is list or type(free_element) is tuple:
-            if all( type(coords) is tuple for coords in free_element ):
-                mtx.element_list.update(dict.fromkeys(free_element))
-
-        mtx.minimum=minimum
-        mtx.maximum=maximum
-        mtx.pace=pace
-        if step_width:
-            mtx.step_width=step_width
-        else:
-            try:
-                mtx.step_width=(mtx.maximum-mtx.minimum)/100.
-            except TypeError:
-                Caution(
-                    "  Both maximum and minimum of '%s' should be given with pace='%s'"%(name,pace[0])
-                +   " if step width is not specified. Later, step width will be 1% of its initial value")
-
-        # add matrix into lists
-        if name in self.variable_dict.keys():
-            Caution("parameter '%s' overridden"%name)
-        self.variable_dict[name]=mtx
-        self.matrix_list[name]=mtx
-
-        if block in self.block_list.keys():
-            Caution("matrix '%s' overridden"%name)
-        self.block_list[block]=mtx
-
-    def GetNewPoint_mcmc(self,step_factor=1.):
-        new_point=copy.deepcopy(self)
-        for name in self.scalar_list.keys():
-            old=self.scalar_list[name]
-            v=getattr(Random,old.pace)(old.value , old.minimum , old.maximum ,step_factor)
-            new_point.scalar_list[name].value=v
-        for name in self.follower_list.keys():
-            par=new_point.follower_list[name]
-            par.value=new_point.variable_list[par.follow].value
-        for name in self.matrix_list.keys():
-            old=self.matrix_list[name]
-            for coords in old.element_list.keys():
-                v=getattr(Random,old.pace)(old.element_list[coords] , old.minimum , old.maximum ,step_factor)
-                new_point.matrix_list[name].element_list[coords]=v
-        return new_point
-    
     def Print(self):
         for name,par in sorted(self.variable_dict.items()):
             print(f'{name:>10}: {par.value}')
@@ -196,7 +146,7 @@ class scan():
         #     print('\t',name,self.matrix_list[name].element_list)
             
 
-    def GetValue(self,file_name,mapping=None,ignore=None,Read=None):
+    def GetValue(self,file_name,mapping={},ignore=[],Read=None):
         '''Arguments
       Required:
           file_name: SLHA file that contain needed parameters;
@@ -207,18 +157,11 @@ class scan():
             Read   : The function that will analyse the SLHA file
         '''
         if Read is None:
-            Read=ReadSLHAFile
+            Read=SLHA_document
         target=Read(file_name)
         # print(mapping)
-        if mapping is None:
-            mapping={}
-        if ignore is None:
-            ignore=[]
         for par in self.free_parameter_list.values():
             if par.name in ignore:continue
-            block=getattr(target,par.block
-                ,getattr(target,mapping.get(par.block,par.block))
-            )
-            par.value=block.get(par.code)
+            par.value=target(par.block,par.code)
         # for par in self.follower_list.values():
         #     par.value=par.target.value
