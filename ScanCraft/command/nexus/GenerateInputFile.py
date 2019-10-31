@@ -13,6 +13,21 @@ def tuple_code(line):
     return tuple((int(c1),int(c2))),s
 
 class GenerateLine():
+    '''
+    This class is used to generate each line which should be motified
+    in creating an input file. One line for one parameter.
+    __init__:
+        input parameters for initialization:
+            block:str: block name
+            code:int/tuple: code for the parameter.
+            end:list: list of annotation strings to be appended after value and a '#'
+    __call__:
+        input:dict: point
+            format: {block_name:{code:value,},}
+            value:float
+        return:Line with parameter value subsituted, like:
+            '\t3\t2\t# annotations'
+    '''
     def __init__(self,block:str,code,end:list):
         self.block=block
         self.code=code
