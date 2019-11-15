@@ -9,11 +9,18 @@ from .SLHA_decay import SLHA_decay
 
 
 class SplitText(lazyprogerty):
+    '''
+    Text will be seperated into partitions and store them in:
+        instance.block_text & instance.decay_text
+    Each partition start with a line start with 'BLOCK' or 'DECAY'.
+    If any space or tab exist before 'BLOCK' or 'DECAY', that line will be ignored
+    '''
     def __get__(self,instance,cls):
         if instance is None:
             return self
         else:
-            # instance.SplitText()
+            # This branch will be accessed by:
+            # 'instance.SplitText_decorated_function()'
             instance.block_text=OrderedDict()
             instance.decay_text=OrderedDict()
             target=instance.block_text.setdefault('head',[])
