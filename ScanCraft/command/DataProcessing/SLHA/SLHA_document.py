@@ -33,7 +33,7 @@ class SplitText(lazyprogerty):
                 target.append(line)
             return getattr(instance,self.func.__name__)
 
-class SLHA_text:
+class SLHA_text(object):
     '''extracted messages from SLHA file'''
     def __init__(self,text,block_format=ReadBlock):
         self.text=text
@@ -66,6 +66,21 @@ class SLHA_text:
                 raise
         elif name=='WIDTH':
             return self.DECAY[code[0]]['WIDTH']
+    # methods to modify pickling behavior,
+    # see "Handling Stateful Objects" at
+    # https://docs.python.org/3.8/library/pickle.html#pickle-state
+    def __getstate__(self):
+        self.block_text
+        state=self.__dict__.copy()
+        for key in ['BLOCK','DECAY']:
+            try:
+                del state['BLOCK']
+            except KeyError:
+                pass
+        return state
+    def __setstate__(self,state):
+        self.__dict__.update(state)
+
 
 
 class SLHA_document(SLHA_text):
