@@ -50,6 +50,11 @@ def ReadNToolsOutput(spectr_dir,*omega_dir,ignore=[]):
                 result.constraints.append(constraint)
     return result
 
+class ReadNToolsOutput():
+    def __init__(self,spectr_dir,*omega_dir,ignore=[]):
+
+
+
 class NMSSMTools(package):
     def __init__(self,
                  package_name='NMSSMTools_5.4.1',
