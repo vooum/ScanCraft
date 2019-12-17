@@ -5,7 +5,7 @@ def AcquireAttr(obj,attr,value):
         setattr(obj,attr,value)
     return getattr(obj,attr)
 
-class lazyprogerty: # P271 in Python Cookbook
+class lazyproperty: # P271 in Python Cookbook
     def __init__(self,func):
         self.func=func
     def __get__(self,instance,cls):

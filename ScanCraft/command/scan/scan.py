@@ -146,7 +146,7 @@ class scan():
         #     print('\t',name,self.matrix_list[name].element_list)
             
 
-    def GetValue(self,file_name,mapping={},ignore=[],Read=None):
+    def GetValue(self,file_name,mapping:dict={},ignore:list=[],read_func=None):
         '''Arguments
       Required:
           file_name: SLHA file that contain needed parameters;
@@ -154,14 +154,12 @@ class scan():
            mapping : A dict which holds a map of different block names: 
                      { name in object : name in SLHA file }
             ignore : parameters with name in this will not be read
-            Read   : The function that will analyse the SLHA file
+            read_func   : The function that will analyse the SLHA file
         '''
-        if Read is None:
-            Read=SLHA_document
-        target=Read(file_name)
+        if read_func is None:
+            read_func=SLHA_document
+        target=read_func(file_name)
         # print(mapping)
         for par in self.free_parameter_list.values():
             if par.name in ignore:continue
             par.value=target(par.block,par.code)
-        # for par in self.follower_list.values():
-        #     par.value=par.target.value

@@ -3,12 +3,12 @@
 from collections import OrderedDict#,ChainMap
 from .SLHA_line import GetBlockName,GetDecayCode
 from ...operators.iterable import FlatToList
-from ...operators.object import lazyprogerty
+from ...operators.object import lazyproperty
 from .SLHA_block import SLHA_block,ReadBlock
 from .SLHA_decay import SLHA_decay
 
 
-class SplitText(lazyprogerty):
+class SplitText(lazyproperty):
     '''
     Text will be seperated into partitions and store them in:
         instance.block_text & instance.decay_text
@@ -42,10 +42,10 @@ class SLHA_text(object):
     def block_text(self): pass
     @SplitText
     def decay_text(self): pass
-    @lazyprogerty
+    @lazyproperty
     def DECAY(self):
         return SLHA_decay(self.decay_text)
-    @lazyprogerty
+    @lazyproperty
     def BLOCK(self):
         return SLHA_block(self.block_text,block_format=self.block_format)
     def __call__(self,name,*code):
@@ -87,7 +87,7 @@ class SLHA_document(SLHA_text):
     def __init__(self,SLHA_document,block_format=ReadBlock):
         self.path=SLHA_document
         self.block_format=ReadBlock
-    @lazyprogerty
+    @lazyproperty
     def text(self):
         # print(f'Getting text from {self.path}')
         with open(self.path,'r') as SLHA:
