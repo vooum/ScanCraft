@@ -12,13 +12,31 @@ class X2():
         self.err=(data.positive_error+err_th,data.negative_error+err_th)
         self.variance=(self.err[0]**2+self.err[1]**2)/2.
     def __call__(self,prediction):
-        return (prediction-self.value)**2/self.variance
+        chisquare= (prediction-self.value)**2/self.variance
+        return chisquare
+
+class DMDD_X2():
+#    InterpolatePsd=dark_matter.direct_detection.Psd
+#    InterpolatePsi=dark_matter.direct_detection.Psi
+#    InterpolateNsd=dark_matter.direct_detection.Nsd
+    def __init__(self,Interpolate):
+        self.Interpolate=Interpolate
+        self.mass=Interpolate.x
+        self.limit=Interpolate.y
+    def __call__(self,mass,CS_prediction):
+        limit=self.Interpolate(mass)
+        delta_sigmasq=UL**2/1.64**2+(0.2*SI)**2
+        chisquare=CS_prediction**2/delta_sigmasq
+        return chisquare
 
 class Chisquare_Test():
     mh=X2(LHC.Higgs_mass,err_th=mh_error_th)
     bsg=X2(LHC.b__s_gamma)
     bmu=X2(LHC.bs__mu_mu)
     omg=X2(dark_matter.relic_density,err_th=omg_err_th)
+    Psd=DMDD_X2(dark_matter.direct_detection.Psd)
+    Psi=DMDD_X2(dark_matter.direct_detection.Psi)
+    Nsd=DMDD_X2(dark_matter.direct_detection.Nsd)
 
 def Chisq(**predictions):
     X2_dict={}
