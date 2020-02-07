@@ -23,10 +23,10 @@ class DMDD_X2():
         self.Interpolate=Interpolate
         self.mass=Interpolate.x
         self.limit=Interpolate.y
-    def __call__(self,mass,CS_prediction):
+    def __call__(self,mass,cross_section):
         limit=self.Interpolate(mass)
-        delta_sigmasq=UL**2/1.64**2+(0.2*SI)**2
-        chisquare=CS_prediction**2/delta_sigmasq
+        delta_sigmasq=limit**2/1.64**2+(0.2*cross_section)**2
+        chisquare=cross_section**2/delta_sigmasq
         return chisquare
 
 class Chisquare_Test():
@@ -41,5 +41,11 @@ class Chisquare_Test():
 def Chisq(**predictions):
     X2_dict={}
     for key,prediction in predictions.items():
-        X2_dict[key]=getattr(Chisquare_Test,key)(prediction)
+        input_type=type(prediction)
+        if input_type is float:
+            X2_dict[key]=getattr(Chisquare_Test,key)(prediction)
+        elif input_type in [list,tuple]:
+            X2_dict[key]=getattr(Chisquare_Test,key)(*prediction)
+        elif input_type is dict:
+            X2_dict[key]=getattr(Chisquare_Test,key)(**prediction)
     return X2_dict

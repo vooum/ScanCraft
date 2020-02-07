@@ -3,7 +3,7 @@ import os
 from ..format.data_container import capsule
 from ..color_print import Error
 
-def GetSamples(path=None,patterns=None,number_position=-1,separator=','):
+def GetSamples(path=None,patterns=None,number_position=-1,separator='.'):
     '''
     number_position: where the number is in filename.
         eg. number_position=-2, inp.1.dat, spectr.1.dat

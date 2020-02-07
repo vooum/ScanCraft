@@ -66,21 +66,6 @@ class SLHA_text(object):
                 raise
         elif name=='WIDTH':
             return self.DECAY[code[0]]['WIDTH']
-    # methods to modify pickling behavior,
-    # see "Handling Stateful Objects" at
-    # https://docs.python.org/3.8/library/pickle.html#pickle-state
-    def __getstate__(self):
-        self.block_text
-        state=self.__dict__.copy()
-        for key in ['BLOCK','DECAY']:
-            try:
-                del state['BLOCK']
-            except KeyError:
-                pass
-        return state
-    def __setstate__(self,state):
-        self.__dict__.update(state)
-
 
 
 class SLHA_document(SLHA_text):
