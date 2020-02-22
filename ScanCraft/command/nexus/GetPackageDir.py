@@ -9,7 +9,7 @@ def GetPackageDir(name,silent=False):
     package_path=os.path.join(
         os.path.dirname(# Scancommando/
             os.path.dirname(# .command/
-                os.path.dirname(__file__)))# .command/operations/
+                os.path.dirname(__file__)))# .command/nexus/
                 ,'packages/')
     for i in os.listdir(package_path):
         if name in i:

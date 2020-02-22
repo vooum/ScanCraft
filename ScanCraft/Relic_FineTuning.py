@@ -74,8 +74,8 @@ for sample in samples[:200]:#636
     print(number_str)
 
     mold.GetValue(sample.documents['inp'],mapping={'auxiliary':'EXTPAR'})
-    del(mold.variable_list['Kappa'].value)
-    mold.variable_list['minusK'].value=-mold.variable_list['minusK'].value
+    del(mold.variable_dict['Kappa'].value)
+    mold.variable_dict['minusK'].value=-mold.variable_dict['minusK'].value
     
     diff_points={}
     # point in the central
@@ -121,8 +121,8 @@ def output_line(sample):
         omega_0
     ]
     for par in par_name_list:
-        block=mold.variable_list[par].block
-        code=mold.variable_list[par].code
+        block=mold.variable_dict[par].block
+        code=mold.variable_dict[par].code
         plus=diff_points[par+'+']
         minus=diff_points[par+'-']
 
