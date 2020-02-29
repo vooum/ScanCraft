@@ -7,7 +7,7 @@ from ..DataProcessing import SLHA_text,ReadBlock,ReadScalar
 from ..operators.object import lazyproperty
 
 # package version:
-package_name='NMSSMTools_5.4.1'
+package_name='NMSSMTools_5.5.2'
 
 # Read spectial blocks of NMSSMTools
 class NTools_block_format(ReadBlock):
@@ -128,5 +128,9 @@ class NMSSMTools(package):
         print(run)
         run=subprocess.run('make', cwd=self.package_dir, shell=True)
         print(run)
-    def Clean(self):
-        subprocess.run('make', input='y\ny\n', cwd=self.package_dir, shell=True)
+    # def Clean(self):
+    #     run=subprocess.Popen('make clean', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.package_dir, shell=True)
+    #     run.communicate(b'y')
+    #     run.communicate(b'y')
+    #     run.wait()
+    #     print('done')
