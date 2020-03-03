@@ -103,14 +103,17 @@ class NMSSMTools(package):
         self.input_dir=self.SetDir(self.input_file)
 
         self.record_dir=record_dir
+    
     @lazyproperty
     def SetInput(self):
         return GenerateInputWithScan(self.input_mold_text,self.point,self.input_dir)
+    
     def Run(self,point,ignore=[]):
         self.point=point
         self.SetInput(point)
         super().Run()
-        return ReadNToolsOutput(self.output_dir['spectr'],self.output_dir['omega'],ignore=ignore)
+        return NToolsOutput(self.output_dir['spectr'],self.output_dir['omega'],ignore=ignore)
+    
     def Record(self,number):
         destinations={
             'input'     :os.path.join(self.record_dir,f'inp.{number}'),
@@ -122,13 +125,16 @@ class NMSSMTools(package):
         try:
             shutil.copy(self.output_dir['omega'],destinations['omega'])
         except FileNotFoundError:
-            pass
+            del destinations['omega']
+        return destinations
+    
     def Make(self):
         with open('setup_log.txt','w') as log:
             run=subprocess.run('make init',
                 stdout=log, stderr=log ,cwd=self.package_dir, shell=True)
             run=subprocess.run('make',
                 stdout=log, stderr=log, cwd=self.package_dir, shell=True)
+    
     def Clean(self):
         with open('clean_log.txt','w') as log:
             run=subprocess.Popen('make clean',

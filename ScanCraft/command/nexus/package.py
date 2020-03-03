@@ -16,7 +16,8 @@ class package(object):
                 ):
         self.package_name=package_name
         if package_dir is None:
-            self.package_dir=GetPackageDir(package_name)
+            package_dir=GetPackageDir(package_name)
+        self.package_dir=package_dir
         SetDir=partial(os.path.join,self.package_dir)
         self.SetDir=SetDir
         self.run_subdir=run_subdir
