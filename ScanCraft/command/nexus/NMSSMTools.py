@@ -124,13 +124,17 @@ class NMSSMTools(package):
         except FileNotFoundError:
             pass
     def Make(self):
-        run=subprocess.run('make init', cwd=self.package_dir, shell=True)
-        print(run)
-        run=subprocess.run('make', cwd=self.package_dir, shell=True)
-        print(run)
-    # def Clean(self):
-    #     run=subprocess.Popen('make clean', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.package_dir, shell=True)
-    #     run.communicate(b'y')
-    #     run.communicate(b'y')
-    #     run.wait()
-    #     print('done')
+        with open('setup_log.txt','w') as log:
+            run=subprocess.run('make init',
+                stdout=log, stderr=log ,cwd=self.package_dir, shell=True)
+            run=subprocess.run('make',
+                stdout=log, stderr=log, cwd=self.package_dir, shell=True)
+    def Clean(self):
+        with open('clean_log.txt','w') as log:
+            run=subprocess.Popen('make clean',
+                stdin=subprocess.PIPE, stdout=log, stderr=log, cwd=self.package_dir, shell=True)
+            run.communicate(b'y\ny\n')
+        if run.returncode==0:
+            print('clean done')
+        else:
+            print('err in clean, return code:', run.returncode)
