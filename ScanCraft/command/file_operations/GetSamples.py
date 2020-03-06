@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 import os
-from ..format.data_container import capsule
+from .container import capsule
 from ..color_print import Error
 
 def GetSamples(path=None,patterns=None,number_position=-1,separator='.'):
@@ -27,12 +27,12 @@ def GetSamples(path=None,patterns=None,number_position=-1,separator='.'):
 
         if suffix not in sample_dict:
             sample_dict.update({ suffix:capsule() })
-            setattr( sample_dict[suffix], 'documents', {})
+            # setattr( sample_dict[suffix], 'documents', {})
         for p in patterns:
             if p in name:
-                if p in sample_dict[suffix].documents:
+                if p in sample_dict[suffix]:
                     Error("more than one files with pattern '%s' found")
                 else:
-                    sample_dict[suffix].documents.update( {p:os.path.abspath(os.path.join(path,document))} )
+                    sample_dict[suffix].update( {p:os.path.abspath(os.path.join(path,document))} )
 
     return [sample_dict[i] for i in sorted(sample_dict.keys())]

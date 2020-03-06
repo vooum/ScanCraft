@@ -93,40 +93,42 @@ class NMSSMTools(package):
             else:
                 with open(input_mold,'r') as mold:
                     self.input_mold_text=mold.readlines()
-        # self.input_file='inp'
-        # self.main_routine='run'
         command=f'./{self.main_routine} {self.input_file}'
         super().__init__(package_name=package_name,
                          package_dir=package_dir,
                          command=command,
-                         output_file=['spectr','omega'])
-        self.input_dir=self.SetDir(self.input_file)
+                         data_file=['inp','spectr','omega'])
 
         self.record_dir=record_dir
     
     @lazyproperty
     def SetInput(self):
-        return GenerateInputWithScan(self.input_mold_text,self.point,self.input_dir)
+        return GenerateInputWithScan(self.input_mold_text,self.point,self.data_dir['inp'])
     
-    def Run(self,point,ignore=[]):
+    def onlyRun(self,point,ignore=[]):
         self.point=point
         self.SetInput(point)
         super().Run()
-        return NToolsOutput(self.output_dir['spectr'],self.output_dir['omega'],ignore=ignore)
+        return
+
+    def Run(self,point,ignore=[]):
+        self.onlyRun(self,point,ignore=ignore)
+        return NToolsOutput(self.data_dir['spectr'],self.data_dir['omega'],ignore=ignore)
     
     def Record(self,number):
         destinations={
-            'input'     :os.path.join(self.record_dir,f'inp.{number}'),
-            'spectrum'  :os.path.join(self.record_dir,f'spectr.{number}'),
+            'inp'     :os.path.join(self.record_dir,f'inp.{number}'),
+            'spectr'  :os.path.join(self.record_dir,f'spectr.{number}'),
             'omega'     :os.path.join(self.record_dir,f'omega.{number}')
         }
-        shutil.copy(self.input_dir,destinations['input'])
-        shutil.copy(self.output_dir['spectr'],destinations['spectrum'])
-        try:
-            shutil.copy(self.output_dir['omega'],destinations['omega'])
-        except FileNotFoundError:
-            del destinations['omega']
-        return destinations
+        new_capsule=self.data_dir.CopyTo(destinations)
+        # shutil.copy(self.data_dir['inp'],destinations['input'])
+        # shutil.copy(self.data_dir['spectr'],destinations['spectrum'])
+        # try:
+        #     shutil.copy(self.data_dir['omega'],destinations['omega'])
+        # except FileNotFoundError:
+        #     del destinations['omega']
+        return new_capsule
     
     def Make(self):
         with open('setup_log.txt','w') as log:
