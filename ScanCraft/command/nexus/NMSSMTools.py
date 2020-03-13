@@ -131,14 +131,16 @@ class NMSSMTools(package):
         return new_capsule
     
     def Make(self):
-        with open('setup_log.txt','w') as log:
+        log_file=os.path.join(self.package_dir,'setup_log.txt')
+        with open(log_file,'w') as log:
             run=subprocess.run('make init',
                 stdout=log, stderr=log ,cwd=self.package_dir, shell=True)
             run=subprocess.run('make',
                 stdout=log, stderr=log, cwd=self.package_dir, shell=True)
     
     def Clean(self):
-        with open('clean_log.txt','w') as log:
+        log_file=os.path.join(self.package_dir,'clean_log.txt')
+        with open(log_file,'w') as log:
             run=subprocess.Popen('make clean',
                 stdin=subprocess.PIPE, stdout=log, stderr=log, cwd=self.package_dir, shell=True)
             run.communicate(b'y\ny\n')
