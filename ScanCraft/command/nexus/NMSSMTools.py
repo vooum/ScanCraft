@@ -105,14 +105,15 @@ class NMSSMTools(package):
     def SetInput(self):
         return GenerateInputWithScan(self.input_mold_text,self.point,self.data_dir['inp'])
     
-    def onlyRun(self,point,ignore=[]):
+    def onlyRun(self,point):
         self.point=point
+        self.DeleteData()
         self.SetInput(point)
         super().Run()
         return
 
     def Run(self,point,ignore=[]):
-        self.onlyRun(self,point,ignore=ignore)
+        self.onlyRun(point)
         return NToolsOutput(self.data_dir['spectr'],self.data_dir['omega'],ignore=ignore)
     
     def Record(self,number):

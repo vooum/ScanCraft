@@ -41,9 +41,13 @@ class package(object):
             self.Read=None
 
     def Run(self,input=None,timeout=None):
-        for document in self.data_dir.values():
-            try: os.remove(document)
-            except FileNotFoundError: pass
+        '''run command in self.command'''
         run=subprocess.Popen(self.command,cwd=self.run_dir,shell=True,
                 stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
         self.stdout,self.error=run.communicate(input=input,timeout=timeout)
+    
+    def DeleteData(self):
+        '''delete data files in self.data_dir'''
+        for document in self.data_dir.values():
+            try: os.remove(document)
+            except FileNotFoundError: pass

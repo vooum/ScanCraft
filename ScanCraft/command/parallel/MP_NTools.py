@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-
+# 未完成，这里的Queue需要将元素序列化，而scan对象暂时无法被序列化
 import os,shutil,time
 from multiprocessing import Process,Queue
+from _queue import Empty
 from ..nexus.NMSSMTools import NMSSMTools,package_name
 from ..nexus.GetPackageDir import GetPackageDir
 from ..file_operations.Rename import Tag_ctime
@@ -93,7 +94,7 @@ class MP_NTools():
             )
         start_time=time.time()
         total=point_queue.qsize()
-        print(f'Calculations begin at {time.ctime()}\n  threads:\t{self.processes}\n  points:\t{total}')
+        print(f'Calculations begin at {time.ctime()}\n  Processes:\t{self.processes}\n  points:\t{total}')
         
         for N_i in self.NTs:
             N_i.start()
@@ -104,7 +105,7 @@ class MP_NTools():
             if rest==0:
                 break
             else:
-                time.sleep(0.1)
+                time.sleep(1)
         for N_i in self.NTs:
             N_i.join()
         end_time=time.time()
@@ -116,3 +117,7 @@ class MP_NTools():
         )
         print('all data files stored in \'all_points\' attribute')
         return self.all_points
+
+    def DeleteData(self):
+        for record_dir in [N.record_dir for N in self.NTs]:
+            os.rmdir(record_dir)
