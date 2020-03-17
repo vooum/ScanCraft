@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from .data_structure_functions import FlatToList
+from ..operators.iterable import FlatToList
 
 class list_block():
     def __init__(self,PDG_name_dict):

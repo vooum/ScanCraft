@@ -57,6 +57,11 @@ class SLHA_text(object):
             except KeyError:
                 print(f'data with code:{code} not found in text:\n{data_dict}')
                 raise
+            except IndexError:
+                if len(code)==0:
+                    return getattr(self.BLOCK,name)
+                else: # just in case
+                    raise
         elif name=='DECAY':
             data_dict=self.DECAY[code[0]]
             try:
