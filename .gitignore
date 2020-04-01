@@ -10,6 +10,5 @@
 !/ScanCraft/*.py
 !/ScanCraft/laboratory
 /ScanCraft/laboratory/*
-!/ScanCraft/laboratory/*.ipynb*
+!/ScanCraft/laboratory/*.ipynb
 !/ScanCraft/laboratory/chips/
-
