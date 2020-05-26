@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-from collections import OrderedDict#,ChainMap
-from .SLHA_line import GetBlockName,GetDecayCode
-from ...operators.iterable import FlatToList
 from ...operators.object import lazyproperty
-from .SLHA_block import SLHA_block,ReadBlock
-from .SLHA_decay import SLHA_decay
-
+from .ReadBlock import ReadBlock
+from .ReadDecay import ReadDecay
+from collections import OrderedDict#,ChainMap
 
 class SplitText(lazyproperty):
     '''
@@ -33,8 +30,56 @@ class SplitText(lazyproperty):
                 target.append(line)
             return getattr(instance,self.func.__name__)
 
+
+class SLHA_block:
+    '''block'''
+    def __init__(self,block_text,block_format=ReadBlock):
+        self.text_dict=block_text
+        self.block_format=block_format
+    def __getattr__(self,block_name):
+        # print(f'find {block_name}')
+        try: text=self.text_dict[block_name]
+        except KeyError: 
+            print(f'{block_name} not found in text')
+            raise
+        try: data=getattr(self.block_format,block_name)(text)
+        except AttributeError:
+            print(f'Load method for {block_name} not found in block_format')
+            print(*self.text_dict[block_name])
+            raise
+        setattr(self,block_name,data)
+        return data
+
+class SLHA_decay:
+    '''particals' decay information'''
+    def __init__(self,decay_text):
+        self.text_dict=decay_text
+        self.data={}
+
+    def ReadDecay(self,p_code=None):
+        if p_code is None:
+            for p_code in self.text_dict.keys():
+                self.ReadDecay(p_code)
+        else:
+            try: text=self.text_dict[p_code]
+            except KeyError:
+                print(f'DECAY for particle-{code} not found in text')
+                raise
+            self.data[p_code]=ReadDecay(text)
+    def __getitem__(self,p_code):
+        try: return self.data[p_code]
+        except KeyError:
+            self.ReadDecay(p_code)
+            return self[p_code]
+    def __getattr__(self,p_str):
+        if p_str[0]=='p':
+            return self[int(p_str[1:])]
+        else:
+            print(f'Wrong Key: {p_str}')
+            print(r'argument "p_str" should be p{PDG} like p24 for Z decay')
+
 class SLHA_text(object):
-    '''extracted messages from SLHA file'''
+    '''extracted messages from SLHA text'''
     def __init__(self,text,block_format=ReadBlock):
         self.text=text
         self.block_format=block_format
@@ -72,8 +117,8 @@ class SLHA_text(object):
         elif name=='WIDTH':
             return self.DECAY[code[0]]['WIDTH']
 
-
 class SLHA_document(SLHA_text):
+    '''extracted messages from SLHA file'''
     def __init__(self,SLHA_document,block_format=ReadBlock):
         self.path=SLHA_document
         self.block_format=ReadBlock
