@@ -20,19 +20,19 @@ class SLHA_text(object):
         if case='all'(default), split all blocks'''
         last_case,start='head',0
         for i,line in enumerate(self.text):
-            start=line[:5].upper()
-            if 'BLOCK' == start:# block line
+            label=line[:5].upper()
+            if 'BLOCK' == label:# block line
                 current_case=GetBlockName(line) # str
-            elif 'DECAY' == start:# decay line
+            elif 'DECAY' == label:# decay line
                 current_case=GetDecayCode(line) # int
             else:
                 continue
             # find a case line
             end=i
-            self.menu[last_case]=tuple(start,end)
+            self.menu[last_case]=tuple([start,end])
             last_case,start=current_case,i
         # last line
-        self.menu[current_case]=tuple(start,-1)
+        self.menu[current_case]=tuple([start,-1])
     def GetTextOfCase(self,case_name):
         try:
             start,end=self.menu[case_name]
@@ -51,7 +51,13 @@ class SLHA_text(object):
         return {name:self.GetTextOfCase(name) for name in self.menu if type(name) is int}
     def ReadBlock(self,block_name):
         text=self.GetTextOfCase(block_name)
-        self._BLOCK[block_name]=getattr(self.block_format,block_name)(text)
+        try:
+            ReadFunc=getattr(self.block_format,block_name)
+        except AttributeError:
+            print(f'Function to read text of {block_name} not found in block_format.\n the text is:')
+            print(*text)
+            raise
+        self._BLOCK[block_name]=ReadFunc(text)
         return self._BLOCK[block_name]
     def ReadDecay(self,code):
         text=self.GetTextOfCase(code)
@@ -59,7 +65,7 @@ class SLHA_text(object):
         return self._DECAY[code]
     def __call__(self,block:str,*code):
         if block in self.menu:
-            data_dict=deepcopy(self._BLOCK[block])
+            data_dict=deepcopy(self._BLOCK.get('block',self.ReadBlock(block)))
             try:
                 return data_dict[code[0]]
             except IndexError:
@@ -69,10 +75,11 @@ class SLHA_text(object):
                 raise
         elif block=='DECAY':
             try:
-                data_dict=deepcopy(self._DECAY[code[0]])
+                PDG=code[0]
             except IndexError:
                 print('please give the PDG-code of particle')
                 raise
+            data_dict=deepcopy(self._DECAY.get(PDG,self.ReadDecay(PDG)))
             try:
                 return data_dict[code[1]]
             except IndexError:
@@ -82,11 +89,14 @@ class SLHA_text(object):
                 raise
         elif block=='WIDTH':
             try:
-                data_dict=deepcopy(self._DECAY[code[0]])
+                PDG=code[0]
             except IndexError:
                 print('please give the PDG-code of particle')
                 raise
+            data_dict=deepcopy(self._DECAY.get(PDG,self.ReadDecay(PDG)))
             return data_dict['WIDTH']
+        else:
+            print(f'block with name {block} not found')
 
 
 class SLHA_document(SLHA_text):
@@ -94,8 +104,8 @@ class SLHA_document(SLHA_text):
     def __init__(self,SLHA_document,block_format=ReadBlock):
         self.path=SLHA_document
         self.block_format=ReadBlock
-    @lazyproperty
-    def text(self):
-        # print(f'Getting text from {self.path}')
+    # @lazyproperty
+    # def text(self):
+    #     # print(f'Getting text from {self.path}')
         with open(self.path,'r') as SLHA:
-            return SLHA.readlines()
+            super().__init__(SLHA.readlines(),block_format=ReadBlock)
