@@ -7,7 +7,7 @@ except:
 def GetPackageDir(name,silent=False):
     candidate=[]
     package_path=os.path.join(
-        os.path.dirname(# Scancommando/
+        os.path.dirname(# ScanCraft/
             os.path.dirname(# .command/
                 os.path.dirname(__file__)))# .command/nexus/
                 ,'packages/')

@@ -45,22 +45,3 @@ for name in scalar_list:
     setattr(ReadBlock,name,ReadScalar)
 for name in matrix_list:
     setattr(ReadBlock,name,ReadMatrix)
-
-class SLHA_block:
-    '''block'''
-    def __init__(self,block_text,block_format=ReadBlock):
-        self.text_dict=block_text
-        self.block_format=block_format
-    def __getattr__(self,block_name):
-        # print(f'find {block_name}')
-        try: text=self.text_dict[block_name]
-        except KeyError: 
-            print(f'{block_name} not found in text')
-            raise
-        try: data=getattr(self.block_format,block_name)(text)
-        except AttributeError:
-            print(f'Load method for {block_name} not found in block_format')
-            print(*self.text_dict[block_name])
-            raise
-        setattr(self,block_name,data)
-        return data

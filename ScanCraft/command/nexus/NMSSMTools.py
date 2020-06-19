@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
-import os,shutil
+import os,shutil,subprocess
 from .package import package
 from .GenerateInputFile import GenerateInputWithScan
 from ..DataProcessing import SLHA_text,ReadBlock,ReadScalar
 from ..operators.object import lazyproperty
+
+# package version:
+package_name='NMSSMTools_5.5.2'
 
 # Read spectial blocks of NMSSMTools
 class NTools_block_format(ReadBlock):
@@ -72,42 +75,77 @@ class NToolsOutput(SLHA_text):
 
 
 class NMSSMTools(package):
+    input_file='inp'
+    main_routine='run'
     def __init__(self,
-                 package_name='NMSSMTools_5.4.1',
+                 package_name=package_name,
                  package_dir=None,
-                 input_mold='inp_mold',
+                 input_mold:str='',
+                 input_mold_text:list=[],
                  record_dir='./output/record/',
                  clean=None
                 ):
+        self.input_mold_text=input_mold_text
         self.input_mold=input_mold
-        self.input_file='inp'
-        self.main_routine='run'
+        if input_mold:
+            if input_mold_text:
+                print('input_mold_text is already given, input_mold not needed')
+            else:
+                with open(input_mold,'r') as mold:
+                    self.input_mold_text=mold.readlines()
         command=f'./{self.main_routine} {self.input_file}'
         super().__init__(package_name=package_name,
+                         package_dir=package_dir,
                          command=command,
-                         output_file=['spectr','omega'])
-        self.input_dir=self.SetDir(self.input_file)
-        with open(input_mold,'r') as mold:
-            self.input_mold_lines=mold.readlines()
+                         data_file=['inp','spectr','omega'])
 
         self.record_dir=record_dir
+    
     @lazyproperty
     def SetInput(self):
-        return GenerateInputWithScan(self.input_mold_lines,self.point,self.input_dir)
-    def Run(self,point,ignore=[]):
+        return GenerateInputWithScan(self.input_mold_text,self.point,self.data_dir['inp'])
+    
+    def onlyRun(self,point):
         self.point=point
+        self.DeleteData()
         self.SetInput(point)
         super().Run()
-        return ReadNToolsOutput(self.output_dir['spectr'],self.output_dir['omega'],ignore=ignore)
+        return
+
+    def Run(self,point,ignore=[]):
+        self.onlyRun(point)
+        return NToolsOutput(self.data_dir['spectr'],self.data_dir['omega'],ignore=ignore)
+    
     def Record(self,number):
         destinations={
-            'input'     :os.path.join(self.record_dir,f'inp.{number}'),
-            'spectrum'  :os.path.join(self.record_dir,f'spectr.{number}'),
+            'inp'     :os.path.join(self.record_dir,f'inp.{number}'),
+            'spectr'  :os.path.join(self.record_dir,f'spectr.{number}'),
             'omega'     :os.path.join(self.record_dir,f'omega.{number}')
         }
-        shutil.copy(self.input_dir,destinations['input'])
-        shutil.copy(self.output_dir['spectr'],destinations['spectrum'])
-        try:
-            shutil.copy(self.output_dir['omega'],destinations['omega'])
-        except FileNotFoundError:
-            pass
+        new_capsule=self.data_dir.CopyTo(destinations)
+        # shutil.copy(self.data_dir['inp'],destinations['input'])
+        # shutil.copy(self.data_dir['spectr'],destinations['spectrum'])
+        # try:
+        #     shutil.copy(self.data_dir['omega'],destinations['omega'])
+        # except FileNotFoundError:
+        #     del destinations['omega']
+        return new_capsule
+    
+    def Make(self):
+        log_file=os.path.join(self.package_dir,'setup_log.txt')
+        with open(log_file,'w') as log:
+            run=subprocess.run('make init',
+                stdout=log, stderr=log ,cwd=self.package_dir, shell=True)
+            run=subprocess.run('make',
+                stdout=log, stderr=log, cwd=self.package_dir, shell=True)
+    
+    def Clean(self):
+        log_file=os.path.join(self.package_dir,'clean_log.txt')
+        with open(log_file,'w') as log:
+            run=subprocess.Popen('make clean',
+                stdin=subprocess.PIPE, stdout=log, stderr=log, cwd=self.package_dir, shell=True)
+            run.communicate(b'y\ny\n')
+        if run.returncode==0:
+            print('clean done')
+        else:
+            print('err in clean, return code:', run.returncode)
