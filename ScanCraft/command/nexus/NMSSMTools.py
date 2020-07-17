@@ -62,7 +62,7 @@ class NToolsOutput(SLHA_text):
     @property
     def constraints(self):
         all_consts=[]
-        for constraint in self.BLOCK.SPINFO[3]:
+        for constraint in self('SPINFO')[3]:
             for const in self.ignore:
                 if const in constraint:
                     break
@@ -71,7 +71,7 @@ class NToolsOutput(SLHA_text):
         return all_consts
     @property
     def error(self):
-        return 4 in self.BLOCK.SPINFO
+        return 4 in self('SPINFO')
 
 
 class NMSSMTools(package):

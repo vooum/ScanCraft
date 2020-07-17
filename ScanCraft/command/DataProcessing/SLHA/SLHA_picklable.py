@@ -11,7 +11,7 @@ class SLHA_text(object):
         self.text=text
         self.current_line_number=0
         self.block_format=block_format
-        self.menu={}# [case:(begin_line_number,end_line_number)]
+        self.menu={}# A list like: [case:(begin_line_number,end_line_number), ]
         self.CheckMenu()
         self._BLOCK={}
         self._DECAY={}
@@ -64,8 +64,9 @@ class SLHA_text(object):
         self._DECAY[code]=ReadDecay(text)
         return self._DECAY[code]
     def __call__(self,block:str,*code):
-        if block in self.menu:
-            data_dict=deepcopy(self._BLOCK.get('block',self.ReadBlock(block)))
+        upperBLOCK=block.upper()
+        if upperBLOCK in self.menu:
+            data_dict=deepcopy(self._BLOCK.get(upperBLOCK,self.ReadBlock(upperBLOCK)))
             try:
                 return data_dict[code[0]]
             except IndexError:
@@ -73,7 +74,7 @@ class SLHA_text(object):
             except KeyError:
                 print(f'data with code:{code} not found in text:\n{self.GetTextOfCase[block]}')
                 raise
-        elif block=='DECAY':
+        elif upperBLOCK=='DECAY':
             try:
                 PDG=code[0]
             except IndexError:
@@ -87,7 +88,7 @@ class SLHA_text(object):
             except KeyError:
                 print(f'data with code:{code} not found in text:\n{self.GetTextOfCase[code[0]]}')
                 raise
-        elif block=='WIDTH':
+        elif upperBLOCK=='WIDTH':
             try:
                 PDG=code[0]
             except IndexError:
