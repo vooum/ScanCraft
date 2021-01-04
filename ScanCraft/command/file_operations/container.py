@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import shutil
 import copy
-import colored
+# import colored
 def KeyNotExist(key):
-    print(f'{colored.fg("red")}{colored.attr("bold")} Document:{key} dose not exist{colored.attr(0)}')
+    # print(f'{colored.fg("red")}{colored.attr("bold")} Document:{key} dose not exist{colored.attr(0)}')
+    print(f'Document:{key} dose not exist')
     return None
 
 class capsule(dict):
