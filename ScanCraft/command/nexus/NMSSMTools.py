@@ -33,8 +33,6 @@ class NTools_block_format(ReadBlock):
                 # last_code=code
         return info
 
-def ReadNToolsOutput(spectr_dir,*omega_dir,ignore=[]):
-    return NToolsOutput(spectr_dir,*omega_dir,ignore=ignore)
 
 def CorrectSpectrText(text:list)->list: # There is some mistakes in NMSSMTools output file: spectrum
     for i,line in enumerate(text):
@@ -80,6 +78,10 @@ class NToolsOutput(SLHA_text):
         return 4 in self('SPINFO')
 
 
+def ReadNToolsOutput(spectr_dir,*omega_dir,ignore=[]):
+    return NToolsOutput(spectr_dir,*omega_dir,ignore=ignore)
+
+    
 class NMSSMTools(package):
     input_file='inp'
     main_routine='run'
