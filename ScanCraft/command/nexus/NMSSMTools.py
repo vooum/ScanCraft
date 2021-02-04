@@ -36,28 +36,34 @@ class NTools_block_format(ReadBlock):
 def ReadNToolsOutput(spectr_dir,*omega_dir,ignore=[]):
     return NToolsOutput(spectr_dir,*omega_dir,ignore=ignore)
 
+def CorrectSpectrText(text:list)->list: # There is some mistakes in NMSSMTools output file: spectrum
+    for i,line in enumerate(text):
+        if line == '# BLOCK FINETUNING\n' :
+            text[i]=line[2:]
+        elif line[-5:]=='n^SD\n':
+            if line.strip()[0] == '2':
+                text[i]=line.replace('2','3',1)
+        elif line[-5:]=='p^SD\n':
+            if line.strip()[0] == '2':
+                text[i]=line.replace('2','4',1)
+    return text
+
 class NToolsOutput(SLHA_text):
     def __init__(self,spectr_dir=None,omega_dir=None,text=None,ignore=[]):
         self.ignore=ignore
         output_text=[]
         if spectr_dir:
             with open(spectr_dir,'r') as spectr:
-                for line in spectr:
-                    if line=='# BLOCK FINETUNING\n':
-                        output_text.append(line[2:])
-                    else:
-                        output_text.append(line)
+                corrected=CorrectSpectrText(spectr.readlines())
+                output_text.extend(corrected)
             self.spectr_dir=spectr_dir
         if omega_dir:
             with open(omega_dir,'r') as omega:
                 output_text.extend(omega.readlines())
             self.omega_dir=omega_dir[0]
         if text:
-            for line in text:
-                if line=='# BLOCK FINETUNING\n':
-                    output_text.append(line[2:])
-                else:
-                    output_text.append(line)
+            corrected=CorrectSpectrText(text)
+            output_text.extend(corrected)
         super().__init__(output_text,block_format=NTools_block_format)
     @property
     def constraints(self):
