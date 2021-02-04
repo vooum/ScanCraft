@@ -12,7 +12,7 @@ class capsule(dict):
     def MoveTo(self,destinations):
         keys=destinations.keys()
         if self.keys()!=keys:
-            Error('keys do not match while moving files')
+            print('keys do not match while moving files')
         else:
             for key in keys:
                 shutil.move(self[key],destinations[key])
