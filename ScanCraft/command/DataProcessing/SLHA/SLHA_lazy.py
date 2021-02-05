@@ -8,7 +8,7 @@ from collections import OrderedDict#,ChainMap
 class SplitText(lazyproperty):
     '''
     Text will be seperated into partitions and store them in:
-        instance.block_text & instance.decay_text
+        instance.block_dict & instance.decay_dict
     Each partition start with a line start with 'BLOCK' or 'DECAY'.
     If any space or tab exist before 'BLOCK' or 'DECAY', that line will be ignored
     '''
@@ -18,23 +18,23 @@ class SplitText(lazyproperty):
         else:
             # This branch will be accessed by:
             # 'instance.SplitText_decorated_function()'
-            instance.block_text=OrderedDict()
-            instance.decay_text=OrderedDict()
-            target=instance.block_text.setdefault('head',[])
+            instance.block_dict=OrderedDict()
+            instance.decay_dict=OrderedDict()
+            target=instance.block_dict.setdefault('head',[])
             for line in instance.text:
                 start=line[:5].upper()
                 if 'BLOCK' == start:
-                    target=instance.block_text.setdefault(GetBlockName(line),[])
+                    target=instance.block_dict.setdefault(GetBlockName(line),[])
                 elif 'DECAY' == start:
-                    target=instance.decay_text.setdefault(GetDecayCode(line),[])
+                    target=instance.decay_dict.setdefault(GetDecayCode(line),[])
                 target.append(line)
             return getattr(instance,self.func.__name__)
 
 
 class SLHA_block:
     '''block'''
-    def __init__(self,block_text,block_format=ReadBlock):
-        self.text_dict=block_text
+    def __init__(self,block_dict,block_format=ReadBlock):
+        self.text_dict=block_dict
         self.block_format=block_format
     def __getattr__(self,block_name):
         # print(f'find {block_name}')
@@ -52,8 +52,8 @@ class SLHA_block:
 
 class SLHA_decay:
     '''particals' decay information'''
-    def __init__(self,decay_text):
-        self.text_dict=decay_text
+    def __init__(self,decay_dict):
+        self.text_dict=decay_dict
         self.data={}
 
     def ReadDecay(self,p_code=None):
@@ -84,18 +84,18 @@ class SLHA_text(object):
         self.text=text
         self.block_format=block_format
     @SplitText
-    def block_text(self): pass
+    def block_dict(self): pass
     @SplitText
-    def decay_text(self): pass
+    def decay_dict(self): pass
     @lazyproperty
     def DECAY(self):
-        return SLHA_decay(self.decay_text)
+        return SLHA_decay(self.decay_dict)
     @lazyproperty
     def BLOCK(self):
-        return SLHA_block(self.block_text,block_format=self.block_format)
+        return SLHA_block(self.block_dict,block_format=self.block_format)
     def __call__(self,name,*code):
         name=name.upper()
-        if name in self.block_text.keys():
+        if name in self.block_dict.keys():
             data_dict=getattr(self.BLOCK,name)
             try:
                 return data_dict[code[0]]

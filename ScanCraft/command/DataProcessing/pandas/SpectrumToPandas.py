@@ -1,37 +1,47 @@
 #!/usr/bin/env python3
 
 import numpy,pandas,colored
-#from multiprocessing import Pool # SLHA_text still not picklable
-from ..SLHA.SLHA_document import SLHA_text
+#from multiprocessing import Pool 
+from .. import SLHA_text
 from ...format.block_table import block_table
 from ...operators.iterable import FlatToList,SortMixList
 
-def _GetBlocks(spec): # list of block names of given spectrum
-    return list(spectr.block_text.keys())
+def _GetBlocks(spectrum:SLHA_text) -> list:
+    '''Get a list of READable block names of a given spectrum
+    '''
+    readable_blocks=[b for b in spectrum.block_dict.keys() 
+                        if hasattr( spectrum.block_format, b)
+                    ]
+    return readable_blocks
 def _GetBlockList(spec_list):
+    '''Get a list of All block names from a list of spectrum'''
     # with Pool() as P:
     #     block_lists=P.map( _GetBlocks, spec_list )
     block_lists=[_GetBlocks(spec) for spec in spec_list]
     block_set=set(FlatToList(block_lists))
-    block_list=[ b for b in block_table if b in block_set]
+    block_list=[ b for b in dir(block_table) 
+                    if b in block_set
+                ]
     return block_list
-def _GetCodes(pars):# list of codes of given spectrum and block
-    # spec,block_name=pars
-    # return list(spec(block_name).keys())
-    return list( pars[0](pars[1]).keys() )
+def _GetCodes(spectrum,block_name)->list:
+    '''Get a list of codes of given spectrum and block_name'''
+    return list(spectrum(block_name).keys())
+    # return list( pars[0](pars[1]).keys() )
 def _GetCodeList(spec_list,block_name):
+    '''Collect codes of given block_name from all spectrums in spec_list'''
     # with Pool() as P:
     #     code_lists=P.map(
     #         _GetCodes,
     #         [(spec,block_name) for spec in spec_list]
     #     )
-    code_lists=[_GetCodes((spec,block_name)) for spec in spec_list]
+    code_lists=[_GetCodes(spec,block_name) for spec in spec_list]
     code_list=list(set(
         sum(code_lists,[])
     ))
     code_list.sort()
     return code_list
 def _ExpandIndex(spec_list,index):
+    '''Expand index (block_name or a list of it) to tuples of (block_name, code)'''
     tuple_block_code_list=[]
     for i_i in index:
         if type(i_i) is str: # block_name
@@ -56,7 +66,7 @@ def SpectrumToPandas(*spectrum_list,index=None,title=None):
     block_code_list=[]
     # get columns from spectrum
     if index is None:# Not done
-        index=_GetBlockSet(SL)
+        index=_GetBlockList(SL)
     elif type(index) is str:
         index=[index]
     elif isinstance(index,list):
