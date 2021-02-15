@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
-import numpy,pandas,colored
+import numpy,pandas
 #from multiprocessing import Pool 
 from .. import SLHA_text
 from ...format.block_table import block_table
 from ...operators.iterable import FlatToList,SortMixList
+red='\x1b[38;5;1m'
+bold='\x1b[1m'
+clean_color='\x1b[0m'
 
 def _GetBlocks(spectrum:SLHA_text) -> list:
     '''Get a list of READable block names of a given spectrum
@@ -59,7 +62,7 @@ def SpectrumToPandas(*spectrum_list,index=None,title=None):
     flags=[isinstance(spec,SLHA_text) for spec in SL]
     if not all(flags):
         print(flags.index(False))
-        print(f'{colored.fg("red")}{colored.attr("bold")}wrong type when interpreting spectrum data into Pandas{colored.attr(0)}')
+        print(f'{red}{bold}wrong type when interpreting spectrum data into Pandas{clean_color}')
         exit()
     # get columns
     column_list=[]
@@ -72,7 +75,7 @@ def SpectrumToPandas(*spectrum_list,index=None,title=None):
     elif isinstance(index,list):
         pass
     else:
-        print(f'{colored.fg("red")}{colored.attr("bold")}Wrong type of index.{colored.attr(0)}')
+        print(f'{red}{bold}Wrong type of index.{clean_color}')
         exit()
     
     block_code_list=_ExpandIndex(SL,index)
