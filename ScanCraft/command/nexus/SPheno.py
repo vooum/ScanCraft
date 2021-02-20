@@ -18,7 +18,7 @@ from ..read.SLHA_string import SLHA_string
 from ..operators.iterable import FlatToList
 
 block_mapping=dict(
-    [ (i,i+'IN') 
+    [ (i,i+'IN')
         for i in ['MSOFT','NMSSMRUN'
             ,'MSQ2','MSU2','MSD2','MSL2','MSE2','TU','TD','TE'
             ,'MUX','MV2','MX2','YV','LAMN','BMUX','TV','TLAMN'] ]
