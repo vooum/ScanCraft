@@ -3,6 +3,7 @@
 from .SLHA_line import LoopLines
 
 class special_blocks():
+    @staticmethod
     @LoopLines
     def HIGGSCOUPLINGSBOSONS(line):
         s=line.split()
@@ -10,6 +11,7 @@ class special_blocks():
         np=int(s[1])
         tuple_p=tuple([int(i) for i in s[2:2+np]])
         return {tuple_p:v}
+    @staticmethod
     @LoopLines
     def HIGGSCOUPLINGSFERMIONS(line):
         s=line.split()
@@ -17,6 +19,7 @@ class special_blocks():
         np=int(s[2])
         tuple_p=tuple([int(i) for i in s[3:3+np]])
         return {tuple_p:v}
+    @staticmethod
     @LoopLines
     def HIGGSBOUNDSRESULTS(line):
         semanteme=line.split()
@@ -27,6 +30,7 @@ class special_blocks():
         elif semanteme[1]=='3':
             return {'obsratio'+semanteme[0]:float(semanteme[2])}
         else: return {}
+    @staticmethod
     @LoopLines
     def HIGGSSIGNALSRESULTS(line):
         semanteme=line.split()

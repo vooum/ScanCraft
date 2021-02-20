@@ -8,6 +8,7 @@
 !/ScanCraft/Scan/
 !/ScanCraft/Script/
 !/ScanCraft/*.py
+!/ScanCraft/scenarios
 !/ScanCraft/laboratory
 /ScanCraft/laboratory/*
 !/ScanCraft/laboratory/*.ipynb*
