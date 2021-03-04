@@ -114,7 +114,7 @@ SLHA = {
 }
 
 MicrOMEGAs = {
-    'RDINFO':{1:'Dark matter package'，2:'Version number'},
+    'RDINFO':{1:'Dark matter package', 2:'Version number'},
     'ABUNDANCE': {
         1: 'T_f[GeV]',
         3: 'vSigma',
