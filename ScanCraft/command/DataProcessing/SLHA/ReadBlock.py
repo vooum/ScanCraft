@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
 
 from functools import wraps
+from .Accords import SLHA,MicrOMEGAs,matrixs
 from ...operators.string import Dfloat
 from .SLHA_line import LoopLines
 
-scalar_groups={
-    'SUSY_input':   ['MINPAR','EXTPAR'],
-    'additional':   ['NMSSMRUN','MSOFT'],
-    'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LHCFIT','FINETUNING'],
-    'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT','INDIRECT_CHISQUARES']
+additional_scalars={
+    'SPhenoLowEnergy',
+    'FlavorKitQFV',
+    'INDIRECT_CHISQUARES'
 }
-matrix_groups={
-    'Mass'      :   ['MSD2','MSE2','MSL2','MSQ2','MSU2'],
-    'Mix'       :   ['NMHMIX','NMAMIX','STOPMIX','NMNMIX','UMIX','VMIX'],
-    'Triliner'  :   ['TD','TE','TU'],
-    'SeeSaw'    :   ['MUX','MV2','MX2','YV','TV','BMUX','LAMN','TLAMN'],
-    'output'    :   ['YE','YU','YD',
-                     'HiggsLHC13','HiggsLHC14','REDCOUP']
+additional_matrixs={
+    'MUX','MV2','MX2','YV','TV','BMUX','LAMN','TLAMN', # 'SeeSaw
+    'HiggsLHC13','HiggsLHC14','REDCOUP'
 }
-scalar_list=[ i.upper() for j in scalar_groups.values()  for i in j ]
-matrix_list=[ i.upper() for j in matrix_groups.values()  for i in j ]
+
+scalar_list=[ i.upper() for i in
+    set( SLHA.keys() ) | set( MicrOMEGAs.keys() ) | additional_scalars
+]
+matrix_list=[ i.upper() for i in
+    set( matrixs ) | additional_matrixs
+]
 
 
 @staticmethod
