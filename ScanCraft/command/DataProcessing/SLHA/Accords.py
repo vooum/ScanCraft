@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from collections import ChainMap
+
 PDG = {
     1: 'd', 2: 'u', 3: 's', 4: 'c', 5: 'b', 6: 't',
     11: 'e-', 12: 'nu_e', 13: 'mu-', 14: 'nu_mu', 15: 'tau-', 16: 'nu_tau',
@@ -18,7 +20,7 @@ PDG = {
 
 # scalar blocks
 ## format: { block_name: { entry_code : definition}, }
-SLHA = {
+SLHA_standard = {
     'SPINFO': {
         1: 'spectrum calculator name',
         2: 'version number',
@@ -151,6 +153,7 @@ NMSSMTools = {
     }
 }
 
+entries = ChainMap(SLHA_standard,NMSSMTools)
 
 matrixs = {
     'NMHMIX': '',

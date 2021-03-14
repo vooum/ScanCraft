@@ -2,7 +2,7 @@
 
 from .special_blocks import special_blocks
 from functools import wraps
-from .Accords import SLHA, MicrOMEGAs, matrixs
+from .Accords import entries, matrixs
 from ...operators.string import Dfloat
 from .SLHA_line import LoopLines
 
@@ -17,7 +17,7 @@ additional_matrixs = {
 }
 
 scalar_list = [i.upper() for i in
-               set(SLHA.keys()) | set(MicrOMEGAs.keys()) | additional_scalars
+               set(entries.keys()) | additional_scalars
                ]
 matrix_list = [i.upper() for i in
                set(matrixs) | additional_matrixs
