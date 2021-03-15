@@ -6,9 +6,8 @@ from _queue import Empty
 from ..nexus.NMSSMTools import NMSSMTools,package_name
 from ..nexus.GetPackageDir import GetPackageDir
 from ..file_operations.Rename import Tag_ctime
-import colored
 from ..operators.time import ChangeTime
-from ..operators.iterable import FlatToList
+from ..DataProcessing.data_operators.list_operators import FlatToList
 
 class NTools_thread(Thread):
     pylon='pylon'

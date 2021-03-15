@@ -17,7 +17,7 @@ class lazyproperty: # P271 in Python Cookbook
             return value
 
 class lazyclass: # P271 in Python Cookbook
-    def __init__(self,func,arg):
+    def __init__(self,func,args):
         self.func=func
         self.args=args
     def __get__(self,instance,cls):

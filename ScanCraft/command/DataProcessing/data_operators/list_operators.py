@@ -8,7 +8,7 @@ def FlatToList(*Lists):
     # DL=[list(i)for i in Lists]
     return FTL([list(i)for i in Lists])
 
-def SortMixList(mix_list):
+def SortMixList(mix_list:list)->list:
     try:
         return sorted(mix_list)
     except TypeError:
