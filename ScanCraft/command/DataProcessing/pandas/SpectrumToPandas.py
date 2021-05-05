@@ -4,15 +4,14 @@ import numpy,pandas
 #from multiprocessing import Pool 
 from .. import SLHA_text
 from ...format.block_table import block_table
-from ...DataProcessing.data_operators.list_operators import FlatToList,SortMixList
+from ..data_operators.list_operators import FlatToList,SortMixList
 color_red='\x1b[38;5;1m'
 color_bold='\x1b[1m'
 color_clean='\x1b[0m'
 
 def _GetBlocks(spectrum:SLHA_text) -> list:
-    '''Get a list of READable block names of a given spectrum
-    '''
-    readable_blocks=[b for b in spectrum.block_dict.keys() 
+    '''Get a list of READable block names of a given spectrum'''
+    readable_blocks=[b for b in spectrum.menu.keys() 
                         if hasattr( spectrum.block_format, b)
                     ]
     return readable_blocks
@@ -30,7 +29,7 @@ def _GetCodes(spectrum,block_name)->list:
     '''Get a list of codes of given spectrum and block_name'''
     return list(spectrum(block_name).keys())
     # return list( pars[0](pars[1]).keys() )
-def _GetCodeList(spec_list,block_name):
+def _GetAllCodes(spec_list,block_name):
     '''Collect codes of given block_name from all spectrums in spec_list'''
     # with Pool() as P:
     #     code_lists=P.map(
@@ -43,20 +42,20 @@ def _GetCodeList(spec_list,block_name):
     ))
     code_list.sort()
     return code_list
-def _ExpandIndex(spec_list,index):
+def _ExpandIndex(spec_list:list(SLHA_text),index:list):
     '''Expand index (block_name or a list of it) to tuples of (block_name, code)'''
     tuple_block_code_list=[]
     for i_i in index:
         if type(i_i) is str: # block_name
             tuple_block_code_list.extend(
-                [ (i_i,code) for code in _GetCodeList(spec_list,i_i)]
+                [ (i_i,code) for code in _GetAllCodes(spec_list,i_i)]
             )
         elif type(i_i) is tuple: # (block_name,code)
+            assert len(i_i)==2, "index element should be a string or a lenth 2 tuple."
             tuple_block_code_list.append(i_i)
     return tuple_block_code_list
 
-def SpectrumToPandas(*spectrum_list,index=None,title=None):
-    if title is None: title='spectrum'
+def SpectrumToPandas(*spectrum_list,index=None,title='Spectrum'):
     SL=FlatToList(spectrum_list)
     # check all items in spectrum_list are SLHA_text objects
     flags=[isinstance(spec,SLHA_text) for spec in SL]
