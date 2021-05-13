@@ -4,14 +4,14 @@ from .. import SLHA_text
 from ..data_operators.list_operators import FlatToList
 import numpy,pandas
 
-def _GetInitials(spectrum:SLHA_text)->List(int):
+def _GetInitials(spectrum:SLHA_text)->list(int):
     '''Get a list of Decay initial PDGs'''
     initials = [d for d in spectrum.menu.keys() 
                 if type(d) is int
             ]
     return initials
 
-def _GetInitialList(spec_list:List(SLHA_text) )->list(int):
+def _GetInitialList(spec_list:list(SLHA_text) )->list(int):
     '''a sorted list within all initial PDG that may decay'''
     # only used when initial particle is not assigned
     list_of_initials=[
@@ -22,7 +22,7 @@ def _GetInitialList(spec_list:List(SLHA_text) )->list(int):
     ))
     return initial_list
 
-def _GetFinals(spectrum:SLHA_text,initial:int) -> List(tuple):
+def _GetFinals(spectrum:SLHA_text,initial:int) -> list(tuple):
     '''Get a list of final states tuples for a given initial PDG'''
     return list( spectrum('DECAY',initial).keys() )
 
@@ -78,13 +78,27 @@ def DecayToPandas(*spectrum_list,index=None,title='Decay'):
         print('index of decay particle should be an integer, a list, or None.')
         exit()
     
+    # [ ( iniPDG, (final state PDGs) ), ... ]
     ini_final_list=_ExpandDecayIndex(SL,index)
+
     column_list=[
-        (title,str(ini),str(finals),)
+        (title, ini, finals, f'{ini}->{finals}' )
         for ini, finals in ini_final_list
     ]
-    
     # pandas column
     column_Pd=pandas.MultiIndex.from_tuples(column_list 
                 ,names=['title','block','code','name']
                 )
+    
+    # get data array
+    value_list = []
+    for spec in SL:
+        row=[]
+        for ini, finals in ini_final_list:
+            try:
+                row.append(spec('DECAY', ini, finals) )
+            except KeyError:
+                row.append(numpy.nan)
+        value_list.append(row)
+    DF=pandas.DataFrame(numpy.array(value_list),columns=column_Pd)
+    return DF
