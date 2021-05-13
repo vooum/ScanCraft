@@ -81,6 +81,7 @@ def DecayToPandas(*spectrum_list,index=None,title='Decay'):
     ini_final_list=_ExpandDecayIndex(SL,index)
     column_list=[
         (title,str(ini),str(finals),)
+        for ini, finals in ini_final_list
     ]
     
     # pandas column

@@ -155,8 +155,8 @@ NMSSMTools = {
 
 entries = ChainMap(SLHA_standard,NMSSMTools)
 
-matrixs = {
-    'NMHMIX': '',
+matrixs = { # not finished
+    'NMHMIX': 'neutralino mix (5*5)',
     'NMAMIX': '',
     'STOPMIX': '',
     'SBOTMIX': '',
