@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import numpy,pandas
-from ..operators.iterable import FlatToList
+from ..DataProcessing.data_operators.list_operators import FlatToList
 # from ..format.data_container import capsule
 from ..data_transformer.defult_parameter_order import defult_name_order
 from ..scan.scan import scan

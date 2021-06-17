@@ -4,7 +4,7 @@ import numpy,copy,math
 from collections import ChainMap
 from ..read.readline import ReadLine
 from ..color_print import Error,Caution
-from ..DataProcessing.SLHA.SLHA_document import SLHA_document
+from ..DataProcessing.SLHA.SLHA_picklable import SLHA_document
 from .free_parameter import independent_scalar,independent_element,follower,dependent_scalar
 from ..format.parameter_type import scalar
 

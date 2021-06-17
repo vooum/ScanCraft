@@ -7,7 +7,7 @@ from .ReadDecay import ReadDecay
 
 class SLHA_text(object):
     '''need Python3.8 or higher version'''
-    def __init__(self,text:list,block_format=ReadBlock):
+    def __init__(self, text:list, block_format=ReadBlock):
         self.text=text
         self.current_line_number=0
         self.block_format=block_format
@@ -38,17 +38,20 @@ class SLHA_text(object):
             start,end=self.menu[case_name]
         except KeyError:
             if type(case_name) is str:
-                print(f'{block_name} not found in text')
+                print(f'block {case_name} not found in text')
             elif type(case_name) is int:
-                print(f'DECAY for particle-{code} not found in text')
+                print(f'DECAY for particle-{case_name} not found in text')
             raise
         return self.text[start:end]
+
     @property
     def block_dict(self):
         return {name:self.GetTextOfCase(name) for name in self.menu if type(name) is str}
+
     @property
     def decay_dict(self):
         return {name:self.GetTextOfCase(name) for name in self.menu if type(name) is int}
+
     def ReadBlock(self,block_name):
         text=self.GetTextOfCase(block_name)
         try:
@@ -59,11 +62,13 @@ class SLHA_text(object):
             raise
         self._BLOCK[block_name]=ReadFunc(text)
         return self._BLOCK[block_name]
+
     def ReadDecay(self,code):
         text=self.GetTextOfCase(code)
         self._DECAY[code]=ReadDecay(text)
         return self._DECAY[code]
-    def __call__(self,block:str,*code):
+        
+    def __call__(self, block:str, *code):
         upperBLOCK=block.upper()
         if upperBLOCK in self.menu:
             data_dict=deepcopy(self._BLOCK.get(upperBLOCK,self.ReadBlock(upperBLOCK)))
@@ -86,7 +91,7 @@ class SLHA_text(object):
             except IndexError:
                 return data_dict
             except KeyError:
-                print(f'data with code:{code} not found in text:\n{self.GetTextOfCase[code[0]]}')
+                print(f'data with code:{code} not found in text:\n{ self.GetTextOfCase[code[0]]}')
                 raise
         elif upperBLOCK=='WIDTH':
             try:

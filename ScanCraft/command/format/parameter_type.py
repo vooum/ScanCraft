@@ -27,7 +27,7 @@ class matrix():
         elif type(shape) is int:
             self.shape=(shape,shape)
         else:
-            Error('wrong type of shape of matrix %s'(name))
+            Error(f'wrong type of shape of matrix {name}')
 
     def Set_value(new_value):
         # set value

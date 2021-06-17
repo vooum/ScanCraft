@@ -1,47 +1,52 @@
 #!/usr/bin/env python3
 
+from .special_blocks import special_blocks
 from functools import wraps
+from .Accords import entries, matrixs
 from ...operators.string import Dfloat
 from .SLHA_line import LoopLines
 
-scalar_groups={
-    'SUSY_input':   ['MINPAR','EXTPAR'],
-    'additional':   ['NMSSMRUN','MSOFT'],
-    'output'    :   ['MASS','SPhenoLowEnergy','FlavorKitQFV','LHCFIT','FINETUNING'],
-    'omega'     :   ['ABUNDANCE','LSP','NDMCROSSSECT','INDIRECT_CHISQUARES']
+additional_scalars = {
+    'SPhenoLowEnergy',
+    'FlavorKitQFV',
+    'INDIRECT_CHISQUARES'
 }
-matrix_groups={
-    'Mass'      :   ['MSD2','MSE2','MSL2','MSQ2','MSU2'],
-    'Mix'       :   ['NMHMIX','NMAMIX','STOPMIX','NMNMIX','UMIX','VMIX'],
-    'Triliner'  :   ['TD','TE','TU'],
-    'SeeSaw'    :   ['MUX','MV2','MX2','YV','TV','BMUX','LAMN','TLAMN'],
-    'output'    :   ['YE','YU','YD',
-                     'HiggsLHC13','HiggsLHC14','REDCOUP']
+additional_matrixs = {
+    'MUX', 'MV2', 'MX2', 'YV', 'TV', 'BMUX', 'LAMN', 'TLAMN',  # 'SeeSaw
+    'HiggsLHC13', 'HiggsLHC14', 'REDCOUP'
 }
-scalar_list=[ i.upper() for j in scalar_groups.values()  for i in j ]
-matrix_list=[ i.upper() for j in matrix_groups.values()  for i in j ]
+
+scalar_list = [i.upper() for i in
+               set(entries.keys()) | additional_scalars
+               ]
+matrix_list = [i.upper() for i in
+               set(matrixs) | additional_matrixs
+               ]
 
 
 @staticmethod
 @LoopLines
 def ReadScalar(line):
-    s=line.split()
-    code=int(s[0])
-    value=Dfloat(s[1])
-    return {code:value}
+    s = line.split()
+    code = int(s[0])
+    value = Dfloat(s[1])
+    return {code: value}
+
+
 @staticmethod
 @LoopLines
 def ReadMatrix(line):
-    s=line.split()
-    code=(int(s[0]),int(s[1]))
-    value=Dfloat(s[2])
-    return {code:value}
+    s = line.split()
+    code = (int(s[0]), int(s[1]))
+    value = Dfloat(s[2])
+    return {code: value}
 
-from .special_blocks import special_blocks
-class ReadBlock(special_blocks): # Container of methods to read SLHA data
+
+class ReadBlock(special_blocks):  # Container of methods to read SLHA data
     pass
 
+
 for name in scalar_list:
-    setattr(ReadBlock,name,ReadScalar)
+    setattr(ReadBlock, name, ReadScalar)
 for name in matrix_list:
-    setattr(ReadBlock,name,ReadMatrix)
+    setattr(ReadBlock, name, ReadMatrix)

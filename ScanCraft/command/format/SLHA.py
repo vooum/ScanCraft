@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ..operators.iterable import FlatToList
+from ..DataProcessing.data_operators.list_operators import FlatToList
 
 class list_block():
     def __init__(self,PDG_name_dict):
@@ -14,7 +14,7 @@ class matrix_block():
         return '_'.join(str(i) for i in FlatToList([self.name,element]))  #例如self.name=Hmix,element=(3,3) 它们组成列表[Hmix,3,3],
 
 SMINPUTS={1:'ALPHA_EM^-1(MZ)',2:'GF',3:'ALPHA_S(MZ)',
-          4:'MZ',5:'MB',6:'MTOP',7:'MTAU'}        
+          4:'MZ',5:'MB',6:'MTOP',7:'MTAU'}
 MINPAR={3:'tanB',0:'SCALE'}
 EXTPAR={1:'M1',2:'M2',3:'M3',
         11:'Atop',12:'Abottom',

@@ -15,7 +15,7 @@ from .GetPackageDir import GetPackageDir
 from ..format.data_container import capsule
 from ..read.readSLHA import ReadSLHAFile
 from ..read.SLHA_string import SLHA_string
-from ..operators.iterable import FlatToList
+from ..DataProcessing.data_operators.list_operators import FlatToList
 
 block_mapping=dict(
     [ (i,i+'IN')

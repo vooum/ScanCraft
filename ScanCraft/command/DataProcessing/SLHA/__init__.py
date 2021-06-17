@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
 # 说明：
-# 该SLHA读取包大量采用了懒加载属性
+
+# SLHA_lazy:
+# 该SLHA读取包大量采用了懒加载属性。
+# SLHA_picklable:
+# 该函数存在的目的是方便多进程使用。
+
 # 读取SLHA数据文件：
 #     从文件读取：
 #     spectr=SLHA_document({path},blockformat=ReadBlock)

@@ -3,6 +3,7 @@
 from ...operators.string import Dfloat
 
 def FormatTo_float_tuple(line):
+    '''Get PDG tuple of final states'''
     splited=line.split()
     value=float(splited[0])
     member_number=int(splited[1])
