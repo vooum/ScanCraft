@@ -7,7 +7,7 @@ from ..DataProcessing import SLHA_text,ReadBlock,ReadScalar
 from ..operators.object import lazyproperty
 
 # package version:
-package_name='NMSSMTools_5.5.2'
+package_name='NMSSMTools_5.5.3'
 
 # Read spectial blocks of NMSSMTools
 class NTools_block_format(ReadBlock):
@@ -126,9 +126,9 @@ class NMSSMTools(package):
     
     def Record(self,number):
         destinations={
-            'inp'     :os.path.join(self.record_dir,f'inp.{number}'),
-            'spectr'  :os.path.join(self.record_dir,f'spectr.{number}'),
-            'omega'     :os.path.join(self.record_dir,f'omega.{number}')
+            'inp'     :os.path.join(self.record_dir,f'inp.{number}.dat'),
+            'spectr'  :os.path.join(self.record_dir,f'spectr.{number}.dat'),
+            'omega'     :os.path.join(self.record_dir,f'omega.{number}.dat')
         }
         new_capsule=self.data_dir.CopyTo(destinations)
         # shutil.copy(self.data_dir['inp'],destinations['input'])
