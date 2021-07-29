@@ -1,24 +1,14 @@
-#!/usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python3
 
-# In[2]:
-
-
-# get_ipython().run_line_magic('matplotlib', 'inline')
-# get_ipython().run_line_magic('load_ext', 'autoreload')
-# get_ipython().run_line_magic('autoreload', '2')
-
-import sys,os
+import sys,pandas
 sys.path.append('/home/heyangle/Desktop/ScanCraft/ScanCraft')
-sys.path.append('/home/vooum/Desktop/ScanCraft/ScanCraft')
-sys.path.append('C://Users//vooum//Desktop//ScanCraft//ScanCraft')
-
-
 from command.scan.scan import scan
-from command.nexus.NMSSMTools import NMSSMTools
+from command.NMSSMTools import NMSSMTools
+from command.multi_thread.queue_operation import GenerateQueue#,FillQueue
+from command.multi_thread.MT_NTools import MT_NTools
+from command.data_transformer.InputListToPandas import InputListToPandas as I2P
 
-
-mold=scan(method="random")
+mold=scan(method='random')
 mold.AddScalar('tanB','MINPAR',3,1.,60.)
 mold.AddScalar('M1','EXTPAR',1  ,20.    ,1000.)
 mold.AddScalar('M2','EXTPAR'   ,2  ,100.    ,2000.)
@@ -36,80 +26,17 @@ mold.AddScalar('A_Lambda','EXTPAR' ,63,-3.e3,3.e3)
 mold.AddScalar('A_kappa','EXTPAR' ,64,-3.e3,3.e3)
 mold.AddScalar('mu_eff','EXTPAR'  ,65,100.,1500.)
 
+MTN=MT_NTools(threads=6)
+ore_q=GenerateQueue(mold,lenth=10)
+MTN.Run(ore_q)
 
-
-
-[k for k in mold.variable_dict.keys()]
-
-
-# In[28]:
-
-
-len(_27)
-
-
-# In[32]:
-
-
-[k for k in mold.free_parameter_list.keys()]
-
-
-# In[29]:
-
-
-mold.Print()
-
-
-# In[30]:
-
-
-mold.Sample()
-
-
-# In[31]:
-
-
-mold.Print()
-
-
-# In[39]:
-
-
-N=NMSSMTools(input_mold="/home/vooum/Desktop/ScanCraft/ScanCraft/packages/NMSSMTools_5.5.2/inpZ3.dat")
-
-
-# In[41]:
-
-
-N.Make()
-
-
-# In[42]:
-
-
-N.Run(mold)
-
-
-# In[44]:
-
-
-N.data_dir
-
-
-# In[49]:
-
-
-_42('EXTPAR',1)
-
-
-# In[50]:
-
-
-_42.error
-
-
-# In[ ]:
-
-
-
-
+if len(MTN.accepted_list)>0:
+    acc=I2P(MTN.accepted_list,title='accepted')
+    # acc[('accepted','points','are','calculable')]=1
+    acc[('flags','binary','1/0_is/not','calculable')]=1
+    acc.to_csv('accepted.csv')
+if len(MTN.excluded_list)>0:
+    exc=I2P(MTN.excluded_list,title='excluded')
+    # exc[('excluded','points','mass','negative')]=0
+    exc[('flags','binary','1/0_is/not','calculable')]=0
+    exc.to_csv('excluded.csv')
