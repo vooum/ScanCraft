@@ -1,22 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
-
-# get_ipython().run_line_magic('matplotlib', 'inline')
-# get_ipython().run_line_magic('load_ext', 'autoreload')
-# get_ipython().run_line_magic('autoreload', '2')
-
-import sys,os
-sys.path.append('/home/heyangle/Desktop/ScanCraft/ScanCraft')
-sys.path.append('/home/vooum/Desktop/ScanCraft/ScanCraft')
-sys.path.append('C://Users//vooum//Desktop//ScanCraft//ScanCraft')
-
+import sys,os,time,shutil,numpy
+sys.path.append('/home/lifei/ScanCraft-New_ReadSLHA/ScanCraft')
 
 from command.scan.scan import scan
 from command.nexus.NMSSMTools import NMSSMTools
-
 
 mold=scan(method="random")
 mold.AddScalar('tanB','MINPAR',3,1.,60.)
@@ -36,80 +25,34 @@ mold.AddScalar('A_Lambda','EXTPAR' ,63,-3.e3,3.e3)
 mold.AddScalar('A_kappa','EXTPAR' ,64,-3.e3,3.e3)
 mold.AddScalar('mu_eff','EXTPAR'  ,65,100.,1500.)
 
+os.chdir('/home/lifei/ScanCraft-New_ReadSLHA/ScanCraft/packages/NMSSMTools_5.5.3')
+try:
+    os.makedirs("output/record/random_20")
+except FileExistsError:
+    pass
 
-
-
-[k for k in mold.variable_dict.keys()]
-
-
-# In[28]:
-
-
-len(_27)
-
-
-# In[32]:
-
-
-[k for k in mold.free_parameter_list.keys()]
-
-
-# In[29]:
-
-
-mold.Print()
-
-
-# In[30]:
-
-
-mold.Sample()
-
-
-# In[31]:
-
-
-mold.Print()
-
-
-# In[39]:
-
-
-N=NMSSMTools(input_mold="/home/vooum/Desktop/ScanCraft/ScanCraft/packages/NMSSMTools_5.5.2/inpZ3.dat")
-
-
-# In[41]:
-
-
+N=NMSSMTools(input_mold="./SAMPLES/inpZ3.dat")
 N.Make()
 
+time_left = 2
+i=0
 
-# In[42]:
+good=[]
 
+start = time.time()
+while time.time()-start < 2:
+    new_point=mold.Sample() 
+    i+=1
+    result=N.Run(new_point)
+    if result.error:
+        shutil.move("./inp", f"./output/record/random_20/inp.{i}.dat")
+        good.append([i,0])
+    else:
+        N.Record(i)
+        good.append([i,1])
 
-N.Run(mold)
-
-
-# In[44]:
-
-
-N.data_dir
-
-
-# In[49]:
-
-
-_42('EXTPAR',1)
-
-
-# In[50]:
-
-
-_42.error
-
-
-# In[ ]:
-
+good=numpy.array(good)
+numpy.savetxt('./results',good)
 
 
 
