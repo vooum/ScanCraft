@@ -12,7 +12,7 @@
 import os,subprocess,shutil,sys,time
 from ..color_print import ColorPrint,UseStyle,Error
 from .GetPackageDir import GetPackageDir
-from ..format.data_container import capsule
+from ..DataProcessing.FileOperators.container import capsule
 from ..read.readSLHA import ReadSLHAFile
 from ..read.SLHA_string import SLHA_string
 from ..DataProcessing.data_operators.list_operators import FlatToList

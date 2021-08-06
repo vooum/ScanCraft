@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
 import shutil
 import copy
-# import colored
-def KeyNotExist(key):
-    # print(f'{colored.fg("red")}{colored.attr("bold")} Document:{key} dose not exist{colored.attr(0)}')
-    print(f'Document:{key} dose not exist')
-    return None
 
 class capsule(dict):
-    '''container to store data_file_path in attribute 'documents'.'''
+    '''container to store data_file_path. This class base on dict.'''
     def MoveTo(self,destinations):
         keys=destinations.keys()
         if self.keys()!=keys:
@@ -27,5 +22,3 @@ class capsule(dict):
         new_capsule=copy.deepcopy(self)
         new_capsule.update(destinations)
         return new_capsule
-    # def __eq__(self,other):
-        # return self.EqualTo(other)

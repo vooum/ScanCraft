@@ -3,7 +3,7 @@
 import os,subprocess
 from functools import partial
 from .GetPackageDir import GetPackageDir
-from ..file_operations.container import capsule
+from ..DataProcessing.FileOperators.container import capsule
 
 class package(object):
     def __init__(self

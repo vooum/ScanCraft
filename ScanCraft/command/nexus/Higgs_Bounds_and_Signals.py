@@ -4,7 +4,7 @@ try:
     from .GetPackageDir import GetPackageDir
     from .color_print import ColorPrint,UseStyle,Error
     from .read.readline import ReadLine
-    from ..format.data_container import capsule
+    from ..DataProcessing.FileOperators.container import capsule
 except:
     pass
 
