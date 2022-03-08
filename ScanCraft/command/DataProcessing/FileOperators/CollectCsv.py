@@ -1,16 +1,17 @@
 #! /usr/bin/env python3
 import os,pandas
-from ..color_print import Error
 
-def CollectCsvFiles(patterns=None,paths=None):
-    if patterns is None:
-        Error('patterns need')
-    elif not isinstance(patterns,(tuple,list)):
-        patterns=[patterns]
+def CollectCsvFiles(keywords=None,paths=None):
+    if keywords is None:
+        print('\033[1;31;40mpatterns need\033[0m')
+        exit()
+    elif not isinstance(keywords,(tuple,list)):
+        keywords=[keywords]
+
     if paths is None:
         paths=['./']
     doc_dict={}
-    for pattern in patterns:
+    for pattern in keywords:
         doc_dict[pattern]={}
     for path_i in paths:
         for document in os.listdir(path_i):
