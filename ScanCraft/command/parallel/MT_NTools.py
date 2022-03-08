@@ -7,7 +7,7 @@ from ..nexus.NMSSMTools import NMSSMTools,package_name
 from ..nexus.GetPackageDir import GetPackageDir
 from ..file_operations.Rename import Tag_ctime
 from ..operators.time import ChangeTime
-from ..DataProcessing.data_operators.list_operators import FlatToList
+from ..DataProcessing.DataOperators.list_operators import FlatToList
 
 class NTools_thread(Thread):
     pylon='pylon'

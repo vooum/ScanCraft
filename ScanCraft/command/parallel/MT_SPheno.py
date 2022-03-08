@@ -7,7 +7,7 @@ from ..nexus.GetPackageDir import GetPackageDir
 from ..nexus.SPheno import SPheno
 from ..nexus.Higgs_Bounds_and_Signals import HiggsBounds
 from ..color_print import Error
-from ..DataProcessing.data_operators.list_operators import FlatToList
+from ..DataProcessing.DataOperators.list_operators import FlatToList
 
 from ..data_transformer.InputToPandas import InputToPandas
 

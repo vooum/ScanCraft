@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ..DataProcessing.data_operators.list_operators import FlatToList
+from ..DataProcessing.DataOperators.list_operators import FlatToList
 
 class list_block():
     def __init__(self,PDG_name_dict):

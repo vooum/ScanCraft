@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from .. import SLHA_text
-from ..data_operators.list_operators import FlatToList
+from ..DataOperators.list_operators import FlatToList
 import numpy,pandas
 
 def _GetInitials(spectrum:SLHA_text)->list(int):

@@ -4,7 +4,7 @@ import numpy,pandas
 #from multiprocessing import Pool 
 from .. import SLHA_text
 from ...format.block_table import block_table
-from ..data_operators.list_operators import FlatToList,SortMixList
+from ..DataOperators.list_operators import FlatToList,SortMixList
 color_red='\x1b[38;5;1m'
 color_bold='\x1b[1m'
 color_clean='\x1b[0m'
