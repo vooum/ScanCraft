@@ -2,7 +2,7 @@
 
 import copy
 from collections import defaultdict
-from ..DataProcessing.SLHA.SLHA_line import GetBlockName
+from ..DataProcessing.SLHA.LHA_line import GetBlockName
 
 
 def int_code(line):
@@ -47,6 +47,12 @@ class unchanged_line():
         return self.line
 
 class GenerateInputFile():
+    '''Generate a new input file with parameters of sample point.
+    __init__:
+        text_mold: lines in input mold file got by readlines();
+        point_dict: see blow
+        path: where new input file to write
+    '''
     def __init__(self,text_mold,point_dict,path):
         self.text_mold=text_mold
         self.path=path
@@ -61,7 +67,7 @@ class GenerateInputFile():
         generators=[]
         target_block=None
         for i,line in enumerate(text_mold):
-            if line[0]=='#':pass # annotation
+            if line[0]=='#':pass # annotation line, keep it as unchanged_line
             else:
                 start=line[:5].upper()
                 if 'BLOCK' == start:
@@ -86,6 +92,8 @@ class GenerateInputFile():
             inp.writelines(lines)
 
 def GetSLHAValues(point):
+    '''Get {block:{code:value, }, } from sample point
+    '''
     point_dict=defaultdict(dict)
     for par in point.variable_dict.values():
         point_dict[par.block][par.code]=par.value

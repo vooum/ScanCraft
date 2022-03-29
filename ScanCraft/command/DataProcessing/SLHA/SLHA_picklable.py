@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from copy import deepcopy
-from .SLHA_line import GetBlockName,GetDecayCode
+from .LHA_line import GetBlockName,GetDecayCode
 from .ReadBlock import ReadBlock
 from .ReadDecay import ReadDecay
 

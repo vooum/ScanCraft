@@ -4,7 +4,7 @@ from .special_blocks import special_blocks
 from functools import wraps
 from .Accords import entries, matrixs
 from ...operators.string import Dfloat
-from .SLHA_line import LoopLines
+from .LHA_line import LoopLines
 
 additional_scalars = {
     'SPhenoLowEnergy',
@@ -16,9 +16,11 @@ additional_matrixs = {
     'HiggsLHC13', 'HiggsLHC14', 'REDCOUP'
 }
 
-scalar_list = [i.upper() for i in
+# block names of scalars
+scalar_list = [i.upper() for i in 
                set(entries.keys()) | additional_scalars
                ]
+# block names of matrixes
 matrix_list = [i.upper() for i in
                set(matrixs) | additional_matrixs
                ]
@@ -42,9 +44,9 @@ def ReadMatrix(line):
     return {code: value}
 
 
-class ReadBlock(special_blocks):  # Container of methods to read SLHA data
+class ReadBlock(special_blocks):
+    '''Container of methods to read SLHA data'''
     pass
-
 
 for name in scalar_list:
     setattr(ReadBlock, name, ReadScalar)

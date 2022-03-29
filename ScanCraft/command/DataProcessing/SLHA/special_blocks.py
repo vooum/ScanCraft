@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from .SLHA_line import LoopLines
+from .LHA_line import LoopLines
 
 class special_blocks():
     @staticmethod

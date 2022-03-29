@@ -2,6 +2,8 @@
 
 from collections import ChainMap
 
+'''all accords of SLHA'''
+
 PDG = {
     1: 'd', 2: 'u', 3: 's', 4: 'c', 5: 'b', 6: 't',
     11: 'e-', 12: 'nu_e', 13: 'mu-', 14: 'nu_mu', 15: 'tau-', 16: 'nu_tau',
