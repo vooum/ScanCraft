@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import copy
+from ..DataOperators.dict_operators import KeyOfMaxValue,KeyOfMinValue
 
 def MaxN1Conponent(sample):
     Component={
