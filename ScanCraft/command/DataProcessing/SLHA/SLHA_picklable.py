@@ -109,9 +109,9 @@ class SLHA_document(SLHA_text):
     '''extracted messages from SLHA file'''
     def __init__(self,SLHA_document,block_format=ReadBlock):
         self.path=SLHA_document
-        self.block_format=ReadBlock
+        self.block_format=block_format
     # @lazyproperty
     # def text(self):
     #     # print(f'Getting text from {self.path}')
         with open(self.path,'r') as SLHA:
-            super().__init__(SLHA.readlines(),block_format=ReadBlock)
+            super().__init__(SLHA.readlines(),block_format=block_format)

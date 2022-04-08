@@ -3,7 +3,7 @@
 from .special_blocks import special_blocks
 from functools import wraps
 from .Accords import entries, matrixs
-from ...operators.string import Dfloat
+from ..DataOperators.string import Dfloat
 from .LHA_line import LoopLines
 
 additional_scalars = {
