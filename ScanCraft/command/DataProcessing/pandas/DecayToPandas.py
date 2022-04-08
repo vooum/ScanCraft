@@ -1,139 +1,84 @@
 #!/usr/bin/env python3
 
+from ast import Str
+from atexit import register
 from .. import SLHA_text, SLHA_document
 from ..DataOperators.list_operators import FlatToList
 import numpy,pandas
 from functools import singledispatch
 
-@singledispatch
-def _GetInitials(spectrum:SLHA_text) -> list(int):
-    '''Get a list of initial PDGs from spectrum'''
+def _GetInitials(spectrum:SLHA_text) -> list:
+    '''Get a list of all possible decay initial particle PDGs from a spectrum
+    when initial particle is not given.'''
     return [d for d in spectrum.menu.keys() if type(d) is int]
+    # like: [24, 25, ...]
 
-@_GetInitials.register(list)
-def _(spectrum_list:list(SLHA_text)):
-    '''Get lists of Decay initial PDGs from list of spectrums'''
-    list_of_initials=[ _GetInitials(spec) for spec in spectrum_list ]
-    all_initials=sorted( set( FlatToList(list_of_initials) ) )
-    return all_initials
+# One spectrum
+# initial can be:
+#  - None, which means all initial particles
+#  - an integer, which is initial particle PDG
+#  - a list of initial particle PDGs
+#  - a list of channel tuples (initial_PDG, tuple(final_PDGs))
+@singledispatch
+def _Get_channel_list(initial:int, spectrum:SLHA_text ) -> list:
+    # Initial PDG is given
+    '''Get a list:
+    start with decay WIDTH of a particle specified by PDG,
+    then all its decay channels: tuple( iniPDG, (final state PDGs) )
+    from a spectrum'''
+    channel_list = [(initial, 'WIDTH')]
+    finals=[ f for f in spectrum('DECAY',initial).keys() if type(f) is tuple ]
+    channel_list.extend( [ (initial,f) for f in finals ] )
+    return channel_list
+@_Get_channel_list.register(tuple)
+def _(channel:tuple, spectrum:SLHA_text):
+    return [channel]
+@_Get_channel_list.register(list)
+def _(initial:list, spectrum:SLHA_text):
+    channel_list=sum( # sum lists
+        [ _Get_channel_list(ini,spectrum) for ini in initial ],
+        [] )
+    return channel_list
+@_Get_channel_list.register(type(None))
+def _(initial:None, spectrum:SLHA_text):
+    return _Get_channel_list(_GetInitials(spectrum) ,spectrum)
 
-
-def _GetInitials(spectrum:SLHA_text)->list(int):
-    '''Get a list of Decay initial PDGs'''
-    initials = [d for d in spectrum.menu.keys() 
-                if type(d) is int
-            ]
-    return initials
-
-def _GetInitialList(spec_list:list(SLHA_text) )->list(int):
-    '''a sorted list within all initial PDGs that may decay from all spectrums'''
-    # only used when initial particle is not assigned
-    list_of_initials=[
-        _GetInitials(spec) for spec in spec_list
-    ]
-    initial_list=sorted( set(
-        FlatToList(list_of_initials)
-    ))
-    return initial_list
-
-def _GetFinals(spectrum:SLHA_text,initial:int) -> list(tuple):
-    '''Get a list of final states tuples for a given initial PDG'''
-    return list( spectrum('DECAY',initial).keys() )
-
-def _GetAllFinals(spec_list:list[SLHA_text], initial:int)->list(tuple):
-    '''Get all PDG tuples of final states of a given initial PDG'''
-    list_of_finals=[ _GetFinals(spec,initial)
-        for spec in spec_list
-    ]
-    final_list=sorted( set(
-        FlatToList(list_of_finals)
-    ))
-    return final_list
-
-def _ExpandDecayIndex(spec_list:list(SLHA_text), index:list) -> list:
-    '''Expand index and its final PDG tuples to list of tuple( iniPDG, (final state PDGs) )
-    the element of index should be:
-        an integer, which is initial PDGs,
-    or  a the tuple within an initial PDG and a tuple of final states PDGs'''
-    tuple_ini_final_list=[]
-    for ini in  index:
-        if type(ini) is int: #Decay particle PDG
-            tuple_ini_final_list.extend(
-                [ (ini,finals) for finals in _GetAllFinals(spec_list,ini) ]
-            )
-        elif type(ini) is tuple:
-            # a tuple of ( iniPDG, (final states tuple))
-            assert len(ini)==2, "Index element should be an integer or a lenth 2 tuple."
-            assert type(ini[1]) is tuple, "Second index element should be a tuple of final states PDGs"
-            tuple_ini_final_list.append(ini)
-    return tuple_ini_final_list
-
-def _decay_index_To_String(in_fi:tuple) -> str:
-    '''convert decay index: (iniPDG, (final_PDGs,) )
+def _StringChannel(channel:tuple) -> str:
+    '''convert decay index: (iniPDG, “WIDTH” or (final_PDGs,) )
     to string: "DECAY_iniPDG->finalOne_finalTwo".'''
-    return f'DECAY_{in_fi[0]}->{"_".join(in_fi[1])}'
+    ini,finals=channel
+    if finals=='WIDTH':
+        return f'DECAY_{ini}_WIDTH'
+    elif type(finals) is tuple:
+        final_str="_".join( [str(fi) for fi in finals] )
+        return f'DECAY_{ini}->{final_str}'
 
-def DecayToPandas(spectrum_list,index=None):
-    '''Collect decay branch ratios of particles or channels in index.
-    if index is None, collect decay of all particles;
-    else the index should be a list. Its items can be
-     - integer: all decay chennels of the particle which PDG is the integer;
-     - tuple : ( ini_PDG, (final_PDGs) )
+@singledispatch
+def _DictDecay(spectrum:SLHA_text, initial=None)->dict:
+    decay_dict={}
+    channel_list=_Get_channel_list(initial,spectrum)
+    for channel in channel_list:
+        key=_StringChannel(channel)
+        decay_dict[key]=spectrum('DECAY',*channel)
+    return decay_dict
+@_DictDecay.register(str)
+def _(spectrum:str, initial=None):
+    return _DictDecay(SLHA_document(spectrum),initial)
+
+@singledispatch
+def PandasDecay(spectrum:SLHA_text, initial=None)->pandas.Series:
+    '''Collect decay branch ratios of initial particles.
+    initial can be:
+        - None, which means all initial particles
+        - an integer, which is initial particle PDG
+        - a list of initial particle PDGs
     '''
-    SL=FlatToList(spectrum_list)
-    # check all items in spectrum_list are SLHA_text objects
-    flags=[isinstance(spec,SLHA_text) for spec in SL]
-    assert all(flags), "wrong type when interpreting Decay data into Pandas"
-
-    # get columns
-    if index is None: ## Get columns from spectrum
-        index=_GetInitialList(spectrum_list)
-    elif type(index) is int:
-        index=[index]
-    elif isinstance(index,list):
-        pass
-    else:
-        print('index of decay particle should be an integer, a list, or None.')
-        exit()
-    ini_final_list=_ExpandDecayIndex(SL,index) # [ ( iniPDG, (final state PDGs) ), ... ]
-    column_Pd=map(_decay_index_To_String, ini_final_list)
-    
-    # get data array
-    value_list = []
-    for spec in SL:
-        row=[]
-        for ini, finals in ini_final_list:
-            try:
-                row.append(spec('DECAY', ini, finals) )
-            except KeyError:
-                row.append(numpy.nan)
-        value_list.append(row)
-    DF=pandas.DataFrame(numpy.array(value_list),columns=column_Pd)
-    return DF
-
-LHA_path=str
-
-def ReadDecayToPandas(LHA_files:list[LHA_path], index = None)-> pandas.DataFrame:
-    '''Collect decay branch ratios of particles or channels in index from LHA files.
-    if index is None, collect decay of all particles;
-    else the index should be:
-     - integer: all decay chennels of the particle which PDG is the integer;
-     - tuple : ( ini_PDG, (final_PDGs) )
-     - or a list of such tuples.
-    This is another version of DecayToPandas which will READ spectrum_list one by one -- RAM will be saved.
-    '''
-    SL=FlatToList(LHA_files)
-    # check all items in spectrum_list are SLHA_text objects
-    flags=[isinstance(spec,str) for spec in SL]
-    assert all(flags), "All items in LHA_files should be path like string of LHA files."
-
-    decay_DataFrame=pandas.DataFrame()
-    for spec in map(SLHA_document , SL):
-        ini_final_list=_ExpandDecayIndex([spec],index) # [ ( iniPDG, (final state PDGs) ), ... ]
-        data_dict={}
-        for in_fi in ini_final_list:
-            key=_decay_index_To_String(in_fi)
-            data_dict[key]=spec('DECAY', ini, finals)
-        decay_DataFrame=decay_DataFrame.append(data_dict,ignore_index=True)
-    return decay_DataFrame
-        
+    decay_dict=_DictDecay(spectrum,initial)
+    return pandas.Series(decay_dict)
+@PandasDecay.register(list)
+def _(spectrum_list:list, initial=None)->pandas.DataFrame:
+    data_DF=pandas.DataFrame()
+    for spectrum in spectrum_list:
+        decay_dict=_DictDecay(spectrum,initial)
+        data_DF = data_DF.append(decay_dict,ignore_index=True)
+    return data_DF

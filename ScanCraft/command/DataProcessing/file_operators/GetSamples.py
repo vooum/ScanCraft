@@ -6,7 +6,12 @@ def _GetNumberWithSep(file_name,number_position,separator):
     num_str=file_name.rsplit(separator,-number_position)[1] # Get number string from given position.
     return int(num_str)
 
-def GetSampleDictWithFucn(path=None,patterns=None,number_function=None,args=dict(),raise_exception=False):
+def GetSampleDictWithFucn(
+        path=None,
+        patterns=None,
+        number_function=None,
+        args=dict(),
+        raise_exception=False):
     '''
     number_position: where the number is in filename.
         eg. number_position=-2, inp.1.dat, spectr.1.dat
@@ -24,10 +29,15 @@ def GetSampleDictWithFucn(path=None,patterns=None,number_function=None,args=dict
         try: # get number from document name
             number=number_function(document,**args)
         except ValueError:
-            if raise_exception:
-                continue
+            if raise_exception: raise
             else:
                 print(document,'jumped.')
+                continue
+        except IndexError:
+            if raise_exception: raise
+            else:
+                print(document,'jumped.')
+                continue
         sample_dict.setdefault(number,capsule())
         for p in patterns:
             if p in document:
