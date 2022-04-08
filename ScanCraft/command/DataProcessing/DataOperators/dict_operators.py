@@ -14,3 +14,20 @@ def Change_key_type(dictionary: dict, new_type: type, layers: list = range(1000)
             k = new_type(k)
         new_dict.update({k: v})
     return new_dict
+
+def KeyOfMaxValue(Dict):
+    mk,mv='',0.
+    for k,v in Dict.items():
+        if v>mv:
+            mk=k
+            mv=v
+        #print(k,v,mk,mv)
+    return mk
+def KeyOfMinValue(Dict):
+    mk,mv='',1.e99
+    for k,v in Dict.items():
+        if v<mv:
+            mk=k
+            mv=v
+        #print(k,v,mk,mv)
+    return mk

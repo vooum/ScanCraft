@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import imp
-from ...operators.string import Dfloat
+from ..DataOperators.string import Dfloat
 from .LHA_line import LoopLines
 
 
@@ -31,4 +31,3 @@ def ReadDecay(text):
     branch_ratios = ReadBranchRatio(text)
     data.update(branch_ratios)
     return data
-
