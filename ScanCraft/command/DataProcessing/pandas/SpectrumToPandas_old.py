@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
 
-import numpy
-from singledispatch import singledispatch
-
-import pandas
-
-from ...format.block_table import block_table
+import numpy,pandas
 #from multiprocessing import Pool 
 from .. import SLHA_text
-from ..DataOperators.list_operators import FlatToList, SortMixList
-
+from ...format.block_table import block_table
+from ..DataOperators.list_operators import FlatToList,SortMixList
 color_red='\x1b[38;5;1m'
 color_bold='\x1b[1m'
 color_clean='\x1b[0m'
@@ -119,12 +114,3 @@ def SpectrumToPandas(*spectrum_list,index=None,title='Spectrum'):
     # generate dataframe
     DF=pandas.DataFrame(numpy.array(value_list),columns=column_Pd)
     return DF
-
-@singledispatch
-def PandasSpectrum(spectrum:SLHA_text, index=None)-> pandas.Series:
-    '''
-    initial can be:
-        - None, return all possible blocks
-        - string, block name
-        - tuple, block-code(-code) tuple
-        - a list of string or tuple'''
