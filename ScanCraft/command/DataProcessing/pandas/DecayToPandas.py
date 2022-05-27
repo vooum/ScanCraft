@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 
-from ast import Str
-from atexit import register
 from .. import SLHA_text, SLHA_document
-from ..DataOperators.list_operators import FlatToList
-import numpy,pandas
+import pandas
 from functools import singledispatch
 
 def _GetInitials(spectrum:SLHA_text) -> list:
