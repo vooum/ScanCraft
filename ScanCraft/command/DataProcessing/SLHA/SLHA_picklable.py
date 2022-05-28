@@ -71,7 +71,8 @@ class SLHA_text(object):
     def __call__(self, block:str, *code):
         upperBLOCK=block.upper()
         if upperBLOCK in self.menu:
-            data_dict=deepcopy(self._BLOCK.get(upperBLOCK,self.ReadBlock(upperBLOCK)))
+            # data_dict=deepcopy(self._BLOCK.get(upperBLOCK,self.ReadBlock(upperBLOCK)))
+            data_dict=self._BLOCK.get(upperBLOCK,self.ReadBlock(upperBLOCK))
             try:
                 return data_dict[code[0]]
             except IndexError:
@@ -85,7 +86,8 @@ class SLHA_text(object):
             except IndexError:
                 print('please give the PDG-code of particle')
                 raise
-            data_dict=deepcopy(self._DECAY.get(PDG,self.ReadDecay(PDG)))
+            # data_dict=deepcopy(self._DECAY.get(PDG,self.ReadDecay(PDG)))
+            data_dict=self._DECAY.get(PDG,self.ReadDecay(PDG))
             try:
                 return data_dict[code[1]]
             except IndexError:

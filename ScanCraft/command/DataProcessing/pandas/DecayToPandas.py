@@ -4,12 +4,6 @@ from .. import SLHA_text, SLHA_document
 import pandas
 from functools import singledispatch
 
-def _GetInitials(spectrum:SLHA_text) -> list:
-    '''Get a list of all possible decay initial particle PDGs from a spectrum
-    when initial particle is not given.'''
-    return [d for d in spectrum.menu.keys() if type(d) is int]
-    # like: [24, 25, ...]
-
 # One spectrum
 # initial can be:
 #  - None, which means all initial particles
@@ -38,7 +32,9 @@ def _(initial:list, spectrum:SLHA_text):
     return channel_list
 @_Get_channel_list.register(type(None))
 def _(initial:None, spectrum:SLHA_text):
-    return _Get_channel_list(_GetInitials(spectrum) ,spectrum)
+    #Get a list of all possible decay initial particle PDGs
+    initials = [d for d in spectrum.menu.keys() if type(d) is int]
+    return _Get_channel_list(initials ,spectrum)
 
 def _StringChannel(channel:tuple) -> str:
     '''convert decay index: (iniPDG, “WIDTH” or (final_PDGs,) )
@@ -76,6 +72,6 @@ def PandasDecay(spectrum:SLHA_text, initial=None)->pandas.Series:
 def _(spectrum_list:list, initial=None)->pandas.DataFrame:
     data_DF=pandas.DataFrame()
     for spectrum in spectrum_list:
-        decay_dict=_DictDecay(spectrum,initial)
-        data_DF = data_DF.append(decay_dict,ignore_index=True)
+        data_SR = PandasDecay(spectrum,initial)
+        data_DF = data_DF.append(data_SR ,ignore_index=True)
     return data_DF
